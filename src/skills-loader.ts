@@ -10,6 +10,10 @@ type ParsedSkill = {
   content: string;
 };
 
+export function filterByHook(skills: ParsedSkill[], hookType: string): ParsedSkill[] {
+  return skills.filter((skill) => skill.frontmatter.hook === hookType);
+}
+
 export function parseSkill(raw: string): ParsedSkill {
   const frontmatterMatch = raw.match(/^---\n([\s\S]*?)\n---\n\n?([\s\S]*)$/);
 

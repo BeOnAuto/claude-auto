@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { parseSkill, scanSkills } from './skills-loader.js';
+import { filterByHook, parseSkill, scanSkills } from './skills-loader.js';
 
 describe('skills-loader', () => {
   describe('scanSkills', () => {
@@ -83,6 +83,33 @@ Skill content here.`;
         frontmatter: {},
         content: '# Just Content\n\nNo frontmatter here.',
       });
+    });
+  });
+
+  describe('filterByHook', () => {
+    it('filters skills by hook type', () => {
+      const skills = [
+        { frontmatter: { hook: 'SessionStart' }, content: 'A' },
+        { frontmatter: { hook: 'PreToolUse' }, content: 'B' },
+        { frontmatter: { hook: 'SessionStart' }, content: 'C' },
+      ];
+
+      const result = filterByHook(skills, 'SessionStart');
+
+      expect(result).toEqual([
+        { frontmatter: { hook: 'SessionStart' }, content: 'A' },
+        { frontmatter: { hook: 'SessionStart' }, content: 'C' },
+      ]);
+    });
+
+    it('returns empty array when no skills match hook', () => {
+      const skills = [
+        { frontmatter: { hook: 'PreToolUse' }, content: 'A' },
+      ];
+
+      const result = filterByHook(skills, 'SessionStart');
+
+      expect(result).toEqual([]);
     });
   });
 });
