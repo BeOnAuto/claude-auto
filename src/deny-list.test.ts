@@ -1,0 +1,49 @@
+import * as fs from 'node:fs';
+import * as os from 'node:os';
+import * as path from 'node:path';
+
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+import { loadDenyPatterns } from './deny-list.js';
+
+describe('deny-list', () => {
+  describe('loadDenyPatterns', () => {
+    let tempDir: string;
+
+    beforeEach(() => {
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-deny-'));
+    });
+
+    afterEach(() => {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    });
+
+    it('loads patterns from deny-list.project.txt', () => {
+      fs.writeFileSync(
+        path.join(tempDir, 'deny-list.project.txt'),
+        '*.secret\n/private/**\n'
+      );
+
+      const result = loadDenyPatterns(tempDir);
+
+      expect(result).toEqual(['*.secret', '/private/**']);
+    });
+
+    it('returns empty array when no deny list files exist', () => {
+      const result = loadDenyPatterns(tempDir);
+
+      expect(result).toEqual([]);
+    });
+
+    it('ignores empty lines and comments', () => {
+      fs.writeFileSync(
+        path.join(tempDir, 'deny-list.project.txt'),
+        '*.secret\n\n# This is a comment\n/private/**\n'
+      );
+
+      const result = loadDenyPatterns(tempDir);
+
+      expect(result).toEqual(['*.secret', '/private/**']);
+    });
+  });
+});
