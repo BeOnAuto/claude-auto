@@ -1,7 +1,6 @@
 # Ketchup Plan: claude-ketchup npm package
 
 ## TODO
-- [ ] Burst 8: isLinkedMode detects pnpm link
 - [ ] Burst 9: createSymlink creates file symlink on Unix
 - [ ] Burst 10: createSymlink backs up existing non-symlink file
 - [ ] Burst 11: createSymlink replaces existing symlink
@@ -17,3 +16,4 @@
 - [x] Burst 4+6: findProjectRoot walks up to find package.json with cwd fallback (0f8fdf3)
 - [x] Burst 5: findProjectRoot walks up to find .git (d199531)
 - [x] Burst 7: getPackageDir returns package directory (6914505)
+- [x] Burst 8: isLinkedMode detects pnpm link (2343208)
