@@ -7,6 +7,23 @@ type RepairResult = {
   repaired: string[];
 };
 
+export function getExpectedSymlinks(packageDir: string): string[] {
+  const dirs = ['scripts', 'skills', 'commands'];
+  const files: string[] = [];
+
+  for (const dir of dirs) {
+    const dirPath = path.join(packageDir, dir);
+    if (fs.existsSync(dirPath)) {
+      const entries = fs.readdirSync(dirPath);
+      for (const entry of entries) {
+        files.push(path.join(dir, entry));
+      }
+    }
+  }
+
+  return files;
+}
+
 export function repair(packageDir: string, claudeDir: string, files: string[]): RepairResult {
   const repaired: string[] = [];
 

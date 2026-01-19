@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { repair } from './repair.js';
+import { getExpectedSymlinks, repair } from './repair.js';
 
 describe('cli repair', () => {
   let tempDir: string;
@@ -33,5 +33,15 @@ describe('cli repair', () => {
       repaired: ['scripts/session-start.ts'],
     });
     expect(fs.readlinkSync(path.join(claudeDir, 'scripts', 'session-start.ts'))).toBe(sourceFile);
+  });
+
+  it('getExpectedSymlinks finds files in scripts, skills, and commands directories', () => {
+    fs.writeFileSync(path.join(packageDir, 'scripts', 'hook.ts'), '');
+    fs.mkdirSync(path.join(packageDir, 'skills'), { recursive: true });
+    fs.writeFileSync(path.join(packageDir, 'skills', 'skill.md'), '');
+
+    const result = getExpectedSymlinks(packageDir);
+
+    expect(result).toEqual(['scripts/hook.ts', 'skills/skill.md']);
   });
 });
