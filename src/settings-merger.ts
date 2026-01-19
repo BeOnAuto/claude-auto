@@ -1,10 +1,27 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+type HookEntry = {
+  hooks: Array<{ type: string; command: string }>;
+};
+
+type HookOverride = {
+  _disabled?: string[];
+};
+
 type Settings = {
-  hooks?: Record<string, unknown[]>;
+  hooks?: Record<string, HookEntry[] | HookOverride>;
   [key: string]: unknown;
 };
+
+function isHookOverride(value: unknown): value is HookOverride {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    '_disabled' in value
+  );
+}
 
 function deepMergeSettings(base: Settings, override: Settings): Settings {
   const result: Settings = { ...base };
@@ -13,9 +30,20 @@ function deepMergeSettings(base: Settings, override: Settings): Settings {
     if (key === 'hooks' && base.hooks && override.hooks) {
       result.hooks = { ...base.hooks };
       for (const hookName of Object.keys(override.hooks)) {
-        const baseHooks = (base.hooks[hookName] as unknown[]) || [];
-        const overrideHooks = override.hooks[hookName] as unknown[];
-        result.hooks[hookName] = [...baseHooks, ...overrideHooks];
+        const overrideValue = override.hooks[hookName];
+
+        if (isHookOverride(overrideValue)) {
+          const disabled = overrideValue._disabled || [];
+          const baseHooks = (base.hooks[hookName] as HookEntry[]) || [];
+          result.hooks[hookName] = baseHooks.filter((entry) => {
+            const command = entry.hooks[0]?.command;
+            return !disabled.includes(command);
+          });
+        } else {
+          const baseHooks = (base.hooks[hookName] as HookEntry[]) || [];
+          const overrideHooks = overrideValue as HookEntry[];
+          result.hooks[hookName] = [...baseHooks, ...overrideHooks];
+        }
       }
     } else {
       result[key] = override[key];
