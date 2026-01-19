@@ -23,11 +23,13 @@ describe('postinstall', () => {
 
     it('detects project root and returns it', () => {
       const projectDir = path.join(tempDir, 'my-project');
+      const packageDir = path.join(tempDir, 'empty-package');
       fs.mkdirSync(projectDir, { recursive: true });
+      fs.mkdirSync(packageDir, { recursive: true });
       fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
       process.env.KETCHUP_ROOT = projectDir;
 
-      const result = runPostinstall();
+      const result = runPostinstall(packageDir);
 
       expect(result).toEqual({
         projectRoot: projectDir,
