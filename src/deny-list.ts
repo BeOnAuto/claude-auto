@@ -1,6 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+import micromatch from 'micromatch';
+
 function loadFile(filePath: string): string[] {
   if (!fs.existsSync(filePath)) {
     return [];
@@ -18,4 +20,8 @@ export function loadDenyPatterns(dir: string): string[] {
   const localPatterns = loadFile(path.join(dir, 'deny-list.local.txt'));
 
   return [...projectPatterns, ...localPatterns];
+}
+
+export function isDenied(filePath: string, patterns: string[]): boolean {
+  return micromatch.isMatch(filePath, patterns, { matchBase: true });
 }

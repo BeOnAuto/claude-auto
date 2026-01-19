@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { loadDenyPatterns } from './deny-list.js';
+import { isDenied, loadDenyPatterns } from './deny-list.js';
 
 describe('deny-list', () => {
   describe('loadDenyPatterns', () => {
@@ -70,6 +70,16 @@ describe('deny-list', () => {
       const result = loadDenyPatterns(tempDir);
 
       expect(result).toEqual(['/my-local/**']);
+    });
+  });
+
+  describe('isDenied', () => {
+    it('returns true when path matches a glob pattern', () => {
+      const patterns = ['*.secret', '/private/**'];
+
+      const result = isDenied('/config/api.secret', patterns);
+
+      expect(result).toBe(true);
     });
   });
 });

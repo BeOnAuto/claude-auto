@@ -29,14 +29,16 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "yaml": "^2.3.0",
-    "commander": "^12.0.0"
+    "commander": "^12.0.0",
+    "micromatch": "^4.0.8",
+    "yaml": "^2.3.0"
   },
   "devDependencies": {
+    "@types/micromatch": "^4.0.10",
     "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
     "typescript": "^5.0.0",
-    "vitest": "^1.0.0",
-    "tsx": "^4.0.0"
+    "vitest": "^1.0.0"
   },
   "files": [
     "dist/",
