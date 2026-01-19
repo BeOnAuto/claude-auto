@@ -7,6 +7,8 @@ type HookEntry = {
 
 type HookOverride = {
   _disabled?: string[];
+  _mode?: 'replace';
+  _value?: HookEntry[];
 };
 
 type Settings = {
@@ -19,7 +21,7 @@ function isHookOverride(value: unknown): value is HookOverride {
     typeof value === 'object' &&
     value !== null &&
     !Array.isArray(value) &&
-    '_disabled' in value
+    ('_disabled' in value || '_mode' in value)
   );
 }
 
@@ -33,12 +35,16 @@ function deepMergeSettings(base: Settings, override: Settings): Settings {
         const overrideValue = override.hooks[hookName];
 
         if (isHookOverride(overrideValue)) {
-          const disabled = overrideValue._disabled || [];
-          const baseHooks = (base.hooks[hookName] as HookEntry[]) || [];
-          result.hooks[hookName] = baseHooks.filter((entry) => {
-            const command = entry.hooks[0]?.command;
-            return !disabled.includes(command);
-          });
+          if (overrideValue._mode === 'replace') {
+            result.hooks[hookName] = overrideValue._value || [];
+          } else {
+            const disabled = overrideValue._disabled || [];
+            const baseHooks = (base.hooks[hookName] as HookEntry[]) || [];
+            result.hooks[hookName] = baseHooks.filter((entry) => {
+              const command = entry.hooks[0]?.command;
+              return !disabled.includes(command);
+            });
+          }
         } else {
           const baseHooks = (base.hooks[hookName] as HookEntry[]) || [];
           const overrideHooks = overrideValue as HookEntry[];
