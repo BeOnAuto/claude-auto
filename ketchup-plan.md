@@ -41,7 +41,7 @@
 
 ### Phase 4: CLI
 
-- [ ] Burst 47: `claude-ketchup status` shows symlink status
+- [x] Burst 47: `claude-ketchup status` shows symlink status (914bf73)
 - [ ] Burst 48: `claude-ketchup repair` fixes broken symlinks
 - [ ] Burst 49: `claude-ketchup doctor` diagnoses issues
 - [ ] Burst 50: `claude-ketchup skills` lists enforced skills
