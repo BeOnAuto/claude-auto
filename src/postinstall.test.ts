@@ -29,7 +29,24 @@ describe('postinstall', () => {
 
       const result = runPostinstall();
 
-      expect(result).toEqual({ projectRoot: projectDir });
+      expect(result).toEqual({
+        projectRoot: projectDir,
+        claudeDir: path.join(projectDir, '.claude'),
+      });
+    });
+
+    it('creates .claude directory in project root', () => {
+      const projectDir = path.join(tempDir, 'my-project');
+      fs.mkdirSync(projectDir, { recursive: true });
+      fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
+      process.env.KETCHUP_ROOT = projectDir;
+
+      runPostinstall();
+
+      expect(fs.existsSync(path.join(projectDir, '.claude'))).toBe(true);
+      expect(fs.statSync(path.join(projectDir, '.claude')).isDirectory()).toBe(
+        true
+      );
     });
   });
 });
