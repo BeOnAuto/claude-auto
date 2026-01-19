@@ -2,6 +2,14 @@
 
 ## TODO
 
+- [ ] Burst 19: postinstall detects project root
+- [ ] Burst 20: postinstall creates .claude directory
+- [ ] Burst 21: postinstall symlinks scripts/, skills/, commands/ files
+- [ ] Burst 22: postinstall generates gitignore
+- [ ] Burst 23: postinstall merges settings
+- [ ] Burst 24: preuninstall removes symlinks
+- [ ] Burst 25: preuninstall preserves local files
+
 
 ## DONE
 
