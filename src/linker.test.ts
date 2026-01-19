@@ -9,6 +9,7 @@ import {
   getPackageDir,
   isLinkedMode,
   removeSymlink,
+  verifySymlink,
 } from './linker.js';
 
 describe('linker', () => {
@@ -153,6 +154,62 @@ describe('linker', () => {
       removeSymlink(regularFile);
 
       expect(fs.existsSync(regularFile)).toBe(true);
+    });
+  });
+
+  describe('verifySymlink', () => {
+    let tempDir: string;
+
+    beforeEach(() => {
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-test-'));
+    });
+
+    afterEach(() => {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    });
+
+    it('returns true when symlink points to expected target', () => {
+      const sourceFile = path.join(tempDir, 'source.txt');
+      const targetLink = path.join(tempDir, 'target.txt');
+      fs.writeFileSync(sourceFile, 'content');
+      fs.symlinkSync(sourceFile, targetLink);
+
+      const result = verifySymlink(targetLink, sourceFile);
+
+      expect(result).toBe(true);
+    });
+
+    it('returns false when symlink points to different target', () => {
+      const source1 = path.join(tempDir, 'source1.txt');
+      const source2 = path.join(tempDir, 'source2.txt');
+      const targetLink = path.join(tempDir, 'target.txt');
+      fs.writeFileSync(source1, 'content1');
+      fs.writeFileSync(source2, 'content2');
+      fs.symlinkSync(source1, targetLink);
+
+      const result = verifySymlink(targetLink, source2);
+
+      expect(result).toBe(false);
+    });
+
+    it('returns false when target does not exist', () => {
+      const sourceFile = path.join(tempDir, 'source.txt');
+      const targetLink = path.join(tempDir, 'target.txt');
+
+      const result = verifySymlink(targetLink, sourceFile);
+
+      expect(result).toBe(false);
+    });
+
+    it('returns false when target is not a symlink', () => {
+      const sourceFile = path.join(tempDir, 'source.txt');
+      const regularFile = path.join(tempDir, 'regular.txt');
+      fs.writeFileSync(sourceFile, 'content');
+      fs.writeFileSync(regularFile, 'content');
+
+      const result = verifySymlink(regularFile, sourceFile);
+
+      expect(result).toBe(false);
     });
   });
 });

@@ -29,3 +29,13 @@ export function removeSymlink(target: string): void {
     fs.unlinkSync(target);
   }
 }
+
+export function verifySymlink(target: string, expectedSource: string): boolean {
+  if (!fs.existsSync(target)) {
+    return false;
+  }
+  if (!fs.lstatSync(target).isSymbolicLink()) {
+    return false;
+  }
+  return fs.readlinkSync(target) === expectedSource;
+}
