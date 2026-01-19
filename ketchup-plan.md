@@ -42,7 +42,8 @@
 ### Phase 4: CLI
 
 - [x] Burst 47: `claude-ketchup status` shows symlink status (914bf73)
-- [ ] Burst 48: `claude-ketchup repair` fixes broken symlinks
+- [x] Burst 48a: repair recreates symlinks for specified files (7a1d424)
+- [x] Burst 48b: getExpectedSymlinks finds files in package directories (9ad0e84)
 - [ ] Burst 49: `claude-ketchup doctor` diagnoses issues
 - [ ] Burst 50: `claude-ketchup skills` lists enforced skills
 - [ ] Burst 51: `/ketchup` command definition
