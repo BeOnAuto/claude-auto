@@ -9,8 +9,8 @@
 - [x] Burst 28: mergeSettings handles _disabled array to remove specific hooks (9b98f74)
 - [x] Burst 29: mergeSettings handles mode: replace for full override (1d6bb02)
 - [x] Burst 30: mergeSettings dedupes hooks by command within each matcher (cab82ca)
-- [ ] Burst 31a: lock file created and skips merge when hash matches
-- [ ] Burst 31b: re-merges when lock file hash differs
+- [x] Burst 31a: lock file created and skips merge when hash matches (da37d5e)
+- [x] Burst 31b: re-merges when lock file hash differs (3e9c2c7)
 
 ### Phase 3: Runtime Hooks - State Manager
 
