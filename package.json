@@ -15,7 +15,9 @@
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "postinstall": "npx tsx bin/postinstall.ts",
+    "preuninstall": "npx tsx bin/preuninstall.ts"
   },
   "keywords": [
     "claude",
@@ -38,6 +40,7 @@
   },
   "files": [
     "dist/",
+    "bin/",
     "templates/",
     "scripts/",
     "skills/",
