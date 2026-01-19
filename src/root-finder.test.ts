@@ -30,9 +30,10 @@ describe('root-finder', () => {
       expect(result).toBe(customRoot);
     });
 
-    it('uses INIT_CWD when KETCHUP_ROOT not set', () => {
+    it('finds package.json at INIT_CWD', () => {
       const projectDir = path.join(tempDir, 'my-project');
       fs.mkdirSync(projectDir, { recursive: true });
+      fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
       vi.stubEnv('KETCHUP_ROOT', '');
       vi.stubEnv('INIT_CWD', projectDir);
 
@@ -51,6 +52,28 @@ describe('root-finder', () => {
     it('falls back to cwd when no env vars set', () => {
       vi.stubEnv('KETCHUP_ROOT', '');
       vi.stubEnv('INIT_CWD', '');
+
+      const result = findProjectRoot();
+      expect(result).toBe(process.cwd());
+    });
+
+    it('walks up from INIT_CWD to find package.json', () => {
+      const projectDir = path.join(tempDir, 'my-project');
+      const nestedDir = path.join(projectDir, 'src', 'utils');
+      fs.mkdirSync(nestedDir, { recursive: true });
+      fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
+      vi.stubEnv('KETCHUP_ROOT', '');
+      vi.stubEnv('INIT_CWD', nestedDir);
+
+      const result = findProjectRoot();
+      expect(result).toBe(projectDir);
+    });
+
+    it('falls back to cwd when no package.json found walking up', () => {
+      const isolatedDir = path.join(tempDir, 'isolated');
+      fs.mkdirSync(isolatedDir, { recursive: true });
+      vi.stubEnv('KETCHUP_ROOT', '');
+      vi.stubEnv('INIT_CWD', isolatedDir);
 
       const result = findProjectRoot();
       expect(result).toBe(process.cwd());
