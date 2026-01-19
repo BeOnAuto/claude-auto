@@ -45,5 +45,20 @@ describe('deny-list', () => {
 
       expect(result).toEqual(['*.secret', '/private/**']);
     });
+
+    it('loads and merges patterns from deny-list.local.txt', () => {
+      fs.writeFileSync(
+        path.join(tempDir, 'deny-list.project.txt'),
+        '*.secret\n'
+      );
+      fs.writeFileSync(
+        path.join(tempDir, 'deny-list.local.txt'),
+        '/my-local/**\n'
+      );
+
+      const result = loadDenyPatterns(tempDir);
+
+      expect(result).toEqual(['*.secret', '/my-local/**']);
+    });
   });
 });
