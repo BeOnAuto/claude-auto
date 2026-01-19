@@ -20,12 +20,12 @@
 
 ### Phase 3: Runtime Hooks - Skills Loader
 
-- [ ] Burst 35: skills-loader scans skills directories
-- [ ] Burst 36: skills-loader parses YAML frontmatter
-- [ ] Burst 37: skills-loader filters by hook type
-- [ ] Burst 38: skills-loader filters by mode (plan/code)
-- [ ] Burst 39: skills-loader filters by state conditions
-- [ ] Burst 40: skills-loader sorts by priority
+- [x] Burst 35: skills-loader scans skills directories (39d07d9)
+- [x] Burst 36: skills-loader parses YAML frontmatter (0a5dcb4)
+- [x] Burst 37: skills-loader filters by hook type (2b6acee)
+- [x] Burst 38: skills-loader filters by mode (plan/code) (f90322e)
+- [x] Burst 39: skills-loader filters by state conditions (5016191)
+- [x] Burst 40: skills-loader sorts by priority (f9a10e1)
 
 ### Phase 3: Runtime Hooks - Deny List
 
