@@ -319,5 +319,38 @@ describe('settings-merger', () => {
       );
       expect(secondResult).toBe(JSON.stringify({ modified: true }));
     });
+
+    it('re-merges when lock file hash differs', () => {
+      const packageDir = path.join(tempDir, 'package');
+      const targetDir = path.join(tempDir, 'target');
+      fs.mkdirSync(path.join(packageDir, 'templates'), { recursive: true });
+      fs.mkdirSync(targetDir, { recursive: true });
+
+      const packageSettings = { hooks: { SessionStart: [] } };
+      fs.writeFileSync(
+        path.join(packageDir, 'templates', 'settings.json'),
+        JSON.stringify(packageSettings)
+      );
+
+      mergeSettings(packageDir, targetDir);
+
+      fs.writeFileSync(
+        path.join(targetDir, 'settings.json'),
+        JSON.stringify({ modified: true })
+      );
+
+      const newPackageSettings = { hooks: { SessionStart: [], PreToolUse: [] } };
+      fs.writeFileSync(
+        path.join(packageDir, 'templates', 'settings.json'),
+        JSON.stringify(newPackageSettings)
+      );
+
+      mergeSettings(packageDir, targetDir);
+
+      const result = JSON.parse(
+        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
+      );
+      expect(result).toEqual(newPackageSettings);
+    });
   });
 });
