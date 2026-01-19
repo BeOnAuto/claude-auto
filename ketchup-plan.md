@@ -2,7 +2,6 @@
 
 ## TODO
 
-- [ ] Burst 16: gitignore lists symlinked files from package
 - [ ] Burst 17: gitignore ignores *.local.* pattern
 - [ ] Burst 18: gitignore ignores runtime files (state.json, logs/, etc.)
 
@@ -21,3 +20,4 @@
 - [x] Burst 13: removeSymlink removes symlink but not real files (42d35ab)
 - [x] Burst 14: verifySymlink checks symlink target (7292bed)
 - [x] Burst 15: generateGitignore creates .gitignore file (a5020b1)
+- [x] Burst 16: gitignore includes symlinked files (8194ed2)
