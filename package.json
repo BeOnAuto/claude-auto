@@ -1,0 +1,45 @@
+{
+  "name": "claude-ketchup",
+  "version": "0.1.0",
+  "description": "Husky-style hooks and skills management for Claude Code",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "claude-ketchup": "dist/bin/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "hooks",
+    "skills",
+    "automation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "yaml": "^2.3.0",
+    "commander": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "tsx": "^4.0.0"
+  },
+  "files": [
+    "dist/",
+    "templates/",
+    "scripts/",
+    "skills/",
+    "commands/"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "packageManager": "pnpm@10.28.0"
+}
