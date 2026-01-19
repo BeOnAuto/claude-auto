@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { readState } from './state-manager.js';
+import { readState, writeState } from './state-manager.js';
 
 describe('state-manager', () => {
   describe('readState', () => {
@@ -34,6 +34,29 @@ describe('state-manager', () => {
       const result = readState(tempDir);
 
       expect(result).toEqual({});
+    });
+  });
+
+  describe('writeState', () => {
+    let tempDir: string;
+
+    beforeEach(() => {
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-state-'));
+    });
+
+    afterEach(() => {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    });
+
+    it('writes state to state.json', () => {
+      const stateData = { lastRun: '2024-01-01', counter: 5 };
+
+      writeState(tempDir, stateData);
+
+      const result = JSON.parse(
+        fs.readFileSync(path.join(tempDir, 'state.json'), 'utf-8')
+      );
+      expect(result).toEqual(stateData);
     });
   });
 });

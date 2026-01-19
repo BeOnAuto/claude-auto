@@ -12,3 +12,8 @@ export function readState(dir: string): State {
 
   return JSON.parse(fs.readFileSync(statePath, 'utf-8'));
 }
+
+export function writeState(dir: string, state: State): void {
+  const statePath = path.join(dir, 'state.json');
+  fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
+}
