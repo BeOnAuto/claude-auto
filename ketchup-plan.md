@@ -46,7 +46,7 @@
 - [x] Burst 48b: getExpectedSymlinks finds files in package directories (9ad0e84)
 - [x] Burst 49: `claude-ketchup doctor` diagnoses symlink health (6f4f1b3)
 - [x] Burst 50: `claude-ketchup skills` lists skills with metadata (69c7019)
-- [ ] Burst 51: `/ketchup` command definition
+- [x] Burst 51: `/ketchup` command definition (c593a6d)
 
 ### Phase 5: Templates & Polish
 
@@ -55,8 +55,7 @@
 - [ ] Burst 54: Create scripts/pre-tool-use.ts hook script
 - [ ] Burst 55: Create scripts/user-prompt-submit.ts hook script
 - [ ] Burst 56: Create skills/ketchup.enforced.md
-- [ ] Burst 57: Create commands/ketchup.md
-- [ ] Burst 58: E2E test full npm install flow
+- [ ] Burst 57: E2E test full npm install flow
 
 
 ## DONE
