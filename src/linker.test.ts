@@ -102,5 +102,19 @@ describe('linker', () => {
       expect(fs.readlinkSync(targetLink)).toBe(source2);
       expect(fs.existsSync(`${targetLink}.backup`)).toBe(false);
     });
+
+    it('is idempotent when symlink already points to source', () => {
+      const sourceFile = path.join(tempDir, 'source.txt');
+      const targetLink = path.join(tempDir, 'target.txt');
+      fs.writeFileSync(sourceFile, 'content');
+      fs.symlinkSync(sourceFile, targetLink);
+      const statsBefore = fs.lstatSync(targetLink);
+
+      createSymlink(sourceFile, targetLink);
+
+      expect(fs.lstatSync(targetLink).isSymbolicLink()).toBe(true);
+      expect(fs.readlinkSync(targetLink)).toBe(sourceFile);
+      expect(fs.lstatSync(targetLink).ino).toBe(statsBefore.ino);
+    });
   });
 });

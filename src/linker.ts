@@ -13,6 +13,9 @@ export function createSymlink(source: string, target: string): void {
   if (fs.existsSync(target)) {
     const stats = fs.lstatSync(target);
     if (stats.isSymbolicLink()) {
+      if (fs.readlinkSync(target) === source) {
+        return;
+      }
       fs.unlinkSync(target);
     } else {
       fs.renameSync(target, `${target}.backup`);
