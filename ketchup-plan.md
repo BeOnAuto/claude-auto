@@ -2,7 +2,6 @@
 
 ## TODO
 
-- [ ] Burst 17: gitignore ignores *.local.* pattern
 - [ ] Burst 18: gitignore ignores runtime files (state.json, logs/, etc.)
 
 ## DONE
@@ -21,3 +20,4 @@
 - [x] Burst 14: verifySymlink checks symlink target (7292bed)
 - [x] Burst 15: generateGitignore creates .gitignore file (a5020b1)
 - [x] Burst 16: gitignore includes symlinked files (8194ed2)
+- [x] Burst 17: gitignore includes *.local.* pattern (64510ab)
