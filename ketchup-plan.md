@@ -14,9 +14,9 @@
 
 ### Phase 3: Runtime Hooks - State Manager
 
-- [ ] Burst 32: state-manager reads state.json
-- [ ] Burst 33: state-manager writes state.json
-- [ ] Burst 34: state-manager creates backup before write
+- [x] Burst 32: state-manager reads state.json (70f8db9)
+- [x] Burst 33: state-manager writes state.json (1cf1950)
+- [x] Burst 34: state-manager creates backup before write (72303b5)
 
 ### Phase 3: Runtime Hooks - Skills Loader
 
