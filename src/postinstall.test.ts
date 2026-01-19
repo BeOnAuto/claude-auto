@@ -32,6 +32,7 @@ describe('postinstall', () => {
       expect(result).toEqual({
         projectRoot: projectDir,
         claudeDir: path.join(projectDir, '.claude'),
+        symlinkedFiles: [],
       });
     });
 
@@ -47,6 +48,52 @@ describe('postinstall', () => {
       expect(fs.statSync(path.join(projectDir, '.claude')).isDirectory()).toBe(
         true
       );
+    });
+
+    it('symlinks files from package scripts/, skills/, commands/ to .claude/', () => {
+      const projectDir = path.join(tempDir, 'my-project');
+      const packageDir = path.join(tempDir, 'ketchup-package');
+      fs.mkdirSync(projectDir, { recursive: true });
+      fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
+      fs.mkdirSync(path.join(packageDir, 'scripts'), { recursive: true });
+      fs.mkdirSync(path.join(packageDir, 'skills'), { recursive: true });
+      fs.mkdirSync(path.join(packageDir, 'commands'), { recursive: true });
+      fs.writeFileSync(
+        path.join(packageDir, 'scripts', 'session-start.ts'),
+        'export default {}'
+      );
+      fs.writeFileSync(
+        path.join(packageDir, 'skills', 'my-skill.md'),
+        '# Skill'
+      );
+      fs.writeFileSync(
+        path.join(packageDir, 'commands', 'my-command.md'),
+        '# Command'
+      );
+      process.env.KETCHUP_ROOT = projectDir;
+
+      const result = runPostinstall(packageDir);
+
+      expect(result.symlinkedFiles).toEqual([
+        'scripts/session-start.ts',
+        'skills/my-skill.md',
+        'commands/my-command.md',
+      ]);
+      expect(
+        fs.lstatSync(
+          path.join(projectDir, '.claude', 'scripts', 'session-start.ts')
+        ).isSymbolicLink()
+      ).toBe(true);
+      expect(
+        fs.lstatSync(
+          path.join(projectDir, '.claude', 'skills', 'my-skill.md')
+        ).isSymbolicLink()
+      ).toBe(true);
+      expect(
+        fs.lstatSync(
+          path.join(projectDir, '.claude', 'commands', 'my-command.md')
+        ).isSymbolicLink()
+      ).toBe(true);
     });
   });
 });

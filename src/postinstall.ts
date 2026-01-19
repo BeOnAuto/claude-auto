@@ -1,16 +1,53 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+import { createSymlink, getPackageDir } from './linker.js';
 import { findProjectRoot } from './root-finder.js';
+
+const SYMLINK_DIRS = ['scripts', 'skills', 'commands'];
 
 export interface PostinstallResult {
   projectRoot: string;
   claudeDir: string;
+  symlinkedFiles: string[];
 }
 
-export function runPostinstall(): PostinstallResult {
+function collectFiles(dir: string): string[] {
+  if (!fs.existsSync(dir)) {
+    return [];
+  }
+  const files: string[] = [];
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    if (entry.isFile()) {
+      files.push(entry.name);
+    }
+  }
+  return files;
+}
+
+export function runPostinstall(packageDir?: string): PostinstallResult {
   const projectRoot = findProjectRoot();
   const claudeDir = path.join(projectRoot, '.claude');
   fs.mkdirSync(claudeDir, { recursive: true });
-  return { projectRoot, claudeDir };
+
+  const pkgDir = packageDir ?? getPackageDir();
+  const symlinkedFiles: string[] = [];
+
+  for (const subdir of SYMLINK_DIRS) {
+    const sourceDir = path.join(pkgDir, subdir);
+    const targetDir = path.join(claudeDir, subdir);
+    const files = collectFiles(sourceDir);
+    if (files.length > 0) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+    for (const file of files) {
+      const source = path.join(sourceDir, file);
+      const target = path.join(targetDir, file);
+      createSymlink(source, target);
+      symlinkedFiles.push(`${subdir}/${file}`);
+    }
+  }
+
+  return { projectRoot, claudeDir, symlinkedFiles };
 }
