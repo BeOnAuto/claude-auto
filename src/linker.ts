@@ -10,5 +10,13 @@ export function isLinkedMode(packagePath: string): boolean {
 }
 
 export function createSymlink(source: string, target: string): void {
+  if (fs.existsSync(target)) {
+    const stats = fs.lstatSync(target);
+    if (stats.isSymbolicLink()) {
+      fs.unlinkSync(target);
+    } else {
+      fs.renameSync(target, `${target}.backup`);
+    }
+  }
   fs.symlinkSync(source, target);
 }

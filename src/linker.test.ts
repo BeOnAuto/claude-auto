@@ -72,5 +72,35 @@ describe('linker', () => {
       expect(fs.lstatSync(targetLink).isSymbolicLink()).toBe(true);
       expect(fs.readlinkSync(targetLink)).toBe(sourceFile);
     });
+
+    it('backs up existing non-symlink file before creating symlink', () => {
+      const sourceFile = path.join(tempDir, 'source.txt');
+      const targetLink = path.join(tempDir, 'target.txt');
+      fs.writeFileSync(sourceFile, 'new content');
+      fs.writeFileSync(targetLink, 'existing content');
+
+      createSymlink(sourceFile, targetLink);
+
+      expect(fs.lstatSync(targetLink).isSymbolicLink()).toBe(true);
+      expect(fs.readlinkSync(targetLink)).toBe(sourceFile);
+      expect(fs.readFileSync(`${targetLink}.backup`, 'utf-8')).toBe(
+        'existing content'
+      );
+    });
+
+    it('replaces existing symlink without backup', () => {
+      const source1 = path.join(tempDir, 'source1.txt');
+      const source2 = path.join(tempDir, 'source2.txt');
+      const targetLink = path.join(tempDir, 'target.txt');
+      fs.writeFileSync(source1, 'content1');
+      fs.writeFileSync(source2, 'content2');
+      fs.symlinkSync(source1, targetLink);
+
+      createSymlink(source2, targetLink);
+
+      expect(fs.lstatSync(targetLink).isSymbolicLink()).toBe(true);
+      expect(fs.readlinkSync(targetLink)).toBe(source2);
+      expect(fs.existsSync(`${targetLink}.backup`)).toBe(false);
+    });
   });
 });
