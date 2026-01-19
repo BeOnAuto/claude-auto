@@ -2,7 +2,59 @@
 
 ## TODO
 
-(Phase 1 complete!)
+### Phase 2: Advanced Settings Merger
+
+- [ ] Burst 26: mergeSettings loads settings.project.json and deep merges
+- [ ] Burst 27: mergeSettings loads settings.local.json and deep merges
+- [ ] Burst 28: mergeSettings handles _disabled array to remove specific hooks
+- [ ] Burst 29: mergeSettings handles mode: replace for full override
+- [ ] Burst 30: mergeSettings dedupes hooks by command within each matcher
+- [ ] Burst 31: lock file prevents unnecessary re-merge
+
+### Phase 3: Runtime Hooks - State Manager
+
+- [ ] Burst 32: state-manager reads state.json
+- [ ] Burst 33: state-manager writes state.json
+- [ ] Burst 34: state-manager creates backup before write
+
+### Phase 3: Runtime Hooks - Skills Loader
+
+- [ ] Burst 35: skills-loader scans skills directories
+- [ ] Burst 36: skills-loader parses YAML frontmatter
+- [ ] Burst 37: skills-loader filters by hook type
+- [ ] Burst 38: skills-loader filters by mode (plan/code)
+- [ ] Burst 39: skills-loader filters by state conditions
+- [ ] Burst 40: skills-loader sorts by priority
+
+### Phase 3: Runtime Hooks - Deny List
+
+- [ ] Burst 41: deny-list loads patterns from deny-list.project.txt
+- [ ] Burst 42: deny-list loads patterns from deny-list.local.txt
+- [ ] Burst 43: deny-list checks paths against patterns
+
+### Phase 3: Runtime Hooks - Hook Scripts
+
+- [ ] Burst 44: session-start.ts outputs filtered skills
+- [ ] Burst 45: pre-tool-use.ts blocks denied paths
+- [ ] Burst 46: user-prompt-submit.ts injects reminders
+
+### Phase 4: CLI
+
+- [ ] Burst 47: `claude-ketchup status` shows symlink status
+- [ ] Burst 48: `claude-ketchup repair` fixes broken symlinks
+- [ ] Burst 49: `claude-ketchup doctor` diagnoses issues
+- [ ] Burst 50: `claude-ketchup skills` lists enforced skills
+- [ ] Burst 51: `/ketchup` command definition
+
+### Phase 5: Templates & Polish
+
+- [ ] Burst 52: Create templates/settings.json with default hooks
+- [ ] Burst 53: Create scripts/session-start.ts hook script
+- [ ] Burst 54: Create scripts/pre-tool-use.ts hook script
+- [ ] Burst 55: Create scripts/user-prompt-submit.ts hook script
+- [ ] Burst 56: Create skills/ketchup.enforced.md
+- [ ] Burst 57: Create commands/ketchup.md
+- [ ] Burst 58: E2E test full npm install flow
 
 
 ## DONE
