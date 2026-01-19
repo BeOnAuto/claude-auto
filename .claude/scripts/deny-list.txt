@@ -1,0 +1,13 @@
+# Deny list - one pattern per line
+# Lines starting with # are comments
+# Patterns with regex special chars are treated as regex
+# Otherwise simple substring match
+
+# Examples:
+# \.env$
+# secrets/
+# package\.json$
+
+.claude/scripts/
+CLAUDE\.md$/i
+.claude.hooks.json

@@ -40,6 +40,14 @@ describe('root-finder', () => {
       expect(result).toBe(projectDir);
     });
 
+    it('falls back to cwd when INIT_CWD path does not exist', () => {
+      vi.stubEnv('KETCHUP_ROOT', '');
+      vi.stubEnv('INIT_CWD', '/nonexistent/path');
+
+      const result = findProjectRoot();
+      expect(result).toBe(process.cwd());
+    });
+
     it('falls back to cwd when no env vars set', () => {
       vi.stubEnv('KETCHUP_ROOT', '');
       vi.stubEnv('INIT_CWD', '');

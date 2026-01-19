@@ -1,0 +1,22 @@
+{
+  "autoContinue": {
+    "mode": "smart",
+    "maxIterations": 0,
+    "iteration": 0,
+    "skipModes": [
+      "plan"
+    ]
+  },
+  "validateCommit": {
+    "mode": "strict"
+  },
+  "denyList": {
+    "enabled": true,
+    "extraPatterns": []
+  },
+  "promptReminder": {
+    "enabled": true
+  },
+  "updatedAt": "2026-01-19T03:11:57.313Z",
+  "updatedBy": "init"
+}

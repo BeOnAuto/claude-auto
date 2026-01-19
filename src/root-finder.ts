@@ -8,5 +8,11 @@ export function findProjectRoot(): string {
       return path.resolve(root);
     }
   }
+  if (process.env.INIT_CWD) {
+    const initCwd = process.env.INIT_CWD;
+    if (fs.existsSync(initCwd)) {
+      return path.resolve(initCwd);
+    }
+  }
   return process.cwd();
 }
