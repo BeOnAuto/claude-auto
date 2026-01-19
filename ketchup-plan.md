@@ -2,6 +2,11 @@
 
 ## TODO
 
+- [ ] Burst 15: generateGitignore creates .claude/.gitignore
+- [ ] Burst 16: gitignore lists symlinked files from package
+- [ ] Burst 17: gitignore ignores *.local.* pattern
+- [ ] Burst 18: gitignore ignores runtime files (state.json, logs/, etc.)
+
 ## DONE
 
 - [x] Burst 1: Setup package infrastructure (package.json, tsconfig, vitest)
