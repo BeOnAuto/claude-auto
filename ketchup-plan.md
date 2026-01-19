@@ -2,7 +2,6 @@
 
 ## TODO
 
-- [ ] Burst 3: findProjectRoot uses INIT_CWD when not in node_modules
 - [ ] Burst 4: findProjectRoot walks up to find package.json
 - [ ] Burst 5: findProjectRoot walks up to find .git
 - [ ] Burst 6: findProjectRoot falls back to cwd
@@ -19,3 +18,4 @@
 
 - [x] Burst 1: Setup package infrastructure (package.json, tsconfig, vitest)
 - [x] Burst 2: findProjectRoot uses KETCHUP_ROOT env var
+- [x] Burst 3: findProjectRoot uses INIT_CWD when not in node_modules (cc4cf54)
