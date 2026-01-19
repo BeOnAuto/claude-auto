@@ -16,6 +16,20 @@ type Settings = {
   [key: string]: unknown;
 };
 
+function dedupeHooks(hooks: HookEntry[]): HookEntry[] {
+  const seen = new Map<string, number>();
+  hooks.forEach((entry, index) => {
+    const command = entry.hooks[0]?.command;
+    if (command) {
+      seen.set(command, index);
+    }
+  });
+  return hooks.filter((entry, index) => {
+    const command = entry.hooks[0]?.command;
+    return seen.get(command) === index;
+  });
+}
+
 function isHookOverride(value: unknown): value is HookOverride {
   return (
     typeof value === 'object' &&
@@ -48,7 +62,7 @@ function deepMergeSettings(base: Settings, override: Settings): Settings {
         } else {
           const baseHooks = (base.hooks[hookName] as HookEntry[]) || [];
           const overrideHooks = overrideValue as HookEntry[];
-          result.hooks[hookName] = [...baseHooks, ...overrideHooks];
+          result.hooks[hookName] = dedupeHooks([...baseHooks, ...overrideHooks]);
         }
       }
     } else {

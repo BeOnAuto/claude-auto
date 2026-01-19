@@ -138,6 +138,54 @@ describe('settings-merger', () => {
       });
     });
 
+    it('dedupes hooks by command keeping last occurrence', () => {
+      const packageDir = path.join(tempDir, 'package');
+      const targetDir = path.join(tempDir, 'target');
+      fs.mkdirSync(path.join(packageDir, 'templates'), { recursive: true });
+      fs.mkdirSync(targetDir, { recursive: true });
+
+      const packageSettings = {
+        hooks: {
+          SessionStart: [
+            { hooks: [{ type: 'command', command: 'shared-cmd' }] },
+            { hooks: [{ type: 'command', command: 'pkg-only' }] },
+          ],
+        },
+      };
+      const projectSettings = {
+        hooks: {
+          SessionStart: [
+            { hooks: [{ type: 'command', command: 'shared-cmd' }] },
+            { hooks: [{ type: 'command', command: 'project-only' }] },
+          ],
+        },
+      };
+
+      fs.writeFileSync(
+        path.join(packageDir, 'templates', 'settings.json'),
+        JSON.stringify(packageSettings)
+      );
+      fs.writeFileSync(
+        path.join(targetDir, 'settings.project.json'),
+        JSON.stringify(projectSettings)
+      );
+
+      mergeSettings(packageDir, targetDir);
+
+      const result = JSON.parse(
+        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
+      );
+      expect(result).toEqual({
+        hooks: {
+          SessionStart: [
+            { hooks: [{ type: 'command', command: 'pkg-only' }] },
+            { hooks: [{ type: 'command', command: 'shared-cmd' }] },
+            { hooks: [{ type: 'command', command: 'project-only' }] },
+          ],
+        },
+      });
+    });
+
     it('replaces hooks when _mode is replace', () => {
       const packageDir = path.join(tempDir, 'package');
       const targetDir = path.join(tempDir, 'target');
