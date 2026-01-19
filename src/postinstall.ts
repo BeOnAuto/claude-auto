@@ -4,6 +4,7 @@ import * as path from 'node:path';
 import { generateGitignore } from './gitignore-manager.js';
 import { createSymlink, getPackageDir } from './linker.js';
 import { findProjectRoot } from './root-finder.js';
+import { mergeSettings } from './settings-merger.js';
 
 const SYMLINK_DIRS = ['scripts', 'skills', 'commands'];
 
@@ -51,6 +52,7 @@ export function runPostinstall(packageDir?: string): PostinstallResult {
   }
 
   generateGitignore(claudeDir, symlinkedFiles);
+  mergeSettings(pkgDir, claudeDir);
 
   return { projectRoot, claudeDir, symlinkedFiles };
 }

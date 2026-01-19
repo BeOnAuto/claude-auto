@@ -120,5 +120,29 @@ describe('postinstall', () => {
         )
       );
     });
+
+    it('merges settings from package templates to .claude directory', () => {
+      const projectDir = path.join(tempDir, 'my-project');
+      const packageDir = path.join(tempDir, 'ketchup-package');
+      fs.mkdirSync(projectDir, { recursive: true });
+      fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
+      fs.mkdirSync(path.join(packageDir, 'templates'), { recursive: true });
+      const packageSettings = { hooks: { SessionStart: [] } };
+      fs.writeFileSync(
+        path.join(packageDir, 'templates', 'settings.json'),
+        JSON.stringify(packageSettings)
+      );
+      process.env.KETCHUP_ROOT = projectDir;
+
+      runPostinstall(packageDir);
+
+      const result = JSON.parse(
+        fs.readFileSync(
+          path.join(projectDir, '.claude', 'settings.json'),
+          'utf-8'
+        )
+      );
+      expect(result).toEqual(packageSettings);
+    });
   });
 });
