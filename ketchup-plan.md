@@ -2,13 +2,7 @@
 
 ## TODO
 
-- [ ] Burst 19: postinstall detects project root
-- [ ] Burst 20: postinstall creates .claude directory
-- [ ] Burst 21: postinstall symlinks scripts/, skills/, commands/ files
-- [ ] Burst 22: postinstall generates gitignore
-- [ ] Burst 23: postinstall merges settings
-- [ ] Burst 24: preuninstall removes symlinks
-- [ ] Burst 25: preuninstall preserves local files
+(Phase 1 complete!)
 
 
 ## DONE
@@ -29,3 +23,9 @@
 - [x] Burst 16: gitignore includes symlinked files (8194ed2)
 - [x] Burst 17: gitignore includes *.local.* pattern (64510ab)
 - [x] Burst 18: gitignore includes runtime file patterns (b71e307)
+- [x] Burst 19: postinstall detects project root (99e064e)
+- [x] Burst 20: postinstall creates .claude directory (7f5f206)
+- [x] Burst 21: postinstall symlinks scripts/, skills/, commands/ files (0837768)
+- [x] Burst 22: postinstall generates gitignore (4e624d5)
+- [x] Burst 23: postinstall merges settings (b6b245e)
+- [x] Burst 24+25: preuninstall removes symlinks, preserves local files (8aa2d24)
