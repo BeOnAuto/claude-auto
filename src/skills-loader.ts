@@ -14,6 +14,10 @@ export function filterByHook(skills: ParsedSkill[], hookType: string): ParsedSki
   return skills.filter((skill) => skill.frontmatter.hook === hookType);
 }
 
+export function filterByMode(skills: ParsedSkill[], mode: string): ParsedSkill[] {
+  return skills.filter((skill) => !skill.frontmatter.mode || skill.frontmatter.mode === mode);
+}
+
 export function parseSkill(raw: string): ParsedSkill {
   const frontmatterMatch = raw.match(/^---\n([\s\S]*?)\n---\n\n?([\s\S]*)$/);
 

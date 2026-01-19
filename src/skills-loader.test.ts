@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { filterByHook, parseSkill, scanSkills } from './skills-loader.js';
+import { filterByHook, filterByMode, parseSkill, scanSkills } from './skills-loader.js';
 
 describe('skills-loader', () => {
   describe('scanSkills', () => {
@@ -110,6 +110,37 @@ Skill content here.`;
       const result = filterByHook(skills, 'SessionStart');
 
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('filterByMode', () => {
+    it('filters skills by mode', () => {
+      const skills = [
+        { frontmatter: { mode: 'plan' }, content: 'A' },
+        { frontmatter: { mode: 'code' }, content: 'B' },
+        { frontmatter: { mode: 'plan' }, content: 'C' },
+      ];
+
+      const result = filterByMode(skills, 'plan');
+
+      expect(result).toEqual([
+        { frontmatter: { mode: 'plan' }, content: 'A' },
+        { frontmatter: { mode: 'plan' }, content: 'C' },
+      ]);
+    });
+
+    it('includes skills with no mode specified', () => {
+      const skills = [
+        { frontmatter: { mode: 'plan' }, content: 'A' },
+        { frontmatter: {}, content: 'B' },
+      ];
+
+      const result = filterByMode(skills, 'plan');
+
+      expect(result).toEqual([
+        { frontmatter: { mode: 'plan' }, content: 'A' },
+        { frontmatter: {}, content: 'B' },
+      ]);
     });
   });
 });
