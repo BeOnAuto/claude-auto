@@ -50,10 +50,10 @@
 
 ### Phase 5: Templates & Polish
 
-- [ ] Burst 52: Create templates/settings.json with default hooks
-- [ ] Burst 53: Create scripts/session-start.ts hook script
-- [ ] Burst 54: Create scripts/pre-tool-use.ts hook script
-- [ ] Burst 55: Create scripts/user-prompt-submit.ts hook script
+- [x] Burst 52: Create templates/settings.json with default hooks (347afa1)
+- [x] Burst 53: Create scripts/session-start.ts hook script (0dc1826)
+- [x] Burst 54: Create scripts/pre-tool-use.ts hook script (8c1e09e)
+- [x] Burst 55: Create scripts/user-prompt-submit.ts hook script (193844e)
 - [ ] Burst 56: Create skills/ketchup.enforced.md
 - [ ] Burst 57: E2E test full npm install flow
 
