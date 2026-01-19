@@ -31,11 +31,16 @@ describe('gitignore-manager', () => {
       const claudeDir = path.join(tempDir, '.claude');
       fs.mkdirSync(claudeDir, { recursive: true });
 
-      generateGitignore(claudeDir, ['scripts/session-start.ts', 'skills/ketchup.md']);
+      generateGitignore(claudeDir, ['scripts/session-start.ts']);
 
       const content = fs.readFileSync(path.join(claudeDir, '.gitignore'), 'utf-8');
       expect(content).toBe(
-        'scripts/session-start.ts\nskills/ketchup.md\n*.local.*'
+        [
+          'scripts/session-start.ts',
+          '*.local.*',
+          'state.json',
+          'logs/',
+        ].join('\n')
       );
     });
   });
