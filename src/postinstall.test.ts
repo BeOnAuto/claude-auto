@@ -95,5 +95,30 @@ describe('postinstall', () => {
         ).isSymbolicLink()
       ).toBe(true);
     });
+
+    it('generates .gitignore in .claude directory with symlinked files and runtime patterns', () => {
+      const projectDir = path.join(tempDir, 'my-project');
+      const packageDir = path.join(tempDir, 'ketchup-package');
+      fs.mkdirSync(projectDir, { recursive: true });
+      fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
+      fs.mkdirSync(path.join(packageDir, 'scripts'), { recursive: true });
+      fs.writeFileSync(
+        path.join(packageDir, 'scripts', 'session-start.ts'),
+        'export default {}'
+      );
+      process.env.KETCHUP_ROOT = projectDir;
+
+      runPostinstall(packageDir);
+
+      const gitignoreContent = fs.readFileSync(
+        path.join(projectDir, '.claude', '.gitignore'),
+        'utf-8'
+      );
+      expect(gitignoreContent).toBe(
+        ['scripts/session-start.ts', '*.local.*', 'state.json', 'logs/'].join(
+          '\n'
+        )
+      );
+    });
   });
 });

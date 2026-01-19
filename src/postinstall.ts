@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+import { generateGitignore } from './gitignore-manager.js';
 import { createSymlink, getPackageDir } from './linker.js';
 import { findProjectRoot } from './root-finder.js';
 
@@ -48,6 +49,8 @@ export function runPostinstall(packageDir?: string): PostinstallResult {
       symlinkedFiles.push(`${subdir}/${file}`);
     }
   }
+
+  generateGitignore(claudeDir, symlinkedFiles);
 
   return { projectRoot, claudeDir, symlinkedFiles };
 }
