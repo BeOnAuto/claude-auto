@@ -1,6 +1,11 @@
 {
   "name": "claude-ketchup",
   "version": "0.1.0",
+  "authors": [
+    {
+      "name": "Sam Hatoum"
+    }
+  ],
   "description": "Husky-style hooks and skills management for Claude Code",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
