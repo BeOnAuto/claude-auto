@@ -32,6 +32,7 @@ export function mergeSettings(packageDir: string, targetDir: string): void {
     'settings.json'
   );
   const projectSettingsPath = path.join(targetDir, 'settings.project.json');
+  const localSettingsPath = path.join(targetDir, 'settings.local.json');
   const targetSettingsPath = path.join(targetDir, 'settings.json');
 
   if (!fs.existsSync(packageSettingsPath)) {
@@ -47,6 +48,13 @@ export function mergeSettings(packageDir: string, targetDir: string): void {
       fs.readFileSync(projectSettingsPath, 'utf-8')
     );
     settings = deepMergeSettings(settings, projectSettings);
+  }
+
+  if (fs.existsSync(localSettingsPath)) {
+    const localSettings: Settings = JSON.parse(
+      fs.readFileSync(localSettingsPath, 'utf-8')
+    );
+    settings = deepMergeSettings(settings, localSettings);
   }
 
   fs.writeFileSync(targetSettingsPath, JSON.stringify(settings, null, 2));
