@@ -1,3 +1,4 @@
+import * as crypto from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
@@ -15,6 +16,14 @@ type Settings = {
   hooks?: Record<string, HookEntry[] | HookOverride>;
   [key: string]: unknown;
 };
+
+function computeHash(contents: string[]): string {
+  const hash = crypto.createHash('sha256');
+  for (const content of contents) {
+    hash.update(content);
+  }
+  return hash.digest('hex');
+}
 
 function dedupeHooks(hooks: HookEntry[]): HookEntry[] {
   const seen = new Map<string, number>();
@@ -82,14 +91,34 @@ export function mergeSettings(packageDir: string, targetDir: string): void {
   const projectSettingsPath = path.join(targetDir, 'settings.project.json');
   const localSettingsPath = path.join(targetDir, 'settings.local.json');
   const targetSettingsPath = path.join(targetDir, 'settings.json');
+  const lockFilePath = path.join(targetDir, 'settings.lock.json');
 
   if (!fs.existsSync(packageSettingsPath)) {
     return;
   }
 
-  let settings: Settings = JSON.parse(
-    fs.readFileSync(packageSettingsPath, 'utf-8')
-  );
+  const inputContents: string[] = [];
+  const packageContent = fs.readFileSync(packageSettingsPath, 'utf-8');
+  inputContents.push(packageContent);
+
+  if (fs.existsSync(projectSettingsPath)) {
+    inputContents.push(fs.readFileSync(projectSettingsPath, 'utf-8'));
+  }
+
+  if (fs.existsSync(localSettingsPath)) {
+    inputContents.push(fs.readFileSync(localSettingsPath, 'utf-8'));
+  }
+
+  const currentHash = computeHash(inputContents);
+
+  if (fs.existsSync(lockFilePath)) {
+    const lockData = JSON.parse(fs.readFileSync(lockFilePath, 'utf-8'));
+    if (lockData.hash === currentHash) {
+      return;
+    }
+  }
+
+  let settings: Settings = JSON.parse(packageContent);
 
   if (fs.existsSync(projectSettingsPath)) {
     const projectSettings: Settings = JSON.parse(
@@ -106,4 +135,5 @@ export function mergeSettings(packageDir: string, targetDir: string): void {
   }
 
   fs.writeFileSync(targetSettingsPath, JSON.stringify(settings, null, 2));
+  fs.writeFileSync(lockFilePath, JSON.stringify({ hash: currentHash }));
 }

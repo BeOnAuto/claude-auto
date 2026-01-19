@@ -4,12 +4,13 @@
 
 ### Phase 2: Advanced Settings Merger
 
-- [ ] Burst 26: mergeSettings loads settings.project.json and deep merges
-- [ ] Burst 27: mergeSettings loads settings.local.json and deep merges
-- [ ] Burst 28: mergeSettings handles _disabled array to remove specific hooks
-- [ ] Burst 29: mergeSettings handles mode: replace for full override
-- [ ] Burst 30: mergeSettings dedupes hooks by command within each matcher
-- [ ] Burst 31: lock file prevents unnecessary re-merge
+- [x] Burst 26: mergeSettings loads settings.project.json and deep merges
+- [x] Burst 27: mergeSettings loads settings.local.json and deep merges (246e25a)
+- [x] Burst 28: mergeSettings handles _disabled array to remove specific hooks (9b98f74)
+- [x] Burst 29: mergeSettings handles mode: replace for full override (1d6bb02)
+- [x] Burst 30: mergeSettings dedupes hooks by command within each matcher (cab82ca)
+- [ ] Burst 31a: lock file created and skips merge when hash matches
+- [ ] Burst 31b: re-merges when lock file hash differs
 
 ### Phase 3: Runtime Hooks - State Manager
 
