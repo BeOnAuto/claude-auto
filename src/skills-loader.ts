@@ -30,6 +30,14 @@ export function filterByState(skills: ParsedSkill[], state: State): ParsedSkill[
   });
 }
 
+export function sortByPriority(skills: ParsedSkill[]): ParsedSkill[] {
+  return [...skills].sort((a, b) => {
+    const priorityA = (a.frontmatter.priority as number) ?? 0;
+    const priorityB = (b.frontmatter.priority as number) ?? 0;
+    return priorityB - priorityA;
+  });
+}
+
 export function parseSkill(raw: string): ParsedSkill {
   const frontmatterMatch = raw.match(/^---\n([\s\S]*?)\n---\n\n?([\s\S]*)$/);
 

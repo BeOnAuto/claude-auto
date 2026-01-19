@@ -10,6 +10,7 @@ import {
   filterByState,
   parseSkill,
   scanSkills,
+  sortByPriority,
 } from './skills-loader.js';
 
 describe('skills-loader', () => {
@@ -187,6 +188,40 @@ Skill content here.`;
 
       expect(result).toEqual([
         { frontmatter: { when: { a: 1, b: 2 } }, content: 'A' },
+      ]);
+    });
+  });
+
+  describe('sortByPriority', () => {
+    it('sorts skills by priority descending', () => {
+      const skills = [
+        { frontmatter: { priority: 5 }, content: 'A' },
+        { frontmatter: { priority: 10 }, content: 'B' },
+        { frontmatter: { priority: 1 }, content: 'C' },
+      ];
+
+      const result = sortByPriority(skills);
+
+      expect(result).toEqual([
+        { frontmatter: { priority: 10 }, content: 'B' },
+        { frontmatter: { priority: 5 }, content: 'A' },
+        { frontmatter: { priority: 1 }, content: 'C' },
+      ]);
+    });
+
+    it('treats missing priority as 0', () => {
+      const skills = [
+        { frontmatter: {}, content: 'A' },
+        { frontmatter: { priority: 5 }, content: 'B' },
+        { frontmatter: { priority: -1 }, content: 'C' },
+      ];
+
+      const result = sortByPriority(skills);
+
+      expect(result).toEqual([
+        { frontmatter: { priority: 5 }, content: 'B' },
+        { frontmatter: {}, content: 'A' },
+        { frontmatter: { priority: -1 }, content: 'C' },
       ]);
     });
   });
