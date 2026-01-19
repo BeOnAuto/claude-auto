@@ -4,7 +4,13 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { filterByHook, filterByMode, parseSkill, scanSkills } from './skills-loader.js';
+import {
+  filterByHook,
+  filterByMode,
+  filterByState,
+  parseSkill,
+  scanSkills,
+} from './skills-loader.js';
 
 describe('skills-loader', () => {
   describe('scanSkills', () => {
@@ -140,6 +146,47 @@ Skill content here.`;
       expect(result).toEqual([
         { frontmatter: { mode: 'plan' }, content: 'A' },
         { frontmatter: {}, content: 'B' },
+      ]);
+    });
+  });
+
+  describe('filterByState', () => {
+    it('filters skills by state conditions', () => {
+      const skills = [
+        { frontmatter: { when: { counter: 5 } }, content: 'A' },
+        { frontmatter: { when: { counter: 10 } }, content: 'B' },
+      ];
+      const state = { counter: 5 };
+
+      const result = filterByState(skills, state);
+
+      expect(result).toEqual([
+        { frontmatter: { when: { counter: 5 } }, content: 'A' },
+      ]);
+    });
+
+    it('includes skills with no when condition', () => {
+      const skills = [
+        { frontmatter: { when: { counter: 5 } }, content: 'A' },
+        { frontmatter: {}, content: 'B' },
+      ];
+      const state = { counter: 10 };
+
+      const result = filterByState(skills, state);
+
+      expect(result).toEqual([{ frontmatter: {}, content: 'B' }]);
+    });
+
+    it('matches when all conditions are satisfied', () => {
+      const skills = [
+        { frontmatter: { when: { a: 1, b: 2 } }, content: 'A' },
+      ];
+      const state = { a: 1, b: 2, c: 3 };
+
+      const result = filterByState(skills, state);
+
+      expect(result).toEqual([
+        { frontmatter: { when: { a: 1, b: 2 } }, content: 'A' },
       ]);
     });
   });
