@@ -47,5 +47,48 @@ describe('settings-merger', () => {
 
       expect(fs.existsSync(path.join(targetDir, 'settings.json'))).toBe(false);
     });
+
+    it('deep merges settings.project.json over package settings', () => {
+      const packageDir = path.join(tempDir, 'package');
+      const targetDir = path.join(tempDir, 'target');
+      fs.mkdirSync(path.join(packageDir, 'templates'), { recursive: true });
+      fs.mkdirSync(targetDir, { recursive: true });
+
+      const packageSettings = {
+        hooks: {
+          SessionStart: [{ hooks: [{ type: 'command', command: 'pkg-cmd' }] }],
+        },
+      };
+      const projectSettings = {
+        hooks: {
+          SessionStart: [
+            { hooks: [{ type: 'command', command: 'project-cmd' }] },
+          ],
+        },
+      };
+
+      fs.writeFileSync(
+        path.join(packageDir, 'templates', 'settings.json'),
+        JSON.stringify(packageSettings)
+      );
+      fs.writeFileSync(
+        path.join(targetDir, 'settings.project.json'),
+        JSON.stringify(projectSettings)
+      );
+
+      mergeSettings(packageDir, targetDir);
+
+      const result = JSON.parse(
+        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
+      );
+      expect(result).toEqual({
+        hooks: {
+          SessionStart: [
+            { hooks: [{ type: 'command', command: 'pkg-cmd' }] },
+            { hooks: [{ type: 'command', command: 'project-cmd' }] },
+          ],
+        },
+      });
+    });
   });
 });
