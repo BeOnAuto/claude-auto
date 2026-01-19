@@ -35,9 +35,9 @@
 
 ### Phase 3: Runtime Hooks - Hook Scripts
 
-- [ ] Burst 44: session-start.ts outputs filtered skills
-- [ ] Burst 45: pre-tool-use.ts blocks denied paths
-- [ ] Burst 46: user-prompt-submit.ts injects reminders
+- [x] Burst 44: session-start.ts outputs filtered skills (c582a3b)
+- [x] Burst 45: pre-tool-use.ts blocks denied paths (3a1e9b3)
+- [x] Burst 46: user-prompt-submit.ts injects reminders (092fcf8)
 
 ### Phase 4: CLI
 
