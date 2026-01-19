@@ -8,3 +8,7 @@ export function getPackageDir(): string {
 export function isLinkedMode(packagePath: string): boolean {
   return fs.lstatSync(packagePath).isSymbolicLink();
 }
+
+export function createSymlink(source: string, target: string): void {
+  fs.symlinkSync(source, target);
+}

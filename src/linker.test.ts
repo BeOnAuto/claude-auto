@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { getPackageDir, isLinkedMode } from './linker.js';
+import { createSymlink, getPackageDir, isLinkedMode } from './linker.js';
 
 describe('linker', () => {
   describe('getPackageDir', () => {
@@ -48,6 +48,29 @@ describe('linker', () => {
 
       const result = isLinkedMode(packagePath);
       expect(result).toBe(false);
+    });
+  });
+
+  describe('createSymlink', () => {
+    let tempDir: string;
+
+    beforeEach(() => {
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-test-'));
+    });
+
+    afterEach(() => {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    });
+
+    it('creates a symlink to the source file', () => {
+      const sourceFile = path.join(tempDir, 'source.txt');
+      const targetLink = path.join(tempDir, 'target.txt');
+      fs.writeFileSync(sourceFile, 'content');
+
+      createSymlink(sourceFile, targetLink);
+
+      expect(fs.lstatSync(targetLink).isSymbolicLink()).toBe(true);
+      expect(fs.readlinkSync(targetLink)).toBe(sourceFile);
     });
   });
 });
