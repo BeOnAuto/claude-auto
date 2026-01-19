@@ -45,7 +45,7 @@
 - [x] Burst 48a: repair recreates symlinks for specified files (7a1d424)
 - [x] Burst 48b: getExpectedSymlinks finds files in package directories (9ad0e84)
 - [x] Burst 49: `claude-ketchup doctor` diagnoses symlink health (6f4f1b3)
-- [ ] Burst 50: `claude-ketchup skills` lists enforced skills
+- [x] Burst 50: `claude-ketchup skills` lists skills with metadata (69c7019)
 - [ ] Burst 51: `/ketchup` command definition
 
 ### Phase 5: Templates & Polish
