@@ -29,9 +29,9 @@
 
 ### Phase 3: Runtime Hooks - Deny List
 
-- [ ] Burst 41: deny-list loads patterns from deny-list.project.txt
-- [ ] Burst 42: deny-list loads patterns from deny-list.local.txt
-- [ ] Burst 43: deny-list checks paths against patterns
+- [x] Burst 41: deny-list loads patterns from deny-list.project.txt (d4c2748)
+- [x] Burst 42: deny-list loads patterns from deny-list.local.txt (08b9419)
+- [x] Burst 43: deny-list checks paths against patterns (c630aae)
 
 ### Phase 3: Runtime Hooks - Hook Scripts
 
