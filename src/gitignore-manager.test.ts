@@ -27,14 +27,16 @@ describe('gitignore-manager', () => {
       expect(fs.existsSync(path.join(claudeDir, '.gitignore'))).toBe(true);
     });
 
-    it('includes symlinked files in gitignore', () => {
+    it('includes symlinked files and standard patterns in gitignore', () => {
       const claudeDir = path.join(tempDir, '.claude');
       fs.mkdirSync(claudeDir, { recursive: true });
 
       generateGitignore(claudeDir, ['scripts/session-start.ts', 'skills/ketchup.md']);
 
       const content = fs.readFileSync(path.join(claudeDir, '.gitignore'), 'utf-8');
-      expect(content).toBe('scripts/session-start.ts\nskills/ketchup.md');
+      expect(content).toBe(
+        'scripts/session-start.ts\nskills/ketchup.md\n*.local.*'
+      );
     });
   });
 });

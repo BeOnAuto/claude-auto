@@ -12,5 +12,7 @@ export function generateGitignore(
     lines.push(file);
   }
 
+  lines.push('*.local.*');
+
   fs.writeFileSync(gitignorePath, lines.join('\n'));
 }
