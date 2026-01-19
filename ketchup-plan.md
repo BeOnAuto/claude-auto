@@ -1,7 +1,6 @@
 # Ketchup Plan: claude-ketchup npm package
 
 ## TODO
-- [ ] Burst 13: removeSymlink removes symlink but not real files
 - [ ] Burst 14: verifySymlink checks symlink target
 
 ## DONE
@@ -16,3 +15,4 @@
 - [x] Burst 9: createSymlink creates file symlink (f781b24)
 - [x] Burst 10+11: createSymlink handles existing files and symlinks (0b3ae5f)
 - [x] Burst 12: createSymlink is idempotent (2bb9aae)
+- [x] Burst 13: removeSymlink removes symlink but not real files (42d35ab)
