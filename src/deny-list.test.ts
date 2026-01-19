@@ -89,5 +89,11 @@ describe('deny-list', () => {
 
       expect(result).toBe(false);
     });
+
+    it('returns false when patterns array is empty', () => {
+      const result = isDenied('/any/path.txt', []);
+
+      expect(result).toBe(false);
+    });
   });
 });
