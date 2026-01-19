@@ -29,3 +29,4 @@
 - [x] Burst 22: postinstall generates gitignore (4e624d5)
 - [x] Burst 23: postinstall merges settings (b6b245e)
 - [x] Burst 24+25: preuninstall removes symlinks, preserves local files (8aa2d24)
+- [x] Infrastructure: bin scripts and E2E test (3d85f62)
