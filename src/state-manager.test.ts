@@ -58,5 +58,21 @@ describe('state-manager', () => {
       );
       expect(result).toEqual(stateData);
     });
+
+    it('creates backup before overwriting existing state', () => {
+      const initialState = { counter: 1 };
+      const newState = { counter: 2 };
+      fs.writeFileSync(
+        path.join(tempDir, 'state.json'),
+        JSON.stringify(initialState)
+      );
+
+      writeState(tempDir, newState);
+
+      const backup = JSON.parse(
+        fs.readFileSync(path.join(tempDir, 'state.backup.json'), 'utf-8')
+      );
+      expect(backup).toEqual(initialState);
+    });
   });
 });

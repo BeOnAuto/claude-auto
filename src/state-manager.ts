@@ -15,5 +15,11 @@ export function readState(dir: string): State {
 
 export function writeState(dir: string, state: State): void {
   const statePath = path.join(dir, 'state.json');
+  const backupPath = path.join(dir, 'state.backup.json');
+
+  if (fs.existsSync(statePath)) {
+    fs.copyFileSync(statePath, backupPath);
+  }
+
   fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
 }
