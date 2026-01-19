@@ -81,5 +81,13 @@ describe('deny-list', () => {
 
       expect(result).toBe(true);
     });
+
+    it('returns false when path does not match any pattern', () => {
+      const patterns = ['*.secret', '/private/**'];
+
+      const result = isDenied('/config/api.json', patterns);
+
+      expect(result).toBe(false);
+    });
   });
 });
