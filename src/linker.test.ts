@@ -4,7 +4,12 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { createSymlink, getPackageDir, isLinkedMode } from './linker.js';
+import {
+  createSymlink,
+  getPackageDir,
+  isLinkedMode,
+  removeSymlink,
+} from './linker.js';
 
 describe('linker', () => {
   describe('getPackageDir', () => {
@@ -115,6 +120,39 @@ describe('linker', () => {
       expect(fs.lstatSync(targetLink).isSymbolicLink()).toBe(true);
       expect(fs.readlinkSync(targetLink)).toBe(sourceFile);
       expect(fs.lstatSync(targetLink).ino).toBe(statsBefore.ino);
+    });
+  });
+
+  describe('removeSymlink', () => {
+    let tempDir: string;
+
+    beforeEach(() => {
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-test-'));
+    });
+
+    afterEach(() => {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    });
+
+    it('removes a symlink', () => {
+      const sourceFile = path.join(tempDir, 'source.txt');
+      const targetLink = path.join(tempDir, 'target.txt');
+      fs.writeFileSync(sourceFile, 'content');
+      fs.symlinkSync(sourceFile, targetLink);
+
+      removeSymlink(targetLink);
+
+      expect(fs.existsSync(targetLink)).toBe(false);
+      expect(fs.existsSync(sourceFile)).toBe(true);
+    });
+
+    it('does not remove regular files', () => {
+      const regularFile = path.join(tempDir, 'regular.txt');
+      fs.writeFileSync(regularFile, 'content');
+
+      removeSymlink(regularFile);
+
+      expect(fs.existsSync(regularFile)).toBe(true);
     });
   });
 });

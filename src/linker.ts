@@ -23,3 +23,9 @@ export function createSymlink(source: string, target: string): void {
   }
   fs.symlinkSync(source, target);
 }
+
+export function removeSymlink(target: string): void {
+  if (fs.existsSync(target) && fs.lstatSync(target).isSymbolicLink()) {
+    fs.unlinkSync(target);
+  }
+}
