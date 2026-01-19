@@ -78,5 +78,17 @@ describe('root-finder', () => {
       const result = findProjectRoot();
       expect(result).toBe(process.cwd());
     });
+
+    it('walks up to find .git when no package.json found', () => {
+      const projectDir = path.join(tempDir, 'my-project');
+      const nestedDir = path.join(projectDir, 'src', 'utils');
+      fs.mkdirSync(nestedDir, { recursive: true });
+      fs.mkdirSync(path.join(projectDir, '.git'));
+      vi.stubEnv('KETCHUP_ROOT', '');
+      vi.stubEnv('INIT_CWD', nestedDir);
+
+      const result = findProjectRoot();
+      expect(result).toBe(projectDir);
+    });
   });
 });

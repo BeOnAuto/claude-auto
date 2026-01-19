@@ -32,5 +32,10 @@ export function findProjectRoot(): string {
     return packageRoot;
   }
 
+  const gitRoot = walkUpToFind(startDir, '.git');
+  if (gitRoot) {
+    return gitRoot;
+  }
+
   return process.cwd();
 }
