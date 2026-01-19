@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { scanSkills } from './skills-loader.js';
+import { parseSkill, scanSkills } from './skills-loader.js';
 
 describe('skills-loader', () => {
   describe('scanSkills', () => {
@@ -47,6 +47,42 @@ describe('skills-loader', () => {
       const result = scanSkills(tempDir);
 
       expect(result).toEqual([path.join(skillsDir, 'skill.md')]);
+    });
+  });
+
+  describe('parseSkill', () => {
+    it('parses YAML frontmatter from skill content', () => {
+      const content = `---
+hook: SessionStart
+priority: 10
+mode: plan
+---
+
+# My Skill
+
+Skill content here.`;
+
+      const result = parseSkill(content);
+
+      expect(result).toEqual({
+        frontmatter: {
+          hook: 'SessionStart',
+          priority: 10,
+          mode: 'plan',
+        },
+        content: '# My Skill\n\nSkill content here.',
+      });
+    });
+
+    it('returns empty frontmatter when no frontmatter exists', () => {
+      const content = '# Just Content\n\nNo frontmatter here.';
+
+      const result = parseSkill(content);
+
+      expect(result).toEqual({
+        frontmatter: {},
+        content: '# Just Content\n\nNo frontmatter here.',
+      });
     });
   });
 });
