@@ -224,5 +224,19 @@ Skill content here.`;
         { frontmatter: { priority: -1 }, content: 'C' },
       ]);
     });
+
+    it('sorts skills with both priorities undefined as equal', () => {
+      const skills = [
+        { frontmatter: {}, content: 'First' },
+        { frontmatter: {}, content: 'Second' },
+      ];
+
+      const result = sortByPriority(skills);
+
+      expect(result).toEqual([
+        { frontmatter: {}, content: 'First' },
+        { frontmatter: {}, content: 'Second' },
+      ]);
+    });
   });
 });
