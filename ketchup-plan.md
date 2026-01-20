@@ -16,7 +16,8 @@
 - [x] Burst 87: Create auto-continue utility functions (getIncompleteBursts, buildPrompt) (d505adc)
 - [x] Burst 88: Verify deny-list implementation is complete (pre-tool-use uses micromatch)
 - [x] Burst 89: prompt-reminder handled by user-prompt-submit skills (no separate module needed)
-- [x] Burst 90: Create clean-logs utility function
+- [x] Burst 90: Create clean-logs utility function (f302eb2)
+- [x] Burst 91: Update templates/settings.json to include validate-commit and auto-continue hooks
 
 ### Bottle: Debug Logging System
 

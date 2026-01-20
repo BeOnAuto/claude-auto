@@ -20,6 +20,15 @@
             "command": "npx tsx node_modules/claude-ketchup/dist/scripts/pre-tool-use.js"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx tsx .claude/scripts/validate-commit.ts"
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -29,6 +38,17 @@
           {
             "type": "command",
             "command": "npx tsx node_modules/claude-ketchup/dist/scripts/user-prompt-submit.js"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx tsx .claude/scripts/auto-continue.ts"
           }
         ]
       }
