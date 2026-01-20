@@ -1,6 +1,6 @@
 # claude-ketchup
 
-Husky-style hooks and skills management for Claude Code, implementing the Ketchup Technique.*
+Husky-style hooks and skills management for Claude Code, implementing the Ketchup Technique.\*
 
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE) [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=flat-square)]()
 
@@ -62,6 +62,7 @@ claude-ketchup doctor
 ```
 
 After installation, claude-ketchup automatically:
+
 - Creates a `.claude/` directory in your project root
 - Symlinks hook scripts, skills, and commands from the package
 - Generates a `.gitignore` for symlinked and runtime files
@@ -180,7 +181,7 @@ claude-ketchup skills
 
 ## Hooks System
 
-claude-ketchup provides three hooks that integrate with Claude Code:
+claude-ketchup provides four hook types that integrate with Claude Code:
 
 ### SessionStart
 
@@ -191,7 +192,10 @@ Fires when a Claude Code session begins. Use it to inject project context, guide
 
 ### PreToolUse
 
-Fires before Claude uses a tool (Edit, Write, NotebookEdit). Use it to protect sensitive files.
+Fires before Claude uses a tool. Has two matchers:
+
+1. **Edit/Write/NotebookEdit** - Checks deny-list to protect sensitive files
+2. **Bash** - Validates git commits against CLAUDE.md rules
 
 **Input:** Tool name and input parameters
 **Output:** `{ decision: "allow" | "block", reason?: string }`
@@ -202,6 +206,13 @@ Fires when user submits a prompt. Use it to inject reminders or context.
 
 **Input:** User prompt text
 **Output:** Original prompt with `<system-reminder>` tags appended
+
+### Stop
+
+Fires when Claude stops execution. Use it for auto-continue logic.
+
+**Input:** Transcript context
+**Output:** `{ decision: "CONTINUE" | "STOP", reason: string }`
 
 ---
 
@@ -225,12 +236,12 @@ Instructions for Claude...
 
 ### Frontmatter Schema
 
-| Field | Type | Required | Default | Description |
-|-------|------|----------|---------|-------------|
-| `hook` | string | Yes | - | Which hook triggers this skill |
-| `priority` | number | No | 0 | Execution order (higher runs first) |
-| `mode` | string | No | - | Filter by mode (plan/code) |
-| `when` | object | No | - | Conditional activation based on state |
+| Field      | Type   | Required | Default | Description                           |
+| ---------- | ------ | -------- | ------- | ------------------------------------- |
+| `hook`     | string | Yes      | -       | Which hook triggers this skill        |
+| `priority` | number | No       | 0       | Execution order (higher runs first)   |
+| `mode`     | string | No       | -       | Filter by mode (plan/code)            |
+| `when`     | object | No       | -       | Conditional activation based on state |
 
 ---
 
@@ -321,35 +332,113 @@ DEBUG=ketchup* claude-ketchup status
 ```
 your-project/
 ├── .claude/
-│   ├── scripts/           # Symlinked hook scripts
-│   │   ├── session-start.ts
-│   │   ├── pre-tool-use.ts
-│   │   └── user-prompt-submit.ts
-│   ├── skills/            # Symlinked + custom skills
-│   │   └── ketchup.enforced.md
-│   ├── commands/          # Symlinked commands
-│   │   └── ketchup.md
-│   ├── settings.json      # Merged settings (generated)
-│   ├── settings.project.json  # Project overrides (optional)
-│   ├── settings.local.json    # Local overrides (optional)
-│   ├── deny-list.project.txt  # Project deny patterns
-│   ├── deny-list.local.txt    # Local deny patterns
-│   └── .gitignore         # Generated
+│   ├── scripts/
+│   │   ├── pre-tool-use.ts       # → symlink to package
+│   │   ├── user-prompt-submit.ts # → symlink to package
+│   │   ├── session-start.ts      # Local (customizable)
+│   │   ├── auto-continue.ts      # Local (customizable)
+│   │   ├── validate-commit.ts    # Local (customizable)
+│   │   ├── deny-list.ts          # Local (customizable)
+│   │   ├── prompt-reminder.ts    # Local (customizable)
+│   │   └── clean-logs.ts         # Local (customizable)
+│   ├── skills/
+│   │   ├── ketchup.enforced.md   # → symlink to package
+│   │   └── my-project.md         # Your custom skills
+│   ├── commands/
+│   │   ├── ketchup.md            # → symlink to package
+│   │   └── my-command.md         # Your custom commands
+│   ├── settings.json             # Merged settings (generated)
+│   ├── settings.project.json     # Project overrides (optional)
+│   ├── settings.local.json       # Local overrides (optional)
+│   ├── deny-list.project.txt     # Project deny patterns
+│   ├── deny-list.local.txt       # Local deny patterns
+│   ├── logs/                     # Runtime logs
+│   └── .gitignore                # Generated
+├── .claude.hooks.json            # Hook state (runtime)
 └── node_modules/
     └── claude-ketchup/
-        ├── scripts/       # Source scripts
-        ├── skills/        # Source skills
-        ├── commands/      # Source commands
-        └── templates/     # Default settings
+        ├── scripts/              # Source scripts (symlink targets)
+        ├── skills/               # Source skills (symlink targets)
+        ├── commands/             # Source commands (symlink targets)
+        └── templates/            # Default settings
 ```
 
 ### Dependencies
 
-| Package | Usage |
-|---------|-------|
-| commander | CLI argument parsing |
+| Package    | Usage                               |
+| ---------- | ----------------------------------- |
+| commander  | CLI argument parsing                |
 | micromatch | Glob pattern matching for deny-list |
-| yaml | YAML parsing for skill frontmatter |
+| yaml       | YAML parsing for skill frontmatter  |
+
+---
+
+## Hook State Management
+
+claude-ketchup maintains a `.claude.hooks.json` file that controls hook behavior:
+
+```json
+{
+  "autoContinue": {
+    "mode": "smart",
+    "maxIterations": 0,
+    "iteration": 0,
+    "skipModes": ["plan"]
+  },
+  "validateCommit": {
+    "mode": "strict"
+  },
+  "denyList": {
+    "enabled": true,
+    "extraPatterns": []
+  },
+  "promptReminder": {
+    "enabled": true
+  },
+  "subagentHooks": {
+    "validateCommitOnExplore": false,
+    "validateCommitOnWork": true,
+    "validateCommitOnUnknown": true
+  }
+}
+```
+
+### Subagent Classification
+
+Hooks can behave differently based on the type of subagent running:
+
+| Type      | Patterns                                        | Default Behavior               |
+| --------- | ----------------------------------------------- | ------------------------------ |
+| `explore` | search, find, understand, investigate, analyze  | Skip commit validation         |
+| `work`    | implement, create, write, fix, refactor, update | Full validation                |
+| `unknown` | Ambiguous or no patterns                        | Full validation (safe default) |
+
+---
+
+## Logging
+
+### Debug Logging
+
+Enable debug logs during development:
+
+```bash
+DEBUG=ketchup* claude-ketchup status
+```
+
+Debug logs are written to `.claude/logs/ketchup/debug.log`.
+
+### Hook Logs
+
+Session-specific hook logs are written to `.claude/logs/hooks/{session-id}.log` with colored output for different log levels:
+
+- `ACK` - Action acknowledged
+- `NACK` - Action rejected
+- `ERROR` - Error occurred
+- `WARN` - Warning
+- `SKIP` - Action skipped
+- `INFO` - Informational
+- `DENIED` - Access denied
+- `CONTINUE` - Auto-continue triggered
 
 ---
 
@@ -359,6 +448,7 @@ For programmatic usage:
 
 ```typescript
 import {
+  // Core utilities
   findProjectRoot,
   createSymlink,
   removeSymlink,
@@ -367,21 +457,41 @@ import {
   mergeSettings,
   readState,
   writeState,
+
+  // Skills
   scanSkills,
   parseSkill,
   filterByHook,
   filterByMode,
   filterByState,
   sortByPriority,
+
+  // Deny-list
   loadDenyPatterns,
   isDenied,
+
+  // CLI
   getStatus,
   repair,
+  getExpectedSymlinks,
   doctor,
   listSkills,
   createCli,
-} from 'claude-ketchup';
+} from "claude-ketchup";
 ```
+
+---
+
+## Documentation
+
+Full documentation is available in the [`docs/`](./docs/) folder:
+
+| Document                                     | Description                     |
+| -------------------------------------------- | ------------------------------- |
+| [Getting Started](./docs/getting-started.md) | Installation and setup tutorial |
+| [Hooks Guide](./docs/hooks-guide.md)         | How-to guides for common tasks  |
+| [API Reference](./docs/api-reference.md)     | Complete API documentation      |
+| [Architecture](./docs/architecture.md)       | System design and internals     |
 
 ---
 
@@ -431,4 +541,4 @@ See [LICENSE](LICENSE) for details.
 
 ---
 
-<sub>*The Ketchup Technique is an independent methodology for AI-native development. While it acknowledges the foundation of time-boxed intervals found in the Pomodoro® Technique (a registered trademark of Francesco Cirillo), it is a separate method. Learn more at [pomodorotechnique.com](http://pomodorotechnique.com/).</sub>
+<sub>\*The Ketchup Technique is an independent methodology for AI-native development. While it acknowledges the foundation of time-boxed intervals found in the Pomodoro® Technique (a registered trademark of Francesco Cirillo), it is a separate method. Learn more at [pomodorotechnique.com](http://pomodorotechnique.com/).</sub>
