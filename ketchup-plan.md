@@ -2,17 +2,16 @@
 
 ## TODO
 
+## DONE
+
 ### Bottle: Debug Logging System
 
-- [ ] Burst 74: debug-logger writes to .claude/logs/ketchup.log when DEBUG=ketchup
-- [ ] Burst 75: debug-logger creates logs directory if missing
-- [ ] Burst 76: debug-logger includes timestamp and hook name in entries
-- [ ] Burst 77: session-start.ts logs skills loaded and filtered
-- [ ] Burst 78: pre-tool-use.ts logs deny-list check results
-- [ ] Burst 79: user-prompt-submit.ts logs reminders injected
-- [ ] Burst 80: gitignore includes logs/ directory
-
-## DONE
+- [x] Burst 74+75: debug-logger writes to .claude/logs/ketchup.log when DEBUG=ketchup, creates logs dir (3447c15)
+- [x] Burst 76: debug-logger includes timestamp in entries (469abea)
+- [x] Burst 77: session-start.ts logs skills loaded and filtered (1d0f23f)
+- [x] Burst 78: pre-tool-use.ts logs deny-list check results (78b67a3)
+- [x] Burst 79: user-prompt-submit.ts logs reminders injected (d3e9226)
+- [x] Burst 80: gitignore already includes logs/ directory (b71e307)
 
 - [x] Burst 1: Setup package infrastructure (package.json, tsconfig, vitest)
 - [x] Burst 2: findProjectRoot uses KETCHUP_ROOT env var
