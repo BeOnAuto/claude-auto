@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 
@@ -31,6 +32,17 @@ export function extractGitCPath(command: string): string | undefined {
   const match = command.match(/git\s+-C\s+(?:"([^"]+)"|'([^']+)'|(\S+))/);
   if (match) {
     return match[1] || match[2] || match[3];
+  }
+  return undefined;
+}
+
+export function findGitRoot(dir: string): string | undefined {
+  const result = spawnSync('git', ['rev-parse', '--show-toplevel'], {
+    cwd: dir,
+    encoding: 'utf8',
+  });
+  if (result.status === 0 && result.stdout) {
+    return result.stdout.trim();
   }
   return undefined;
 }

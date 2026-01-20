@@ -8,6 +8,7 @@ import {
   findClaudeMd,
   getEffectiveCwd,
   extractGitCPath,
+  findGitRoot,
 } from './validate-commit.js';
 
 describe('validate-commit hook', () => {
@@ -96,6 +97,20 @@ describe('validate-commit hook', () => {
       const result = extractGitCPath('git -C "/path with spaces" commit');
 
       expect(result).toBe('/path with spaces');
+    });
+  });
+
+  describe('findGitRoot', () => {
+    it('returns git root for directory in git repo', () => {
+      const result = findGitRoot(process.cwd());
+
+      expect(result).toBe(process.cwd());
+    });
+
+    it('returns undefined for non-git directory', () => {
+      const result = findGitRoot(tempDir);
+
+      expect(result).toBeUndefined();
     });
   });
 });

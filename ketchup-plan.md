@@ -11,7 +11,8 @@
 - [x] Burst 83: Create src/clue-collector.ts from .claude/scripts/lib/clue-collector.ts
 - [x] Burst 84: Update debug-logger to write to logs/ketchup/debug.log subdirectory (73c72b4)
 - [x] Burst 85: Update logger.ts to write to logs/hooks/ subdirectory (c65e0a1)
-- [x] Burst 86a: Create validate-commit utility functions (findClaudeMd, getEffectiveCwd, extractGitCPath)
+- [x] Burst 86a: Create validate-commit utility functions (findClaudeMd, getEffectiveCwd, extractGitCPath) (4116297)
+- [x] Burst 86b: Add findGitRoot to validate-commit
 
 ### Bottle: Debug Logging System
 
