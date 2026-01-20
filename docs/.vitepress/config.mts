@@ -84,13 +84,13 @@ export default defineConfig({
     ['link', { rel: 'shortcut icon', href: '/favicon.ico' }],
     ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }],
     ['link', { rel: 'manifest', href: '/site.webmanifest' }],
-    ['meta', { property: 'og:title', content: 'Claude Ketchup' }],
+    ['meta', { property: 'og:title', content: 'Claude Ketchup - Controlled Bursts for Claude Code' }],
     ['meta', { property: 'og:type', content: 'website' }],
     [
       'meta',
       {
         property: 'og:description',
-        content: 'Husky-style hooks and skills for Claude Code, implementing the Ketchup Technique',
+        content: 'Tame AI over-execution with the Ketchup Technique. Husky-style hooks enforce TDD, TCR, and 100% coverage. One test, one behavior, one commit. Install now and start shipping.',
       },
     ],
     [
@@ -106,8 +106,8 @@ export default defineConfig({
     ['meta', { property: 'og:image:alt', content: 'Claude Ketchup - Controlled Bursts for Claude Code' }],
     ['meta', { property: 'og:site_name', content: 'Claude Ketchup' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:title', content: 'Claude Ketchup' }],
-    ['meta', { name: 'twitter:description', content: 'Husky-style hooks and skills for Claude Code, implementing the Ketchup Technique' }],
+    ['meta', { name: 'twitter:title', content: 'Claude Ketchup - Controlled Bursts for Claude Code' }],
+    ['meta', { name: 'twitter:description', content: 'Tame AI over-execution with the Ketchup Technique. Husky-style hooks enforce TDD, TCR, and 100% coverage. One test, one behavior, one commit. Install now and start shipping.' }],
     ['meta', { name: 'twitter:image', content: 'https://beonauto.github.io/claude-ketchup/og-image.png' }],
   ],
 });
