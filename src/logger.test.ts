@@ -22,24 +22,27 @@ describe('logger', () => {
   });
 
   describe('createLogger', () => {
-    it('creates log file with session prefix when session id provided', () => {
+    it('creates log file in hooks subdirectory with session prefix', () => {
       const logger = createLogger(tempDir, 'abc12345-full-session-id');
       logger.log('INFO', 'test message');
 
-      const files = fs.readdirSync(tempDir);
+      const hooksDir = path.join(tempDir, 'hooks');
+      const files = fs.readdirSync(hooksDir);
       const logFile = files.find((f) => f.startsWith('abc12345-') && f.endsWith('.log'));
       expect(logFile).toBeDefined();
     });
 
-    it('creates unknown.log when no session id provided', () => {
+    it('creates unknown.log in hooks subdirectory when no session id', () => {
       const logger = createLogger(tempDir);
       logger.log('INFO', 'test message');
 
-      expect(fs.existsSync(path.join(tempDir, 'unknown.log'))).toBe(true);
+      expect(fs.existsSync(path.join(tempDir, 'hooks', 'unknown.log'))).toBe(true);
     });
 
     it('reuses existing log file for same session prefix', () => {
-      const existingLog = path.join(tempDir, 'abc12345-2026-01-01T00-00-00.log');
+      const hooksDir = path.join(tempDir, 'hooks');
+      fs.mkdirSync(hooksDir, { recursive: true });
+      const existingLog = path.join(hooksDir, 'abc12345-2026-01-01T00-00-00.log');
       fs.writeFileSync(existingLog, 'existing content\n');
 
       const logger = createLogger(tempDir, 'abc12345-full-session-id');
@@ -50,12 +53,12 @@ describe('logger', () => {
       expect(content).toContain('new message');
     });
 
-    it('creates logs directory if it does not exist', () => {
+    it('creates hooks subdirectory if it does not exist', () => {
       const nestedDir = path.join(tempDir, 'nested', 'logs');
       const logger = createLogger(nestedDir, 'session123');
       logger.log('INFO', 'test');
 
-      expect(fs.existsSync(nestedDir)).toBe(true);
+      expect(fs.existsSync(path.join(nestedDir, 'hooks'))).toBe(true);
     });
   });
 
@@ -64,9 +67,10 @@ describe('logger', () => {
       const logger = createLogger(tempDir, 'test-session');
       logger.log('INFO', 'hello world');
 
-      const files = fs.readdirSync(tempDir);
+      const hooksDir = path.join(tempDir, 'hooks');
+      const files = fs.readdirSync(hooksDir);
       const logFile = files.find((f) => f.endsWith('.log'));
-      const content = fs.readFileSync(path.join(tempDir, logFile!), 'utf8');
+      const content = fs.readFileSync(path.join(hooksDir, logFile!), 'utf8');
 
       expect(content).toMatch(/\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
       expect(content).toContain('INFO');
@@ -77,9 +81,10 @@ describe('logger', () => {
       const logger = createLogger(tempDir, 'test-session');
       logger.log('ACK', 'success');
 
-      const files = fs.readdirSync(tempDir);
+      const hooksDir = path.join(tempDir, 'hooks');
+      const files = fs.readdirSync(hooksDir);
       const logFile = files.find((f) => f.endsWith('.log'));
-      const content = fs.readFileSync(path.join(tempDir, logFile!), 'utf8');
+      const content = fs.readFileSync(path.join(hooksDir, logFile!), 'utf8');
 
       expect(content).toContain(colors.bold);
       expect(content).toContain(colors.green);
@@ -93,9 +98,10 @@ describe('logger', () => {
         logger.log(level, `test ${level}`);
       }
 
-      const files = fs.readdirSync(tempDir);
+      const hooksDir = path.join(tempDir, 'hooks');
+      const files = fs.readdirSync(hooksDir);
       const logFile = files.find((f) => f.endsWith('.log'));
-      const content = fs.readFileSync(path.join(tempDir, logFile!), 'utf8');
+      const content = fs.readFileSync(path.join(hooksDir, logFile!), 'utf8');
 
       for (const level of levels) {
         expect(content).toContain(level);
@@ -104,12 +110,12 @@ describe('logger', () => {
   });
 
   describe('logError', () => {
-    it('writes error to err.log with timestamp and context', () => {
+    it('writes error to err.log in hooks subdirectory', () => {
       const logger = createLogger(tempDir, 'test-session');
       const error = new Error('test error');
       logger.logError(error, 'validate-commit');
 
-      const errLog = path.join(tempDir, 'err.log');
+      const errLog = path.join(tempDir, 'hooks', 'err.log');
       expect(fs.existsSync(errLog)).toBe(true);
 
       const content = fs.readFileSync(errLog, 'utf8');
@@ -122,7 +128,7 @@ describe('logger', () => {
       const logger = createLogger(tempDir, 'test-session');
       logger.logError(new Error('bare error'));
 
-      const errLog = path.join(tempDir, 'err.log');
+      const errLog = path.join(tempDir, 'hooks', 'err.log');
       const content = fs.readFileSync(errLog, 'utf8');
       expect(content).toContain('bare error');
       expect(content).not.toContain('[]');
@@ -132,7 +138,7 @@ describe('logger', () => {
       const logger = createLogger(tempDir, 'test-session');
       logger.logError('string error');
 
-      const errLog = path.join(tempDir, 'err.log');
+      const errLog = path.join(tempDir, 'hooks', 'err.log');
       const content = fs.readFileSync(errLog, 'utf8');
       expect(content).toContain('string error');
     });

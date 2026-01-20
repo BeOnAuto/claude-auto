@@ -43,11 +43,12 @@ export interface Logger {
 }
 
 export function createLogger(logDir: string, sessionId?: string): Logger {
+  const hooksDir = path.join(logDir, 'hooks');
   let logFilePath: string | undefined;
 
   function ensureLogDir(): void {
-    if (!fs.existsSync(logDir)) {
-      fs.mkdirSync(logDir, { recursive: true });
+    if (!fs.existsSync(hooksDir)) {
+      fs.mkdirSync(hooksDir, { recursive: true });
     }
   }
 
@@ -59,18 +60,18 @@ export function createLogger(logDir: string, sessionId?: string): Logger {
     ensureLogDir();
 
     if (!sessionId) {
-      logFilePath = path.join(logDir, 'unknown.log');
+      logFilePath = path.join(hooksDir, 'unknown.log');
       return logFilePath;
     }
 
     const prefix = sessionId.slice(0, 8);
 
-    const files = fs.readdirSync(logDir);
+    const files = fs.readdirSync(hooksDir);
     const existing = files.find(
       (f) => f.startsWith(`${prefix}-`) && f.endsWith('.log')
     );
     if (existing) {
-      logFilePath = path.join(logDir, existing);
+      logFilePath = path.join(hooksDir, existing);
       return logFilePath;
     }
 
@@ -79,7 +80,7 @@ export function createLogger(logDir: string, sessionId?: string): Logger {
       .replace(/:/g, '-')
       .replace(/\.\d{3}Z$/, '');
     const filename = `${prefix}-${timestamp}.log`;
-    logFilePath = path.join(logDir, filename);
+    logFilePath = path.join(hooksDir, filename);
     fs.appendFileSync(logFilePath, `session: ${sessionId}\n\n`);
 
     return logFilePath;
@@ -99,7 +100,7 @@ export function createLogger(logDir: string, sessionId?: string): Logger {
     const errorMsg =
       error instanceof Error ? `${error.message}\n${error.stack}` : String(error);
     const contextStr = context ? ` [${context}]` : '';
-    const errLog = path.join(logDir, 'err.log');
+    const errLog = path.join(hooksDir, 'err.log');
     fs.appendFileSync(errLog, `[${timestamp}]${contextStr} ${errorMsg}\n\n`);
   }
 
