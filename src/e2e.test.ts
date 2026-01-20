@@ -22,13 +22,13 @@ describe('e2e', () => {
       fs.mkdirSync(projectDir, { recursive: true });
       fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
 
-      fs.mkdirSync(path.join(packageDir, 'scripts'), { recursive: true });
+      fs.mkdirSync(path.join(packageDir, 'dist', 'scripts'), { recursive: true });
       fs.mkdirSync(path.join(packageDir, 'skills'), { recursive: true });
       fs.mkdirSync(path.join(packageDir, 'commands'), { recursive: true });
       fs.mkdirSync(path.join(packageDir, 'templates'), { recursive: true });
 
       fs.writeFileSync(
-        path.join(packageDir, 'scripts', 'session-start.ts'),
+        path.join(packageDir, 'dist', 'scripts', 'session-start.js'),
         'export default {}'
       );
       fs.writeFileSync(
@@ -54,14 +54,14 @@ describe('e2e', () => {
       expect(result.projectRoot).toBe(projectDir);
       expect(result.claudeDir).toBe(path.join(projectDir, '.claude'));
       expect(result.symlinkedFiles).toEqual([
-        'scripts/session-start.ts',
+        'scripts/session-start.js',
         'skills/my-skill.md',
       ]);
 
       expect(fs.existsSync(path.join(projectDir, '.claude'))).toBe(true);
       expect(
         fs.lstatSync(
-          path.join(projectDir, '.claude', 'scripts', 'session-start.ts')
+          path.join(projectDir, '.claude', 'scripts', 'session-start.js')
         ).isSymbolicLink()
       ).toBe(true);
       expect(
@@ -80,7 +80,7 @@ describe('e2e', () => {
 
       expect(
         fs.existsSync(
-          path.join(projectDir, '.claude', 'scripts', 'session-start.ts')
+          path.join(projectDir, '.claude', 'scripts', 'session-start.js')
         )
       ).toBe(false);
       expect(
