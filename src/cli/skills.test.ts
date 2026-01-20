@@ -42,4 +42,29 @@ Follow coding standards.`
       ],
     });
   });
+
+  it('defaults priority to 0 when not specified', () => {
+    const skillsDir = path.join(tempDir, 'skills');
+    fs.mkdirSync(skillsDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(skillsDir, 'simple.md'),
+      `---
+hook: PreToolUse
+---
+
+No priority specified.`
+    );
+
+    const result = listSkills(tempDir);
+
+    expect(result).toEqual({
+      skills: [
+        {
+          name: 'simple.md',
+          hook: 'PreToolUse',
+          priority: 0,
+        },
+      ],
+    });
+  });
 });
