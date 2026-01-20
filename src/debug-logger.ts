@@ -17,6 +17,7 @@ export function debugLog(
   }
 
   const logPath = path.join(logsDir, 'ketchup.log');
-  const entry = `[${hookName}] ${message}\n`;
+  const timestamp = new Date().toISOString();
+  const entry = `${timestamp} [${hookName}] ${message}\n`;
   fs.appendFileSync(logPath, entry);
 }

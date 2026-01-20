@@ -46,6 +46,18 @@ describe('debug-logger', () => {
     expect(fs.existsSync(logPath)).toBe(false);
   });
 
+  it('includes ISO timestamp in log entries', () => {
+    process.env.DEBUG = 'ketchup';
+    const claudeDir = path.join(tempDir, '.claude');
+    fs.mkdirSync(claudeDir, { recursive: true });
+
+    debugLog(claudeDir, 'test-hook', 'test message');
+
+    const logPath = path.join(claudeDir, 'logs', 'ketchup.log');
+    const content = fs.readFileSync(logPath, 'utf8');
+    expect(content).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+  });
+
   it('does not write when DEBUG is set to something else', () => {
     process.env.DEBUG = 'other';
     const claudeDir = path.join(tempDir, '.claude');
