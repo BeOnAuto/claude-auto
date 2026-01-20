@@ -38,6 +38,7 @@ describe('hook-state', () => {
         validateCommit: { mode: 'warn' },
         denyList: { enabled: false },
         promptReminder: { enabled: false },
+        subagentHooks: { validateCommitOnExplore: false, validateCommitOnWork: true, validateCommitOnUnknown: true },
         updatedAt: '2026-01-01T00:00:00Z',
         updatedBy: 'test',
       };

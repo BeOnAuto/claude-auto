@@ -89,12 +89,13 @@ describe('auto-continue hook', () => {
     it('builds prompt with clues and ketchup info', () => {
       const clues: ClueCollectorResult = {
         clues: [
-          { timestamp: '2026-01-01T00:00:00Z', type: 'pattern', text: 'Would you like to continue?', matchedPattern: 'Would you like' },
+          { timestamp: '2026-01-01T00:00:00Z', type: 'pattern', source: 'assistant', text: 'Would you like to continue?', matchedPattern: 'Would you like' },
         ],
         lastChats: [
           { timestamp: '2026-01-01T00:00:00Z', user: 'Fix the bug', assistant: 'I fixed it' },
         ],
         summary: '1 clue',
+        sessionCwd: '/tmp',
         ketchupPlanPaths: [],
         workingDirs: [],
       };
@@ -113,6 +114,7 @@ describe('auto-continue hook', () => {
         clues: [],
         lastChats: [],
         summary: 'no clues',
+        sessionCwd: '/tmp',
         ketchupPlanPaths: [],
         workingDirs: [],
       };
