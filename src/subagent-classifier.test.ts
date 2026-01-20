@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { classifySubagent, type SubagentType } from './subagent-classifier.js';
+import {
+  classifySubagent,
+  extractTaskDescription,
+  type SubagentType,
+} from './subagent-classifier.js';
 
 describe('subagent-classifier', () => {
   describe('classifySubagent', () => {
@@ -56,6 +60,46 @@ describe('subagent-classifier', () => {
 
     it('returns unknown for empty description', () => {
       expect(classifySubagent('')).toBe('unknown');
+    });
+  });
+
+  describe('extractTaskDescription', () => {
+    it('extracts description from Task tool invocation', () => {
+      const transcript = [
+        '<invoke name="Task">',
+        '<parameter name="description">Search for auth implementation</parameter>',
+        '<parameter name="prompt">Find all files</parameter>',
+        '</invoke>',
+      ].join('\n');
+
+      expect(extractTaskDescription(transcript)).toBe('Search for auth implementation');
+    });
+
+    it('returns undefined when no Task invocation found', () => {
+      const transcript = [
+        '<invoke name="Read">',
+        '<parameter name="file_path">/some/file.ts</parameter>',
+        '</invoke>',
+      ].join('\n');
+
+      expect(extractTaskDescription(transcript)).toBeUndefined();
+    });
+
+    it('returns undefined for empty transcript', () => {
+      expect(extractTaskDescription('')).toBeUndefined();
+    });
+
+    it('extracts first Task description when multiple present', () => {
+      const transcript = [
+        '<invoke name="Task">',
+        '<parameter name="description">First task</parameter>',
+        '</invoke>',
+        '<invoke name="Task">',
+        '<parameter name="description">Second task</parameter>',
+        '</invoke>',
+      ].join('\n');
+
+      expect(extractTaskDescription(transcript)).toBe('First task');
     });
   });
 });
