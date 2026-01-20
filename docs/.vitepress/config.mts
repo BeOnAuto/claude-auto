@@ -7,6 +7,7 @@ export default defineConfig({
   lang: 'en-US',
   title: 'Claude Ketchup',
   description: 'Husky-style hooks and skills for Claude Code, implementing the Ketchup Technique',
+  appearance: 'dark',
 
   themeConfig: {
     logo: '/logo.png',
