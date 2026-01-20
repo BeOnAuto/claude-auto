@@ -69,7 +69,7 @@ Skill B content.`
 
     handleSessionStart(tempDir);
 
-    const logPath = path.join(tempDir, 'logs', 'ketchup.log');
+    const logPath = path.join(tempDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[session-start]');

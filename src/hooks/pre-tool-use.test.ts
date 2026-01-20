@@ -60,7 +60,7 @@ describe('pre-tool-use hook', () => {
 
     handlePreToolUse(tempDir, toolInput);
 
-    const logPath = path.join(tempDir, 'logs', 'ketchup.log');
+    const logPath = path.join(tempDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[pre-tool-use]');

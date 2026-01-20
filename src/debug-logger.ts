@@ -11,12 +11,12 @@ export function debugLog(
     return;
   }
 
-  const logsDir = path.join(claudeDir, 'logs');
+  const logsDir = path.join(claudeDir, 'logs', 'ketchup');
   if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir, { recursive: true });
   }
 
-  const logPath = path.join(logsDir, 'ketchup.log');
+  const logPath = path.join(logsDir, 'debug.log');
   const timestamp = new Date().toISOString();
   const entry = `${timestamp} [${hookName}] ${message}\n`;
   fs.appendFileSync(logPath, entry);

@@ -21,14 +21,14 @@ describe('debug-logger', () => {
     }
   });
 
-  it('writes to .claude/logs/ketchup.log when DEBUG=ketchup', () => {
+  it('writes to .claude/logs/ketchup/debug.log when DEBUG=ketchup', () => {
     process.env.DEBUG = 'ketchup';
     const claudeDir = path.join(tempDir, '.claude');
     fs.mkdirSync(claudeDir, { recursive: true });
 
     debugLog(claudeDir, 'test-hook', 'test message');
 
-    const logPath = path.join(claudeDir, 'logs', 'ketchup.log');
+    const logPath = path.join(claudeDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('test-hook');
@@ -42,7 +42,7 @@ describe('debug-logger', () => {
 
     debugLog(claudeDir, 'test-hook', 'test message');
 
-    const logPath = path.join(claudeDir, 'logs', 'ketchup.log');
+    const logPath = path.join(claudeDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(false);
   });
 
@@ -53,7 +53,7 @@ describe('debug-logger', () => {
 
     debugLog(claudeDir, 'test-hook', 'test message');
 
-    const logPath = path.join(claudeDir, 'logs', 'ketchup.log');
+    const logPath = path.join(claudeDir, 'logs', 'ketchup', 'debug.log');
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
   });
@@ -65,7 +65,7 @@ describe('debug-logger', () => {
 
     debugLog(claudeDir, 'test-hook', 'test message');
 
-    const logPath = path.join(claudeDir, 'logs', 'ketchup.log');
+    const logPath = path.join(claudeDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(false);
   });
 });

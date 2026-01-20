@@ -4,9 +4,16 @@
 
 ## DONE
 
+### Bottle: Full Enforcement Hooks Migration
+
+- [x] Burst 81: Create src/logger.ts from .claude/scripts/lib/logger.ts with tests
+- [x] Burst 82: Create src/hook-state.ts from .claude/scripts/lib/state.ts
+- [x] Burst 83: Create src/clue-collector.ts from .claude/scripts/lib/clue-collector.ts
+- [x] Burst 84: Update debug-logger to write to logs/ketchup/debug.log subdirectory
+
 ### Bottle: Debug Logging System
 
-- [x] Burst 74+75: debug-logger writes to .claude/logs/ketchup.log when DEBUG=ketchup, creates logs dir (3447c15)
+- [x] Burst 74+75: debug-logger writes to .claude/logs/ketchup/debug.log when DEBUG=ketchup (3447c15)
 - [x] Burst 76: debug-logger includes timestamp in entries (469abea)
 - [x] Burst 77: session-start.ts logs skills loaded and filtered (1d0f23f)
 - [x] Burst 78: pre-tool-use.ts logs deny-list check results (78b67a3)
