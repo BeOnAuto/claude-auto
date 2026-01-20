@@ -1,58 +1,63 @@
-# Documentation
+---
+layout: home
 
-Welcome to the claude-ketchup documentation.
+hero:
+  name: Claude Ketchup
+  text: Controlled Bursts for Claude Code
+  tagline: Husky-style hooks and skills management implementing the Ketchup Technique
+  actions:
+    - theme: brand
+      text: Get Started
+      link: /getting-started
+    - theme: alt
+      text: The Technique
+      link: /ketchup-technique
+    - theme: alt
+      text: View on GitHub
+      link: https://github.com/BeOnAuto/claude-ketchup
 
+features:
+  - icon: 🎯
+    title: Controlled Bursts
+    details: One test, one behavior, one commit. Channel AI energy through small, reversible increments.
+  - icon: 🔄
+    title: TCR Discipline
+    details: "Test && Commit || Revert. Never patch failing code—revert, learn, try differently."
+  - icon: 🌱
+    title: Emergent Design
+    details: Let architecture emerge from passing tests. Individual ants follow simple rules, colonies exhibit complex behavior.
+  - icon: ✅
+    title: 100% Coverage
+    details: True TDD yields complete coverage naturally. If it's uncovered, it wasn't demanded by a test.
+  - icon: 🪝
+    title: Hook System
+    details: SessionStart, PreToolUse, UserPromptSubmit, and Stop hooks enforce discipline automatically.
+  - icon: 📝
+    title: Skills System
+    details: Markdown files with YAML frontmatter inject context into Claude sessions.
 ---
 
-## Quick Navigation
+## Quick Start
 
-| Document | Type | Description |
-|----------|------|-------------|
-| [Getting Started](./getting-started.md) | Tutorial | Install and set up claude-ketchup |
-| [Hooks Guide](./hooks-guide.md) | How-to | Task-oriented guides for common operations |
-| [API Reference](./api-reference.md) | Reference | Complete API documentation |
-| [Architecture](./architecture.md) | Explanation | How claude-ketchup works internally |
+```bash
+# Install
+pnpm add claude-ketchup
 
----
+# Verify
+claude-ketchup status
 
-## Documentation Types (Diataxis)
+# Check health
+claude-ketchup doctor
+```
 
-This documentation follows the [Diataxis framework](https://diataxis.fr/):
+## The Philosophy
 
-### Tutorials (Learning-oriented)
+Just like with real ketchup, you don't dump the whole bottle on your plate—you dispense it in controlled bursts.
 
-Step-by-step guides for beginners. Start here if you're new to claude-ketchup.
+```
+BURST → COMMIT → BURST → COMMIT
+```
 
-- [Getting Started](./getting-started.md) - Install and configure your first project
+The Ketchup Technique grew from frustration with AI over-execution. Ask for "Hello World" and get a nav bar, login system, and comment section. By enforcing small, reversible increments, the technique channels AI energy productively.
 
-### How-to Guides (Task-oriented)
-
-Practical guides for accomplishing specific tasks.
-
-- [Hooks Guide](./hooks-guide.md) - Create skills, protect files, configure hooks
-
-### Reference (Information-oriented)
-
-Technical descriptions of the API.
-
-- [API Reference](./api-reference.md) - All functions, types, and interfaces
-
-### Explanation (Understanding-oriented)
-
-Background and conceptual information.
-
-- [Architecture](./architecture.md) - System design and internals
-
----
-
-## Quick Links
-
-- [README](../README.md) - Package overview
-- [CLAUDE.md](../CLAUDE.md) - The Ketchup Technique methodology
-- [LICENSE](../LICENSE) - MIT license
-
----
-
-## Contributing
-
-Found an issue with the documentation? Please open an issue or submit a PR.
+**[Read the origin story →](/origin-story)**

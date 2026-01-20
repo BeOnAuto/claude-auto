@@ -3,3 +3,7 @@ dist/
 *.log
 .DS_Store
 coverage/
+
+# VitePress
+docs/.vitepress/dist
+docs/.vitepress/cache
