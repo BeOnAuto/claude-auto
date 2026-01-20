@@ -1,0 +1,14 @@
+# claude-ketchup symlinks (auto-generated, do not commit)
+commands/ketchup.md
+scripts/pre-tool-use.ts
+scripts/user-prompt-submit.ts
+scripts/test-hooks.sh
+skills/ketchup.enforced.md
+
+# Runtime files
+logs/
+*.local.*
+.claude.hooks.json
+settings.lock.json
+state.json
+state.json.backup
