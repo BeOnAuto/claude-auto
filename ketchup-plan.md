@@ -24,6 +24,7 @@
 - [x] Burst 95: .gitignore already includes logs/ pattern (no changes needed)
 - [x] Burst 96+97: Create subagent-classifier with explore and work patterns
 - [x] Burst 98: Add extractTaskDescription for transcript parsing (303318a)
+- [x] Burst 99: Add SubagentHooksState to hook-state (e4dfe43)
 
 ### Bottle: Debug Logging System
 

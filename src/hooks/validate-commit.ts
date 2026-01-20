@@ -2,6 +2,9 @@ import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 
+import type { SubagentHooksState } from '../hook-state.js';
+import type { SubagentType } from '../subagent-classifier.js';
+
 export interface ClaudeMdResult {
   content: string;
   path: string;
@@ -45,4 +48,18 @@ export function findGitRoot(dir: string): string | undefined {
     return result.stdout.trim();
   }
   return undefined;
+}
+
+export function shouldValidateCommit(
+  subagentType: SubagentType,
+  state: SubagentHooksState,
+): boolean {
+  switch (subagentType) {
+    case 'explore':
+      return state.validateCommitOnExplore;
+    case 'work':
+      return state.validateCommitOnWork;
+    case 'unknown':
+      return state.validateCommitOnUnknown;
+  }
 }

@@ -9,6 +9,7 @@ import {
   getEffectiveCwd,
   extractGitCPath,
   findGitRoot,
+  shouldValidateCommit,
 } from './validate-commit.js';
 
 describe('validate-commit hook', () => {
@@ -111,6 +112,48 @@ describe('validate-commit hook', () => {
       const result = findGitRoot(tempDir);
 
       expect(result).toBeUndefined();
+    });
+  });
+
+  describe('shouldValidateCommit', () => {
+    it('returns true for work subagent when validateCommitOnWork is true', () => {
+      const state = {
+        validateCommitOnExplore: false,
+        validateCommitOnWork: true,
+        validateCommitOnUnknown: true,
+      };
+
+      expect(shouldValidateCommit('work', state)).toBe(true);
+    });
+
+    it('returns false for explore subagent when validateCommitOnExplore is false', () => {
+      const state = {
+        validateCommitOnExplore: false,
+        validateCommitOnWork: true,
+        validateCommitOnUnknown: true,
+      };
+
+      expect(shouldValidateCommit('explore', state)).toBe(false);
+    });
+
+    it('returns true for unknown subagent when validateCommitOnUnknown is true', () => {
+      const state = {
+        validateCommitOnExplore: false,
+        validateCommitOnWork: true,
+        validateCommitOnUnknown: true,
+      };
+
+      expect(shouldValidateCommit('unknown', state)).toBe(true);
+    });
+
+    it('returns false for work subagent when validateCommitOnWork is false', () => {
+      const state = {
+        validateCommitOnExplore: true,
+        validateCommitOnWork: false,
+        validateCommitOnUnknown: true,
+      };
+
+      expect(shouldValidateCommit('work', state)).toBe(false);
     });
   });
 });
