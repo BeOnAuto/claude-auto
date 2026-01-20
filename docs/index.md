@@ -20,22 +20,28 @@ hero:
       link: https://github.com/BeOnAuto/claude-ketchup
 
 features:
-  - icon: 🧹
+  - icon:
+      src: /icon-janitor.png
     title: "The Problem: AI Janitor"
     details: Ask for Hello World, get an enterprise platform. You spend more time cleaning up than building.
-  - icon: 🏛️
+  - icon:
+      src: /icon-architect.png
     title: "The Solution: System Architect"
     details: Define requirements. Let the system execute. Review results, not repairs.
-  - icon: 🔄
+  - icon:
+      src: /icon-tcr.png
     title: TCR Discipline
     details: "Test && Commit || Revert. Every change earns its place or disappears."
-  - icon: ✅
+  - icon:
+      src: /icon-supervisor.png
     title: Supervisor Validation
     details: ACK or NACK. Every commit is validated against your rules before it lands.
-  - icon: 🚀
+  - icon:
+      src: /icon-parallel.png
     title: Parallel Execution
     details: Independent bursts run simultaneously. Speed without sacrificing quality.
-  - icon: 💯
+  - icon:
+      src: /icon-coverage.png
     title: 100% Coverage by Construction
     details: No untested code. If it exists, a test demanded it.
 ---
