@@ -1,5 +1,6 @@
 import * as fs from 'node:fs';
 
+import { debugLog } from '../debug-logger.js';
 import {
   filterByHook,
   parseSkill,
@@ -21,6 +22,12 @@ export function handleUserPromptSubmit(
   const sorted = sortByPriority(filtered);
 
   const reminders = sorted.map((s) => s.content).join('\n\n');
+
+  debugLog(
+    claudeDir,
+    'user-prompt-submit',
+    `injected ${sorted.length} reminder${sorted.length === 1 ? '' : 's'}`
+  );
 
   if (reminders) {
     return {
