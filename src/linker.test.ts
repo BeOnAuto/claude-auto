@@ -16,7 +16,7 @@ describe('linker', () => {
   describe('getPackageDir', () => {
     it('returns the directory containing this package', () => {
       const result = getPackageDir();
-      expect(result).toBe(path.resolve(__dirname, '..'));
+      expect(result).toBe(path.resolve(__dirname, '..', '..'));
     });
   });
 
