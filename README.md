@@ -1,8 +1,30 @@
 # claude-ketchup
 
-Husky-style hooks and skills management for Claude Code.
+Husky-style hooks and skills management for Claude Code, implementing the Ketchup Technique.*
 
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE) [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=flat-square)]()
+
+---
+
+## The Ketchup Technique
+
+Just like with real ketchup, you don't dump the whole bottle on your plate—you dispense it in controlled bursts.
+
+The Ketchup Technique is an AI-native development methodology that harnesses Claude's enthusiasm through:
+
+- **Controlled Bursts**: One test, one behavior, one commit
+- **TCR Discipline**: Test && Commit || Revert—never patch failing code
+- **Emergent Design**: Let architecture emerge from passing tests
+- **100% Coverage**: True TDD yields complete coverage naturally
+- **Fresh Nomenclature**: "Bottles" and "Bursts" avoid LLM training pollution
+
+```
+BURST → COMMIT → BURST → COMMIT
+```
+
+The technique grew from frustration with AI over-execution—asking for "Hello World" and getting a nav bar, login system, and comment section. By enforcing small, reversible increments, the Ketchup Technique channels AI energy productively.
+
+**[Read the full origin story →](KETCHUP-STORY.md)**
 
 ---
 
@@ -406,3 +428,7 @@ KETCHUP_ROOT=/path/to/test-project npx tsx bin/postinstall.ts
 MIT © 2025 Sam Hatoum
 
 See [LICENSE](LICENSE) for details.
+
+---
+
+<sub>*The Ketchup Technique is an independent methodology for AI-native development. While it acknowledges the foundation of time-boxed intervals found in the Pomodoro® Technique (a registered trademark of Francesco Cirillo), it is a separate method. Learn more at [pomodorotechnique.com](http://pomodorotechnique.com/).</sub>
