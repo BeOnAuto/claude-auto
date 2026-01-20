@@ -20,6 +20,7 @@
 - [x] Burst 91: Update templates/settings.json to include validate-commit and auto-continue hooks (2495241)
 - [x] Burst 92: postinstall already handles scripts/ symlinks (no changes needed)
 - [x] Burst 93: settings-merger already handles Stop hook generically (no changes needed)
+- [x] Burst 94: Create scripts/tail-logs.sh helper
 
 ### Bottle: Debug Logging System
 
