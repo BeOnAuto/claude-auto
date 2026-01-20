@@ -1,10 +1,10 @@
-export { findProjectRoot, getPackageDir, isLinkedMode } from './root-finder.js';
+export { findProjectRoot } from './root-finder.js';
 export { createSymlink, removeSymlink, verifySymlink } from './linker.js';
 export { generateGitignore } from './gitignore-manager.js';
 export { mergeSettings } from './settings-merger.js';
 export { readState, writeState } from './state-manager.js';
-export { scanSkills, parseSkill, filterSkills, sortSkillsByPriority } from './skills-loader.js';
-export { loadDenyPatterns, matchesPattern } from './deny-list.js';
+export { scanSkills, parseSkill, filterByHook, filterByMode, filterByState, sortByPriority } from './skills-loader.js';
+export { loadDenyPatterns, isDenied } from './deny-list.js';
 export { getStatus } from './cli/status.js';
 export { repair, getExpectedSymlinks } from './cli/repair.js';
 export { doctor } from './cli/doctor.js';
