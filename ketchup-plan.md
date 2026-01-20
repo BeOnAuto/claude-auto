@@ -12,7 +12,8 @@
 - [x] Burst 84: Update debug-logger to write to logs/ketchup/debug.log subdirectory (73c72b4)
 - [x] Burst 85: Update logger.ts to write to logs/hooks/ subdirectory (c65e0a1)
 - [x] Burst 86a: Create validate-commit utility functions (findClaudeMd, getEffectiveCwd, extractGitCPath) (4116297)
-- [x] Burst 86b: Add findGitRoot to validate-commit
+- [x] Burst 86b: Add findGitRoot to validate-commit (c28802f)
+- [x] Burst 87: Create auto-continue utility functions (getIncompleteBursts, buildPrompt)
 
 ### Bottle: Debug Logging System
 
