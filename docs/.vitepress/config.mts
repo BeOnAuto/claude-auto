@@ -6,7 +6,7 @@ export default defineConfig({
   base: env === 'production' ? '/claude-ketchup/' : '/',
   lang: 'en-US',
   title: 'Claude Ketchup',
-  description: 'Husky-style hooks and skills for Claude Code, implementing the Ketchup Technique',
+  description: 'From AI Janitor to System Architect. The Quality Stack for Claude Code.',
   appearance: 'dark',
 
   themeConfig: {
@@ -21,7 +21,7 @@ export default defineConfig({
           { text: 'Architecture', link: '/architecture' },
         ],
       },
-      { text: 'The Technique', link: '/ketchup-technique' },
+      { text: 'The Quality Stack', link: '/ketchup-technique' },
       { text: 'Origin Story', link: '/origin-story' },
       {
         text: 'GitHub',
@@ -38,7 +38,7 @@ export default defineConfig({
         ],
       },
       {
-        text: 'The Ketchup Technique',
+        text: 'The Quality Stack',
         items: [
           { text: 'Methodology', link: '/ketchup-technique' },
           { text: 'Origin Story', link: '/origin-story' },
@@ -84,13 +84,13 @@ export default defineConfig({
     ['link', { rel: 'shortcut icon', href: '/favicon.ico' }],
     ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }],
     ['link', { rel: 'manifest', href: '/site.webmanifest' }],
-    ['meta', { property: 'og:title', content: 'Claude Ketchup - Controlled Bursts for Claude Code' }],
+    ['meta', { property: 'og:title', content: 'Claude Ketchup - From AI Janitor to System Architect' }],
     ['meta', { property: 'og:type', content: 'website' }],
     [
       'meta',
       {
         property: 'og:description',
-        content: 'Tame AI over-execution with the Ketchup Technique. Husky-style hooks enforce TDD, TCR, and 100% coverage. One test, one behavior, one commit. Install now and start shipping.',
+        content: 'Stop cleaning up after AI. Get Speed, Quality, AND Control with the Quality Stack: Auto-Planning, Parallel Execution, Supervisor Validation, TCR Discipline.',
       },
     ],
     [
@@ -103,11 +103,11 @@ export default defineConfig({
     ['meta', { property: 'og:image', content: 'https://beonauto.github.io/claude-ketchup/og-image.png' }],
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
-    ['meta', { property: 'og:image:alt', content: 'Claude Ketchup - Controlled Bursts for Claude Code' }],
+    ['meta', { property: 'og:image:alt', content: 'Claude Ketchup - From AI Janitor to System Architect' }],
     ['meta', { property: 'og:site_name', content: 'Claude Ketchup' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:title', content: 'Claude Ketchup - Controlled Bursts for Claude Code' }],
-    ['meta', { name: 'twitter:description', content: 'Tame AI over-execution with the Ketchup Technique. Husky-style hooks enforce TDD, TCR, and 100% coverage. One test, one behavior, one commit. Install now and start shipping.' }],
+    ['meta', { name: 'twitter:title', content: 'Claude Ketchup - From AI Janitor to System Architect' }],
+    ['meta', { name: 'twitter:description', content: 'Stop cleaning up after AI. Get Speed, Quality, AND Control with the Quality Stack.' }],
     ['meta', { name: 'twitter:image', content: 'https://beonauto.github.io/claude-ketchup/og-image.png' }],
   ],
 });

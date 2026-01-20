@@ -1,6 +1,8 @@
 # API Reference
 
-Complete reference for all exported functions, types, and interfaces in claude-ketchup.
+Programmatic access to the Quality Stack components.
+
+Use these functions to build custom hooks, integrate with CI/CD, or extend the supervisor system.
 
 ---
 

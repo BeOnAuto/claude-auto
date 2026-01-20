@@ -1,20 +1,24 @@
-# Getting Started with claude-ketchup
+# Become the System Architect
 
-This tutorial walks you through installing claude-ketchup and using it to manage Claude Code hooks in your project.
+In 5 minutes, you'll transform from AI Janitor to System Architect.
 
-**Time required:** ~5 minutes
+**What you'll accomplish:**
+
+- Install the Quality Stack
+- See the supervisor system in action
+- Create your first skill (context injection)
+- Set up file protection
 
 ---
 
 ## Prerequisites
 
-- Node.js 18.0.0 or later
-- npm, pnpm, or yarn
-- A project with a `package.json`
+- Node.js 18.0.0+
+- A project you're tired of cleaning up after AI
 
 ---
 
-## Step 1: Install the Package
+## Step 1: Install the Quality Stack
 
 ```bash
 pnpm add claude-ketchup
@@ -26,25 +30,26 @@ Or with npm:
 npm install claude-ketchup
 ```
 
-During installation, claude-ketchup automatically runs its postinstall script, which creates the `.claude/` directory structure.
+Behind the scenes, claude-ketchup:
+
+- Injects hooks that validate every commit
+- Creates skills that inject your guidelines
+- Sets up the supervisor that ACKs or NACKs changes
+- Merges settings with smart overrides
 
 ---
 
-## Step 2: Verify Installation
-
-Check that everything was set up correctly:
+## Step 2: Verify Your Transformation
 
 ```bash
 claude-ketchup doctor
 ```
 
-You should see output indicating all symlinks are healthy.
+All green? You're now the architect.
 
 ---
 
-## Step 3: Explore the Created Structure
-
-Look at what was created:
+## Step 3: Explore What Was Created
 
 ```bash
 ls -la .claude/
@@ -63,9 +68,9 @@ You should see:
 
 ---
 
-## Step 4: Create Your First Skill
+## Step 4: Feed the System
 
-Skills inject context into Claude sessions. Create a project-specific skill:
+Create your first skill to inject YOUR rules into every session:
 
 ```bash
 cat > .claude/skills/my-project.md << 'EOF'
@@ -76,19 +81,19 @@ priority: 50
 
 # My Project Guidelines
 
-- Use TypeScript strict mode
-- Follow TDD principles
-- Write tests before implementation
+- TDD: Test first, code second
+- One test, one behavior, one commit
+- No comments in code
 EOF
 ```
 
-This skill will be loaded every time a Claude Code session starts.
+Now every Claude session starts with YOUR rules.
 
 ---
 
-## Step 5: Set Up a Deny-List
+## Step 5: Protect Your Files
 
-Protect sensitive files from being modified:
+Define what the AI cannot touch:
 
 ```bash
 cat > .claude/deny-list.project.txt << 'EOF'
@@ -103,13 +108,38 @@ coverage/**
 EOF
 ```
 
-Now Claude won't be able to edit files matching these patterns.
+The supervisor will block any attempt to modify these files.
 
 ---
 
-## Step 6: Customize Settings (Optional)
+## Step 6: Watch the System Work
 
-Override default hook behavior with project settings. For example, to disable commit validation:
+Start a Claude Code session. The supervisor will:
+
+1. **Inject** your guidelines at session start
+2. **Validate** every commit against your rules
+3. **ACK** clean commits, **NACK** rule violations
+
+You review. You don't repair.
+
+---
+
+## What Just Happened?
+
+You installed the Quality Stack:
+
+| Component | What It Does | You Just Enabled |
+|-----------|--------------|------------------|
+| Auto-Planning | AI plans before coding | ketchup-plan.md support |
+| Supervisor Validation | ACK/NACK every commit | PreToolUse hooks |
+| Context Injection | Your rules, every session | SessionStart skills |
+| File Protection | Deny-list for sensitive files | PreToolUse deny-list |
+
+---
+
+## Customize Settings (Optional)
+
+Override default hook behavior with project settings:
 
 ```bash
 cat > .claude/settings.project.json << 'EOF'
@@ -123,7 +153,7 @@ cat > .claude/settings.project.json << 'EOF'
 EOF
 ```
 
-Or to completely replace the SessionStart hook:
+Or completely replace a hook:
 
 ```bash
 cat > .claude/settings.project.json << 'EOF'
@@ -142,9 +172,9 @@ EOF
 
 ## Next Steps
 
-- [Learn about hooks in depth](./hooks-guide.md)
-- [Read the API reference](./api-reference.md)
-- [Understand the architecture](./architecture.md)
+- [The Quality Stack](/ketchup-technique) - Understand the full methodology
+- [Hooks Guide](/hooks-guide) - Customize your supervision
+- [Origin Story](/origin-story) - Why this approach works
 
 ---
 

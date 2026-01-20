@@ -1,6 +1,15 @@
 # Hooks Guide
 
-Practical how-to guides for working with claude-ketchup hooks.
+Configure your supervision. Define your architecture.
+
+Hooks are how you define "the rules." The supervisor enforces them.
+
+| Hook | When It Fires | What You Control |
+|------|---------------|------------------|
+| SessionStart | Session begins | What context Claude receives |
+| PreToolUse | Before any tool | What actions are allowed |
+| UserPromptSubmit | User sends prompt | What reminders are injected |
+| Stop | Execution pauses | Whether to continue or stop |
 
 ---
 
@@ -50,7 +59,14 @@ This skill only loads when `state.json` contains `projectType: 'typescript'`.
 
 ## Protect Files with Deny-List
 
-Prevent Claude from editing sensitive files.
+Define what the AI cannot touch.
+
+Without protection:
+- AI modifies .env files
+- AI rewrites your carefully crafted configs
+- AI "improves" generated files
+
+With deny-list: sensitive files are untouchable.
 
 ### Create project-wide patterns
 

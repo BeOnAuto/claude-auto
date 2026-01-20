@@ -3,64 +3,71 @@ layout: home
 
 hero:
   name: Claude Ketchup
-  text: Controlled Bursts for Claude Code
-  tagline: Husky-style hooks and skills management implementing the Ketchup Technique
+  text: From AI Janitor to System Architect
+  tagline: Stop cleaning up after AI. Start directing it.
   image:
     src: /hero.png
-    alt: Claude Ketchup - Controlled Bursts
+    alt: Claude Ketchup - The Quality Stack
   actions:
     - theme: brand
       text: Get Started
       link: /getting-started
     - theme: alt
-      text: The Technique
+      text: The Quality Stack
       link: /ketchup-technique
     - theme: alt
       text: View on GitHub
       link: https://github.com/BeOnAuto/claude-ketchup
 
 features:
-  - icon: 🎯
-    title: Controlled Bursts
-    details: One test, one behavior, one commit. Channel AI energy through small, reversible increments.
+  - icon: 🧹
+    title: "The Problem: AI Janitor"
+    details: Ask for Hello World, get an enterprise platform. You spend more time cleaning up than building.
+  - icon: 🏛️
+    title: "The Solution: System Architect"
+    details: Define requirements. Let the system execute. Review results, not repairs.
   - icon: 🔄
     title: TCR Discipline
-    details: "Test && Commit || Revert. Never patch failing code—revert, learn, try differently."
-  - icon: 🌱
-    title: Emergent Design
-    details: Let architecture emerge from passing tests. Individual ants follow simple rules, colonies exhibit complex behavior.
+    details: "Test && Commit || Revert. Every change earns its place or disappears."
   - icon: ✅
-    title: 100% Coverage
-    details: True TDD yields complete coverage naturally. If it's uncovered, it wasn't demanded by a test.
-  - icon: 🪝
-    title: Hook System
-    details: SessionStart, PreToolUse, UserPromptSubmit, and Stop hooks enforce discipline automatically.
-  - icon: 📝
-    title: Skills System
-    details: Markdown files with YAML frontmatter inject context into Claude sessions.
+    title: Supervisor Validation
+    details: ACK or NACK. Every commit is validated against your rules before it lands.
+  - icon: 🚀
+    title: Parallel Execution
+    details: Independent bursts run simultaneously. Speed without sacrificing quality.
+  - icon: 💯
+    title: 100% Coverage by Construction
+    details: No untested code. If it exists, a test demanded it.
 ---
 
-## Quick Start
+## The Quality Stack
+
+Speed, Quality, AND Control. The Ketchup Technique delivers all three through:
+
+| Component | What It Does |
+|-----------|--------------|
+| **Auto-Planning** | AI plans in `ketchup-plan.md` before writing code |
+| **Parallel Execution** | Sub-agents work on independent bursts simultaneously |
+| **Supervisor Validation** | Every commit is ACK'd or NACK'd by the validator |
+| **Auto-Continue** | AI keeps working until the plan is complete |
+| **TCR Discipline** | Tests pass → commit. Tests fail → revert. No patching. |
+
+## Three Steps to Architect Mode
+
+### 1. Feed
 
 ```bash
-# Install
 pnpm add claude-ketchup
-
-# Verify
-claude-ketchup status
-
-# Check health
-claude-ketchup doctor
 ```
 
-## The Philosophy
+Install once. The hooks inject automatically.
 
-Just like with real ketchup, you don't dump the whole bottle on your plate—you dispense it in controlled bursts.
+### 2. Approve
 
-```
-BURST → COMMIT → BURST → COMMIT
-```
+Define your requirements. The supervisor enforces them.
 
-The Ketchup Technique grew from frustration with AI over-execution. Ask for "Hello World" and get a nav bar, login system, and comment section. By enforcing small, reversible increments, the technique channels AI energy productively.
+### 3. Watch
 
-**[Read the origin story →](/origin-story)**
+Architecture emerges from passing tests. You review clean increments.
+
+**[Start your transformation →](/getting-started)**

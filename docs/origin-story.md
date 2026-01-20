@@ -1,14 +1,18 @@
-# The Ketchup Technique: Origin Story
+# The Origin Story: From Janitor to Architect
 
-> How controlled AI execution produces emergent design
+> How one developer stopped cleaning up after AI
 
 ---
 
-## The Problem
+## The Janitor Phase
 
-Ask Claude to write a script that posts something online. You get a script, a README, helper functions you didn't need, and maybe a logging framework. Ask for a webpage that says "Hello World" and you receive a nav bar, login functionality, and a comment system.
+Ask Claude to write a script that posts something online. You get the script, a README you didn't need, helper functions for edge cases that don't exist, and maybe a logging framework.
 
-AI doesn't get tired. It over-executes.
+Ask for "Hello World" and receive a nav bar, login system, and comment section.
+
+**I was spending more time cleaning up than building.**
+
+AI doesn't get tired. It over-executes. And I was the janitor, sweeping up after every session.
 
 Claude Code would hallucinate features nobody asked for, add defensive code paths that would never run, and build enterprise architecture for throwaway scripts.
 
@@ -16,7 +20,7 @@ I wanted precision. Something that could use the machine's output without drowni
 
 ---
 
-## The Foundations
+## The Search for Discipline
 
 ### Extreme Programming Roots
 
@@ -35,12 +39,6 @@ The revert isn't a problem. It's a tool.
 ---
 
 ## The Birth of Ketchup
-
-### Why Not Pomodoro?
-
-The first version was called "The Pomodoro Technique for AI." Time-boxed intervals, focused work, regular breaks. After a conversation with Francesco Cirillo, the creator of the Pomodoro Technique, I decided the approach needed its own identity.
-
-The Pomodoro Technique is for humans. But machines don't get tired. They get lost. Twenty-five minute intervals make sense for human fatigue. For AI, we need something different.
 
 ### Why "Ketchup"?
 
@@ -96,83 +94,61 @@ The coverage requirement isn't extra work. It's a check that the discipline is b
 
 ---
 
-## The Evolution
+## The Transformation
 
-### From Markdown to Hooks
+What changed wasn't the AI. It was my role.
 
-The first implementation was just a CLAUDE.md file. Instructions the AI would read and (theoretically) follow. It worked, sometimes. But it wasn't enforced.
+**Before:** I reviewed AI's work, caught problems, fixed them, reviewed again.
 
-I noticed other approaches emerging. The "Ralph Loop" technique (infinite continue until done). Claude's planning mode capabilities. Various hook systems for intercepting AI behavior.
+**After:** I define requirements. The system executes. I review clean increments.
 
-I started pairing all of that with the Ketchup principles. The hook system was the key. I could enforce the rules, not just suggest them.
+The hooks enforce what I used to do manually:
 
-The important realization: Bottles and Bursts enable parallelization. If bursts are truly independent, multiple sub-agents can work simultaneously, each following the same hooks, each held to the same TCR discipline.
+- Validate commits against rules (supervisor)
+- Block access to sensitive files (deny-list)
+- Inject context at session start (skills)
+- Continue or stop intelligently (auto-continue)
 
-### Battle Testing
+**I stopped being the janitor. I became the architect.**
 
-I built over ten features for Auto using the technique. Nursing it along, automating more of what needed nursing, refining the hooks, tuning the behaviors.
+---
+
+## The Quality Stack
+
+Through refinement, five components emerged:
+
+| Component | What It Does |
+|-----------|--------------|
+| **Auto-Planning** | AI plans in `ketchup-plan.md` before coding |
+| **Parallel Execution** | Sub-agents work on independent bursts |
+| **Supervisor Validation** | Every commit is ACK'd or NACK'd |
+| **Auto-Continue** | AI keeps working until plan is complete |
+| **TCR Discipline** | Tests pass or code reverts |
+
+Together: **Speed, Quality, AND Control.**
+
+---
+
+## Battle-Tested
+
+I built over ten features using the technique. Nursing it along, automating more of what needed nursing, refining the hooks, tuning the behaviors.
 
 It took time to get here. I'd notice a place where Claude was misbehaving and think, "Can I automate a fix for that?" Usually I could. A new hook, a new validation, a new skill.
 
-The technique evolved to be collaborative. Team members can contribute without understanding every detail, because the hooks enforce the discipline automatically. And it coexists with existing project configurations. It just adds its layer of structure.
+Each problem became a feature.
+
+The technique evolved to be collaborative. Team members can contribute without understanding every detail, because the hooks enforce the discipline automatically.
 
 ---
 
-## How It Works
+## Your Turn
 
-### The Loop
+You don't have to be the janitor.
 
-```
-Red → Green → TCR → Refactor → TCR → Done
-```
-
-Write a failing test. Write minimal code to pass it. Run TCR: if tests pass, commit; if they fail, revert. Refactor if needed, TCR again. Move to the next burst.
-
-One test. One behavior. One commit. No exceptions.
-
-### The Philosophy
-
-Don't dump the whole bottle on your plate. Dispense it in controlled bursts.
-
-```
-BURST → COMMIT → BURST → COMMIT
-```
-
-Each burst is small enough that:
-
-- You stay focused on one thing
-- The operator can verify quickly
-- A revert loses minimal work
-
-The AI doesn't plan ahead. It doesn't architect. It follows the tests, one burst at a time, and the design emerges.
+**[Start your transformation →](/getting-started)**
 
 ---
 
-## Using the Technique
+_Disclaimer: I used Claude to "interview me" and then write this story. I use AI to save time, but I curate and tweak the responses._
 
-1. **Prepare a `ketchup-plan.md`** with TODO and DONE sections, organized into Bottles
-2. **Put Claude in planning mode** to analyze requirements
-3. **Execute one burst at a time** with TCR discipline
-4. **Let the hooks enforce the rules** automatically
-
-The hooks validate commits, inject context at session start, protect files from modification, and keep the AI focused on the current burst.
-
----
-
-## The Result
-
-The Ketchup Technique produces code that:
-
-- Has 100% test coverage by construction
-- Features emergent design rather than upfront architecture
-- Can be verified burst by burst
-- Maintains context across reverts
-- Parallelizes across sub-agents
-
-It uses AI's output without being overwhelmed by it. The machine's energy gets channeled through a controlled dispenser, one burst at a time.
-
----
-
-_Disclaimer on the writing of this story: I used Claude to "interview me" and then write this for me. I use AI to save time, but I curate and tweak the responses a lot._
-
-_Note on Inspiration: The Ketchup Technique is an independent methodology built for AI-native development cycles. While it acknowledges the foundation of time-boxed, focused intervals found in the Pomodoro Technique (a registered trademark of Francesco Cirillo), it is a separate method with different mechanics and goals. Learn more about the original human-focused technique at [pomodorotechnique.com](http://pomodorotechnique.com/)._
+_Note: The Ketchup Technique is an independent methodology for AI-native development. While it acknowledges the foundation of time-boxed intervals found in the Pomodoro Technique (a registered trademark of Francesco Cirillo), it is a separate method. Learn more at [pomodorotechnique.com](http://pomodorotechnique.com/)._

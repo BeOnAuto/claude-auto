@@ -1,6 +1,49 @@
 # Architecture
 
-Understanding how claude-ketchup works under the hood.
+Understanding how the Quality Stack works under the hood.
+
+---
+
+## The Quality Stack Implementation
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    SYSTEM ARCHITECT                          │
+│                       (That's you)                           │
+│   Defines: ketchup-plan.md, skills, deny-list, rules        │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    THE QUALITY STACK                         │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │ Auto-       │  │ Parallel    │  │ Supervisor  │         │
+│  │ Planning    │  │ Execution   │  │ Validation  │         │
+│  │             │  │             │  │             │         │
+│  │ ketchup-    │  │ Sub-agents  │  │ ACK / NACK  │         │
+│  │ plan.md     │  │ [depends:]  │  │ hooks       │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+│                                                              │
+│        ┌─────────────┐        ┌─────────────┐              │
+│        │ Auto-       │        │ TCR         │              │
+│        │ Continue    │        │ Discipline  │              │
+│        │             │        │             │              │
+│        │ Stop hook   │        │ test &&     │              │
+│        │ checks plan │        │ commit ||   │              │
+│        │ for TODOs   │        │ revert      │              │
+│        └─────────────┘        └─────────────┘              │
+│                                                              │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     CLEAN INCREMENTS                         │
+│          One test. One behavior. One commit.                 │
+│               Ready for your review.                         │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ---
 
