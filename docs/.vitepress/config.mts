@@ -1,113 +1,166 @@
-import { defineConfig } from 'vitepress';
+import { defineConfig } from "vitepress";
 
 const env = process.env.NODE_ENV;
 
 export default defineConfig({
-  base: env === 'production' ? '/claude-ketchup/' : '/',
-  lang: 'en-US',
-  title: 'Claude Ketchup',
-  description: 'From AI Janitor to System Architect. The Quality Stack for Claude Code.',
-  appearance: 'dark',
+	base: env === "production" ? "/claude-ketchup/" : "/",
+	lang: "en-US",
+	title: "Claude Ketchup",
+	description:
+		"From AI Janitor to System Architect. The Quality Stack for Claude Code.",
+	appearance: "dark",
 
-  themeConfig: {
-    logo: '/logo.png',
-    nav: [
-      {
-        text: 'Documentation',
-        items: [
-          { text: 'Getting Started', link: '/getting-started' },
-          { text: 'Hooks Guide', link: '/hooks-guide' },
-          { text: 'API Reference', link: '/api-reference' },
-          { text: 'Architecture', link: '/architecture' },
-        ],
-      },
-      { text: 'The Quality Stack', link: '/ketchup-technique' },
-      { text: 'Origin Story', link: '/origin-story' },
-      {
-        text: 'GitHub',
-        link: 'https://github.com/BeOnAuto/claude-ketchup',
-      },
-    ],
+	themeConfig: {
+		logo: "/logo.png",
+		nav: [
+			{
+				text: "Documentation",
+				items: [
+					{ text: "Getting Started", link: "/getting-started" },
+					{ text: "Hooks Guide", link: "/hooks-guide" },
+					{ text: "API Reference", link: "/api-reference" },
+					{ text: "Architecture", link: "/architecture" },
+				],
+			},
+			{ text: "The Quality Stack", link: "/ketchup-technique" },
+			{ text: "Origin Story", link: "/origin-story" },
+			{
+				text: "GitHub",
+				link: "https://github.com/BeOnAuto/claude-ketchup",
+			},
+		],
 
-    sidebar: [
-      {
-        text: 'Introduction',
-        items: [
-          { text: 'Overview', link: '/' },
-          { text: 'Getting Started', link: '/getting-started' },
-        ],
-      },
-      {
-        text: 'The Quality Stack',
-        items: [
-          { text: 'Methodology', link: '/ketchup-technique' },
-          { text: 'Origin Story', link: '/origin-story' },
-        ],
-      },
-      {
-        text: 'Guides',
-        items: [
-          { text: 'Hooks Guide', link: '/hooks-guide' },
-        ],
-      },
-      {
-        text: 'Reference',
-        items: [
-          { text: 'API Reference', link: '/api-reference' },
-          { text: 'Architecture', link: '/architecture' },
-        ],
-      },
-    ],
+		sidebar: [
+			{
+				text: "Introduction",
+				items: [
+					{ text: "Overview", link: "/" },
+					{ text: "Getting Started", link: "/getting-started" },
+				],
+			},
+			{
+				text: "The Quality Stack",
+				items: [
+					{ text: "Methodology", link: "/ketchup-technique" },
+					{ text: "Origin Story", link: "/origin-story" },
+				],
+			},
+			{
+				text: "Guides",
+				items: [{ text: "Hooks Guide", link: "/hooks-guide" }],
+			},
+			{
+				text: "Reference",
+				items: [
+					{ text: "API Reference", link: "/api-reference" },
+					{ text: "Architecture", link: "/architecture" },
+				],
+			},
+		],
 
-    search: {
-      provider: 'local',
-    },
+		search: {
+			provider: "local",
+		},
 
-    editLink: {
-      pattern: 'https://github.com/BeOnAuto/claude-ketchup/edit/main/docs/:path',
-      text: 'Suggest changes to this page',
-    },
+		editLink: {
+			pattern:
+				"https://github.com/BeOnAuto/claude-ketchup/edit/main/docs/:path",
+			text: "Suggest changes to this page",
+		},
 
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/BeOnAuto/claude-ketchup' },
-    ],
+		socialLinks: [
+			{ icon: "github", link: "https://github.com/BeOnAuto/claude-ketchup" },
+		],
 
-    footer: {
-      message: 'Released under the MIT License.',
-      copyright: 'Copyright 2025 Sam Hatoum',
-    },
-  },
+		footer: {
+			message: "Released under the MIT License.",
+			copyright: "Copyright 2025 BeOnAuto, Inc.",
+		},
+	},
 
-  head: [
-    ['link', { rel: 'icon', type: 'image/png', href: '/favicon-96x96.png', sizes: '96x96' }],
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
-    ['link', { rel: 'shortcut icon', href: '/favicon.ico' }],
-    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }],
-    ['link', { rel: 'manifest', href: '/site.webmanifest' }],
-    ['meta', { property: 'og:title', content: 'Claude Ketchup - From AI Janitor to System Architect' }],
-    ['meta', { property: 'og:type', content: 'website' }],
-    [
-      'meta',
-      {
-        property: 'og:description',
-        content: 'Stop cleaning up after AI. Get Speed, Quality, AND Control with the Quality Stack: Auto-Planning, Parallel Execution, Supervisor Validation, TCR Discipline.',
-      },
-    ],
-    [
-      'meta',
-      {
-        property: 'og:url',
-        content: 'https://BeOnAuto.github.io/claude-ketchup',
-      },
-    ],
-    ['meta', { property: 'og:image', content: 'https://beonauto.github.io/claude-ketchup/og-image.png' }],
-    ['meta', { property: 'og:image:width', content: '1200' }],
-    ['meta', { property: 'og:image:height', content: '630' }],
-    ['meta', { property: 'og:image:alt', content: 'Claude Ketchup - From AI Janitor to System Architect' }],
-    ['meta', { property: 'og:site_name', content: 'Claude Ketchup' }],
-    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:title', content: 'Claude Ketchup - From AI Janitor to System Architect' }],
-    ['meta', { name: 'twitter:description', content: 'Stop cleaning up after AI. Get Speed, Quality, AND Control with the Quality Stack.' }],
-    ['meta', { name: 'twitter:image', content: 'https://beonauto.github.io/claude-ketchup/og-image.png' }],
-  ],
+	head: [
+		[
+			"link",
+			{
+				rel: "icon",
+				type: "image/png",
+				href: "/favicon-96x96.png",
+				sizes: "96x96",
+			},
+		],
+		["link", { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" }],
+		["link", { rel: "shortcut icon", href: "/favicon.ico" }],
+		[
+			"link",
+			{
+				rel: "apple-touch-icon",
+				sizes: "180x180",
+				href: "/apple-touch-icon.png",
+			},
+		],
+		["link", { rel: "manifest", href: "/site.webmanifest" }],
+		[
+			"meta",
+			{
+				property: "og:title",
+				content: "Claude Ketchup - From AI Janitor to System Architect",
+			},
+		],
+		["meta", { property: "og:type", content: "website" }],
+		[
+			"meta",
+			{
+				property: "og:description",
+				content:
+					"Stop cleaning up after AI. Get Speed, Quality, AND Control with the Quality Stack: Auto-Planning, Parallel Execution, Supervisor Validation, TCR Discipline.",
+			},
+		],
+		[
+			"meta",
+			{
+				property: "og:url",
+				content: "https://BeOnAuto.github.io/claude-ketchup",
+			},
+		],
+		[
+			"meta",
+			{
+				property: "og:image",
+				content: "https://beonauto.github.io/claude-ketchup/og-image.png",
+			},
+		],
+		["meta", { property: "og:image:width", content: "1200" }],
+		["meta", { property: "og:image:height", content: "630" }],
+		[
+			"meta",
+			{
+				property: "og:image:alt",
+				content: "Claude Ketchup - From AI Janitor to System Architect",
+			},
+		],
+		["meta", { property: "og:site_name", content: "Claude Ketchup" }],
+		["meta", { name: "twitter:card", content: "summary_large_image" }],
+		[
+			"meta",
+			{
+				name: "twitter:title",
+				content: "Claude Ketchup - From AI Janitor to System Architect",
+			},
+		],
+		[
+			"meta",
+			{
+				name: "twitter:description",
+				content:
+					"Stop cleaning up after AI. Get Speed, Quality, AND Control with the Quality Stack.",
+			},
+		],
+		[
+			"meta",
+			{
+				name: "twitter:image",
+				content: "https://beonauto.github.io/claude-ketchup/og-image.png",
+			},
+		],
+	],
 });

@@ -120,7 +120,12 @@
   }
 }
 
-/* Feature cards in dark mode */
+/* Feature cards - light mode */
+.VPFeature:hover {
+  border-color: rgba(255, 42, 42, 0.5);
+}
+
+/* Feature cards - dark mode */
 .dark .VPFeature {
   background-color: #151b22;
   border-color: #27313b;
@@ -174,4 +179,39 @@
 .dark .VPFooter {
   background-color: #0a0d10;
   border-top-color: #27313b;
+}
+
+/* Slack-style inline code - Light mode */
+:not(pre) > code {
+  background-color: #f8e8e8;
+  color: #c73a3a;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-weight: 500;
+  border: 1px solid rgba(199, 58, 58, 0.2);
+}
+
+/* Slack-style inline code - Dark mode */
+.dark :not(pre) > code {
+  background-color: #2d1f1f;
+  color: #ff8c42;
+  border: 1px solid rgba(255, 140, 66, 0.3);
+}
+
+/* Feature card inline code styling */
+.VPFeature code {
+  background-color: rgba(199, 58, 58, 0.1);
+  color: #c73a3a;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-weight: 500;
+  border: 1px solid rgba(199, 58, 58, 0.2);
+}
+
+.dark .VPFeature code {
+  background-color: rgba(255, 140, 66, 0.15);
+  color: #ff8c42;
+  border: 1px solid rgba(255, 140, 66, 0.3);
 }

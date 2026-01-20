@@ -30,7 +30,7 @@ The key insight from TDD: if it's hard to test, the design is wrong. Code flows 
 
 ### TCR
 
-In 2021, I read Kent Beck's article on TCR (Test && Commit || Revert). The rule: run your tests, and if they pass, commit automatically. If they fail, revert everything. No debugging. No patching. Start fresh.
+In 2019, I read [Kent Beck's article](https://medium.com/@kentbeck_7670/test-commit-revert-870bbd756864) on TCR (Test && Commit || Revert). The rule: run your tests, and if they pass, commit automatically. If they fail, revert everything. No debugging. No patching. Start fresh.
 
 What if I put this in a loop with AI? The thought experiment about infinite monkeys with typewriters producing Shakespeare, but with tests as the filter. A million AIs, and the ones that work are the ones that meet the tests.
 
@@ -117,13 +117,13 @@ The hooks enforce what I used to do manually:
 
 Through refinement, five components emerged:
 
-| Component | What It Does |
-|-----------|--------------|
-| **Auto-Planning** | AI plans in `ketchup-plan.md` before coding |
-| **Parallel Execution** | Sub-agents work on independent bursts |
-| **Supervisor Validation** | Every commit is ACK'd or NACK'd |
-| **Auto-Continue** | AI keeps working until plan is complete |
-| **TCR Discipline** | Tests pass or code reverts |
+| Component                 | What It Does                                |
+| ------------------------- | ------------------------------------------- |
+| **Auto-Planning**         | AI plans in `ketchup-plan.md` before coding |
+| **Parallel Execution**    | Sub-agents work on independent bursts       |
+| **Supervisor Validation** | Every commit is ACK'd or NACK'd             |
+| **Auto-Continue**         | AI keeps working until plan is complete     |
+| **TCR Discipline**        | Tests pass or code reverts                  |
 
 Together: **Speed, Quality, AND Control.**
 
@@ -148,7 +148,3 @@ You don't have to be the janitor.
 **[Start your transformation →](/getting-started)**
 
 ---
-
-_Disclaimer: I used Claude to "interview me" and then write this story. I use AI to save time, but I curate and tweak the responses._
-
-_Note: The Ketchup Technique is an independent methodology for AI-native development. While it acknowledges the foundation of time-boxed intervals found in the Pomodoro Technique (a registered trademark of Francesco Cirillo), it is a separate method. Learn more at [pomodorotechnique.com](http://pomodorotechnique.com/)._

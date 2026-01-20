@@ -21,7 +21,7 @@ In 5 minutes, you'll transform from AI Janitor to System Architect.
 ## Step 1: Install the Quality Stack
 
 ```bash
-pnpm add claude-ketchup
+pnpm add -D claude-ketchup
 ```
 
 Or with npm:
@@ -128,12 +128,12 @@ You review. You don't repair.
 
 You installed the Quality Stack:
 
-| Component | What It Does | You Just Enabled |
-|-----------|--------------|------------------|
-| Auto-Planning | AI plans before coding | ketchup-plan.md support |
-| Supervisor Validation | ACK/NACK every commit | PreToolUse hooks |
-| Context Injection | Your rules, every session | SessionStart skills |
-| File Protection | Deny-list for sensitive files | PreToolUse deny-list |
+| Component             | What It Does                  | You Just Enabled        |
+| --------------------- | ----------------------------- | ----------------------- |
+| Auto-Planning         | AI plans before coding        | ketchup-plan.md support |
+| Supervisor Validation | ACK/NACK every commit         | PreToolUse hooks        |
+| Context Injection     | Your rules, every session     | SessionStart skills     |
+| File Protection       | Deny-list for sensitive files | PreToolUse deny-list    |
 
 ---
 

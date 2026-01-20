@@ -23,7 +23,7 @@ features:
   - icon:
       src: /icon-janitor.png
     title: "The Problem: AI Janitor"
-    details: Ask for Hello World, get an enterprise platform. You spend more time cleaning up than building.
+    details: Ask for Hello World, get 10,000 lines of code. You spend more time cleaning up than building.
   - icon:
       src: /icon-architect.png
     title: "The Solution: System Architect"
@@ -31,7 +31,7 @@ features:
   - icon:
       src: /icon-tcr.png
     title: TCR Discipline
-    details: "Test && Commit || Revert. Every change earns its place or disappears."
+    details: "Every change earns its place or disappears through <code>test && commit || revert</code>"
   - icon:
       src: /icon-supervisor.png
     title: Supervisor Validation
@@ -50,20 +50,20 @@ features:
 
 Speed, Quality, AND Control. The Ketchup Technique delivers all three through:
 
-| Component | What It Does |
-|-----------|--------------|
-| **Auto-Planning** | AI plans in `ketchup-plan.md` before writing code |
-| **Parallel Execution** | Sub-agents work on independent bursts simultaneously |
-| **Supervisor Validation** | Every commit is ACK'd or NACK'd by the validator |
-| **Auto-Continue** | AI keeps working until the plan is complete |
-| **TCR Discipline** | Tests pass → commit. Tests fail → revert. No patching. |
+| Component                 | What It Does                                           |
+| ------------------------- | ------------------------------------------------------ |
+| **Auto-Planning**         | AI plans in `ketchup-plan.md` before writing code      |
+| **Parallel Execution**    | Sub-agents work on independent bursts simultaneously   |
+| **Supervisor Validation** | Every commit is ACK'd or NACK'd by the validator       |
+| **Auto-Continue**         | AI keeps working until the plan is complete            |
+| **TCR Discipline**        | Tests pass → commit. Tests fail → revert. No patching. |
 
 ## Three Steps to Architect Mode
 
 ### 1. Feed
 
 ```bash
-pnpm add claude-ketchup
+pnpm add -D claude-ketchup
 ```
 
 Install once. The hooks inject automatically.

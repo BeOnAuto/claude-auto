@@ -27,13 +27,13 @@ Without discipline:
 
 Claude Ketchup transforms your role. Stop cleaning up. Start directing.
 
-| Component | What It Does |
-|-----------|--------------|
-| **Auto-Planning** | AI plans in `ketchup-plan.md` before writing code |
-| **Parallel Execution** | Sub-agents work on independent bursts simultaneously |
-| **Supervisor Validation** | Every commit is ACK'd or NACK'd by the validator |
-| **Auto-Continue** | AI keeps working until the plan is complete |
-| **TCR Discipline** | Test && Commit \|\| Revert. Tests pass or code reverts. |
+| Component                 | What It Does                                            |
+| ------------------------- | ------------------------------------------------------- |
+| **Auto-Planning**         | AI plans in `ketchup-plan.md` before writing code       |
+| **Parallel Execution**    | Sub-agents work on independent bursts simultaneously    |
+| **Supervisor Validation** | Every commit is ACK'd or NACK'd by the validator        |
+| **Auto-Continue**         | AI keeps working until the plan is complete             |
+| **TCR Discipline**        | Test && Commit \|\| Revert. Tests pass or code reverts. |
 
 **Speed. Quality. Control. All three.**
 
@@ -59,7 +59,7 @@ Architecture emerges from passing tests. You review results, not repairs.
 
 ```bash
 # Install
-pnpm add claude-ketchup
+pnpm add -D claude-ketchup
 
 # Verify
 claude-ketchup doctor
@@ -106,24 +106,24 @@ The technique evolved from constant refinement: notice where Claude misbehaves, 
 
 ## CLI Reference
 
-| Command | Description |
-|---------|-------------|
+| Command                 | Description                                     |
+| ----------------------- | ----------------------------------------------- |
 | `claude-ketchup status` | Show symlink status for hook scripts and skills |
-| `claude-ketchup doctor` | Diagnose symlink health |
-| `claude-ketchup repair` | Recreate broken or missing symlinks |
-| `claude-ketchup skills` | List all skills with metadata |
+| `claude-ketchup doctor` | Diagnose symlink health                         |
+| `claude-ketchup repair` | Recreate broken or missing symlinks             |
+| `claude-ketchup skills` | List all skills with metadata                   |
 
 ---
 
 ## Documentation
 
-| Guide | Description |
-|-------|-------------|
-| [Getting Started](./docs/getting-started.md) | 5-minute setup tutorial |
-| [The Quality Stack](./docs/ketchup-technique.md) | The methodology explained |
-| [Hooks Guide](./docs/hooks-guide.md) | Practical how-to guides |
-| [API Reference](./docs/api-reference.md) | Complete API documentation |
-| [Architecture](./docs/architecture.md) | System design internals |
+| Guide                                            | Description                |
+| ------------------------------------------------ | -------------------------- |
+| [Getting Started](./docs/getting-started.md)     | 5-minute setup tutorial    |
+| [The Quality Stack](./docs/ketchup-technique.md) | The methodology explained  |
+| [Hooks Guide](./docs/hooks-guide.md)             | Practical how-to guides    |
+| [API Reference](./docs/api-reference.md)         | Complete API documentation |
+| [Architecture](./docs/architecture.md)           | System design internals    |
 
 ---
 
@@ -141,10 +141,8 @@ pnpm build
 
 ## License
 
-MIT © 2025 Sam Hatoum
+MIT © 2025 BeOnAuto, Inc.
 
 See [LICENSE](LICENSE) for details.
 
 ---
-
-<sub>The Ketchup Technique is an independent methodology for AI-native development. While it acknowledges the foundation of time-boxed intervals found in the Pomodoro® Technique (a registered trademark of Francesco Cirillo), it is a separate method.</sub>
