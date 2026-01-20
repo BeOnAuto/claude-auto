@@ -352,5 +352,41 @@ describe('settings-merger', () => {
       );
       expect(result).toEqual(newPackageSettings);
     });
+
+    it('merges non-hooks keys from project settings', () => {
+      const packageDir = path.join(tempDir, 'package');
+      const targetDir = path.join(tempDir, 'target');
+      fs.mkdirSync(path.join(packageDir, 'templates'), { recursive: true });
+      fs.mkdirSync(targetDir, { recursive: true });
+
+      const packageSettings = {
+        hooks: { SessionStart: [] },
+        permissions: { allow: [] },
+      };
+      const projectSettings = {
+        permissions: { allow: ['Edit', 'Write'] },
+        customKey: 'custom-value',
+      };
+
+      fs.writeFileSync(
+        path.join(packageDir, 'templates', 'settings.json'),
+        JSON.stringify(packageSettings)
+      );
+      fs.writeFileSync(
+        path.join(targetDir, 'settings.project.json'),
+        JSON.stringify(projectSettings)
+      );
+
+      mergeSettings(packageDir, targetDir);
+
+      const result = JSON.parse(
+        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
+      );
+      expect(result).toEqual({
+        hooks: { SessionStart: [] },
+        permissions: { allow: ['Edit', 'Write'] },
+        customKey: 'custom-value',
+      });
+    });
   });
 });
