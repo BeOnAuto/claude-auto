@@ -1,0 +1,1 @@
+/Users/sam/code/auto/claude-ketchup/node_modules/.pnpm/claude-ketchup@0.1.1/node_modules/claude-ketchup/dist/scripts/pre-tool-use.d.ts
