@@ -1,6 +1,6 @@
 {
   "name": "claude-ketchup",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "authors": [
     {
       "name": "Sam Hatoum"
@@ -32,7 +32,9 @@
   "author": "Sam Hatoum",
   "license": "MIT",
   "dependencies": {
+    "claude-ketchup": "0.1.1",
     "commander": "^12.0.0",
+    "global": "link:../../../Library/pnpm/global/5/node_modules/global",
     "micromatch": "^4.0.8",
     "yaml": "^2.3.0"
   },
