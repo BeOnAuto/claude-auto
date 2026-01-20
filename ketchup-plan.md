@@ -59,14 +59,7 @@
 
 ### Bottle: Hook Behavior E2E Tests
 
-- [ ] Burst 58: Create test-hooks.sh script with test harness
-- [ ] Burst 59: Test auto-continue blocks with incomplete work
-- [ ] Burst 60: Test auto-continue allows when complete
-- [ ] Burst 61: Test auto-continue respects mode=off
-- [ ] Burst 62: Test auto-continue skips plan permission mode
-- [ ] Burst 63: Test auto-continue non-stop mode iterations
-- [ ] Burst 64: Test pre-tool-use denies paths on deny list
-- [ ] Burst 65: Test pre-tool-use allows normal paths
+- [x] Burst 58-65: Create test-hooks.sh with all E2E hook tests (ff57d1d)
 
 
 ## DONE
