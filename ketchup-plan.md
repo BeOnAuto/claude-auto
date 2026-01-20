@@ -2,11 +2,47 @@
 
 ## TODO
 
+### Bottle: Debug Logging System
+
+- [ ] Burst 74: debug-logger writes to .claude/logs/ketchup.log when DEBUG=ketchup
+- [ ] Burst 75: debug-logger creates logs directory if missing
+- [ ] Burst 76: debug-logger includes timestamp and hook name in entries
+- [ ] Burst 77: session-start.ts logs skills loaded and filtered
+- [ ] Burst 78: pre-tool-use.ts logs deny-list check results
+- [ ] Burst 79: user-prompt-submit.ts logs reminders injected
+- [ ] Burst 80: gitignore includes logs/ directory
+
+## DONE
+
+- [x] Burst 1: Setup package infrastructure (package.json, tsconfig, vitest)
+- [x] Burst 2: findProjectRoot uses KETCHUP_ROOT env var
+- [x] Burst 3: findProjectRoot uses INIT_CWD when not in node_modules (cc4cf54)
+- [x] Burst 4+6: findProjectRoot walks up to find package.json with cwd fallback (0f8fdf3)
+- [x] Burst 5: findProjectRoot walks up to find .git (d199531)
+- [x] Burst 7: getPackageDir returns package directory (6914505)
+- [x] Burst 8: isLinkedMode detects pnpm link (2343208)
+- [x] Burst 9: createSymlink creates file symlink (f781b24)
+- [x] Burst 10+11: createSymlink handles existing files and symlinks (0b3ae5f)
+- [x] Burst 12: createSymlink is idempotent (2bb9aae)
+- [x] Burst 13: removeSymlink removes symlink but not real files (42d35ab)
+- [x] Burst 14: verifySymlink checks symlink target (7292bed)
+- [x] Burst 15: generateGitignore creates .gitignore file (a5020b1)
+- [x] Burst 16: gitignore includes symlinked files (8194ed2)
+- [x] Burst 17: gitignore includes _.local._ pattern (64510ab)
+- [x] Burst 18: gitignore includes runtime file patterns (b71e307)
+- [x] Burst 19: postinstall detects project root (99e064e)
+- [x] Burst 20: postinstall creates .claude directory (7f5f206)
+- [x] Burst 21: postinstall symlinks scripts/, skills/, commands/ files (0837768)
+- [x] Burst 22: postinstall generates gitignore (4e624d5)
+- [x] Burst 23: postinstall merges settings (b6b245e)
+- [x] Burst 24+25: preuninstall removes symlinks, preserves local files (8aa2d24)
+- [x] Infrastructure: bin scripts and E2E test (3d85f62)
+
 ### Bottle: Advanced Settings Merger
 
 - [x] Burst 26: mergeSettings loads settings.project.json and deep merges
 - [x] Burst 27: mergeSettings loads settings.local.json and deep merges (246e25a)
-- [x] Burst 28: mergeSettings handles _disabled array to remove specific hooks (9b98f74)
+- [x] Burst 28: mergeSettings handles \_disabled array to remove specific hooks (9b98f74)
 - [x] Burst 29: mergeSettings handles mode: replace for full override (1d6bb02)
 - [x] Burst 30: mergeSettings dedupes hooks by command within each matcher (cab82ca)
 - [x] Burst 31a: lock file created and skips merge when hash matches (da37d5e)
@@ -71,29 +107,3 @@
 - [x] Burst 71: Test skills-loader priority default (line 35) (a9b7d34)
 - [x] Burst 72: Test cli/skills priority default (line 24) (0c8f57d)
 - [x] Burst 73: Test settings-merger branch coverage gaps (e5b004b)
-
-## DONE
-
-- [x] Burst 1: Setup package infrastructure (package.json, tsconfig, vitest)
-- [x] Burst 2: findProjectRoot uses KETCHUP_ROOT env var
-- [x] Burst 3: findProjectRoot uses INIT_CWD when not in node_modules (cc4cf54)
-- [x] Burst 4+6: findProjectRoot walks up to find package.json with cwd fallback (0f8fdf3)
-- [x] Burst 5: findProjectRoot walks up to find .git (d199531)
-- [x] Burst 7: getPackageDir returns package directory (6914505)
-- [x] Burst 8: isLinkedMode detects pnpm link (2343208)
-- [x] Burst 9: createSymlink creates file symlink (f781b24)
-- [x] Burst 10+11: createSymlink handles existing files and symlinks (0b3ae5f)
-- [x] Burst 12: createSymlink is idempotent (2bb9aae)
-- [x] Burst 13: removeSymlink removes symlink but not real files (42d35ab)
-- [x] Burst 14: verifySymlink checks symlink target (7292bed)
-- [x] Burst 15: generateGitignore creates .gitignore file (a5020b1)
-- [x] Burst 16: gitignore includes symlinked files (8194ed2)
-- [x] Burst 17: gitignore includes *.local.* pattern (64510ab)
-- [x] Burst 18: gitignore includes runtime file patterns (b71e307)
-- [x] Burst 19: postinstall detects project root (99e064e)
-- [x] Burst 20: postinstall creates .claude directory (7f5f206)
-- [x] Burst 21: postinstall symlinks scripts/, skills/, commands/ files (0837768)
-- [x] Burst 22: postinstall generates gitignore (4e624d5)
-- [x] Burst 23: postinstall merges settings (b6b245e)
-- [x] Burst 24+25: preuninstall removes symlinks, preserves local files (8aa2d24)
-- [x] Infrastructure: bin scripts and E2E test (3d85f62)
