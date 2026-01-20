@@ -1,0 +1,177 @@
+/* Light mode */
+:root {
+  /* Brand */
+  --vp-c-brand-1: #ff2a2a; /* ketchup red */
+  --vp-c-brand-2: #ff4d1a; /* hover/active */
+  --vp-c-brand-3: #d81f1f; /* pressed/deeper */
+  --vp-c-brand-soft: rgba(255, 42, 42, 0.14);
+
+  /* Optional secondary accent (for badges, callouts, code highlights) */
+  --vp-c-green-1: #66ff33;
+  --vp-c-green-soft: rgba(102, 255, 51, 0.14);
+
+  /* Backgrounds */
+  --vp-c-bg: #f7f8fa;
+  --vp-c-bg-alt: #f1f3f6;
+  --vp-c-bg-soft: #ffffff;
+  --vp-c-bg-elv: #ffffff;
+
+  /* Text */
+  --vp-c-text-1: #151b22;
+  --vp-c-text-2: #2b3440;
+  --vp-c-text-3: #5b6675;
+
+  /* Borders / dividers */
+  --vp-c-divider: #d9dee6;
+  --vp-c-gutter: #e7ebf0;
+
+  /* Code */
+  --vp-code-bg: #0a0d10;
+  --vp-code-color: #e7ecf2;
+
+  /* Shadows (subtle, "silver frame" vibe) */
+  --vp-shadow-1: 0 10px 30px rgba(10, 13, 16, 0.08);
+}
+
+/* Dark mode */
+.dark {
+  /* Brand */
+  --vp-c-brand-1: #ff2a2a;
+  --vp-c-brand-2: #ff4d1a;
+  --vp-c-brand-3: #ff6a2a;
+  --vp-c-brand-soft: rgba(255, 42, 42, 0.16);
+
+  /* Secondary accent */
+  --vp-c-green-1: #66ff33;
+  --vp-c-green-soft: rgba(102, 255, 51, 0.16);
+
+  /* Backgrounds (CRT/panel) */
+  --vp-c-bg: #0a0d10;
+  --vp-c-bg-alt: #11151a;
+  --vp-c-bg-soft: #151b22;
+  --vp-c-bg-elv: #11151a;
+
+  /* Text */
+  --vp-c-text-1: #e7ecf2;
+  --vp-c-text-2: #c6ced8;
+  --vp-c-text-3: #a7b0bc;
+
+  /* Borders / dividers */
+  --vp-c-divider: #27313b;
+  --vp-c-gutter: #1d2630;
+
+  /* Code */
+  --vp-code-bg: #070a0d;
+  --vp-code-color: #e7ecf2;
+
+  /* Shadows */
+  --vp-shadow-1: 0 14px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* Optional: give links a slight "CRT glow" without looking cheesy */
+:root a:hover,
+.dark a:hover {
+  text-decoration-color: currentColor;
+}
+
+/* Hero section customization */
+.VPHero .name {
+  background: linear-gradient(135deg, #ff2a2a 0%, #ff4d1a 50%, #66ff33 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Hero image sizing - mobile first */
+.VPHero .image-container,
+.VPHero .image-container .image-bg,
+.VPHero .image-container img {
+  max-width: 280px;
+  max-height: 280px;
+}
+
+/* Tablet breakpoint */
+@media (min-width: 640px) and (max-width: 959px) {
+  .VPHero .image-container,
+  .VPHero .image-container .image-bg,
+  .VPHero .image-container img {
+    max-width: 300px;
+    max-height: 300px;
+  }
+}
+
+/* Desktop breakpoint */
+@media (min-width: 960px) {
+  .VPHero .image-container,
+  .VPHero .image-container .image-bg,
+  .VPHero .image-container img {
+    max-width: 380px;
+    max-height: 380px;
+  }
+}
+
+/* Large desktop */
+@media (min-width: 1280px) {
+  .VPHero .image-container,
+  .VPHero .image-container .image-bg,
+  .VPHero .image-container img {
+    max-width: 420px;
+    max-height: 420px;
+  }
+}
+
+/* Feature cards in dark mode */
+.dark .VPFeature {
+  background-color: #151b22;
+  border-color: #27313b;
+}
+
+.dark .VPFeature:hover {
+  border-color: rgba(255, 42, 42, 0.5);
+}
+
+/* Button styling - consistent red across light/dark */
+.VPButton.brand {
+  background-color: #ff2a2a;
+  border-color: #ff2a2a;
+  color: #ffffff;
+}
+
+.VPButton.brand:hover {
+  background-color: #d81f1f;
+  border-color: #d81f1f;
+}
+
+.dark .VPButton.brand {
+  background-color: #ff2a2a;
+  border-color: #ff2a2a;
+  color: #ffffff;
+}
+
+.dark .VPButton.brand:hover {
+  background-color: #d81f1f;
+  border-color: #d81f1f;
+}
+
+/* Nav bar in dark mode */
+.dark .VPNavBar {
+  background-color: rgba(10, 13, 16, 0.8);
+  border-bottom-color: #27313b;
+}
+
+/* Sidebar in dark mode */
+.dark .VPSidebar {
+  background-color: #0a0d10;
+}
+
+/* Local search modal */
+.dark .VPLocalSearchBox .shell {
+  background-color: #11151a;
+  border-color: #27313b;
+}
+
+/* Footer */
+.dark .VPFooter {
+  background-color: #0a0d10;
+  border-top-color: #27313b;
+}
