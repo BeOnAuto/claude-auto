@@ -23,6 +23,7 @@
 - [x] Burst 94: Create scripts/tail-logs.sh helper (4d4ec79)
 - [x] Burst 95: .gitignore already includes logs/ pattern (no changes needed)
 - [x] Burst 96+97: Create subagent-classifier with explore and work patterns
+- [x] Burst 98: Add extractTaskDescription for transcript parsing (303318a)
 
 ### Bottle: Debug Logging System
 

@@ -173,5 +173,47 @@ describe('hook-state', () => {
       expect(DEFAULT_HOOK_STATE.denyList.enabled).toBe(true);
       expect(DEFAULT_HOOK_STATE.promptReminder.enabled).toBe(true);
     });
+
+    it('has subagentHooks with default values', () => {
+      expect(DEFAULT_HOOK_STATE.subagentHooks).toEqual({
+        validateCommitOnExplore: false,
+        validateCommitOnWork: true,
+        validateCommitOnUnknown: true,
+      });
+    });
+  });
+
+  describe('subagentHooks', () => {
+    it('reads subagentHooks from state file', () => {
+      const existingState = {
+        subagentHooks: {
+          validateCommitOnExplore: true,
+          validateCommitOnWork: false,
+          validateCommitOnUnknown: false,
+        },
+      };
+      fs.writeFileSync(
+        path.join(tempDir, '.claude.hooks.json'),
+        JSON.stringify(existingState)
+      );
+
+      const hookState = createHookState(tempDir);
+      const state = hookState.read();
+
+      expect(state.subagentHooks.validateCommitOnExplore).toBe(true);
+      expect(state.subagentHooks.validateCommitOnWork).toBe(false);
+      expect(state.subagentHooks.validateCommitOnUnknown).toBe(false);
+    });
+
+    it('updates subagentHooks with update method', () => {
+      const hookState = createHookState(tempDir);
+
+      hookState.update({
+        subagentHooks: { validateCommitOnExplore: true, validateCommitOnWork: true, validateCommitOnUnknown: true },
+      }, 'test');
+
+      const state = hookState.read();
+      expect(state.subagentHooks.validateCommitOnExplore).toBe(true);
+    });
   });
 });

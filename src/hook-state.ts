@@ -25,11 +25,18 @@ export interface PromptReminderState {
   customReminder?: string;
 }
 
+export interface SubagentHooksState {
+  validateCommitOnExplore: boolean;
+  validateCommitOnWork: boolean;
+  validateCommitOnUnknown: boolean;
+}
+
 export interface HookState {
   autoContinue: AutoContinueState;
   validateCommit: ValidateCommitState;
   denyList: DenyListState;
   promptReminder: PromptReminderState;
+  subagentHooks: SubagentHooksState;
   updatedAt: string;
   updatedBy?: string;
 }
@@ -50,6 +57,11 @@ export const DEFAULT_HOOK_STATE: HookState = {
   },
   promptReminder: {
     enabled: true,
+  },
+  subagentHooks: {
+    validateCommitOnExplore: false,
+    validateCommitOnWork: true,
+    validateCommitOnUnknown: true,
   },
   updatedAt: new Date().toISOString(),
   updatedBy: 'default',
@@ -81,6 +93,7 @@ export function createHookState(projectDir: string): HookStateManager {
       validateCommit: { ...DEFAULT_HOOK_STATE.validateCommit, ...partial.validateCommit },
       denyList: { ...DEFAULT_HOOK_STATE.denyList, ...partial.denyList },
       promptReminder: { ...DEFAULT_HOOK_STATE.promptReminder, ...partial.promptReminder },
+      subagentHooks: { ...DEFAULT_HOOK_STATE.subagentHooks, ...partial.subagentHooks },
       updatedAt: partial.updatedAt ?? DEFAULT_HOOK_STATE.updatedAt,
       updatedBy: partial.updatedBy,
     };
@@ -100,6 +113,7 @@ export function createHookState(projectDir: string): HookStateManager {
       validateCommit: { ...current.validateCommit, ...updates.validateCommit },
       denyList: { ...current.denyList, ...updates.denyList },
       promptReminder: { ...current.promptReminder, ...updates.promptReminder },
+      subagentHooks: { ...current.subagentHooks, ...updates.subagentHooks },
       updatedBy: updatedBy ?? 'unknown',
       updatedAt: current.updatedAt,
     };
