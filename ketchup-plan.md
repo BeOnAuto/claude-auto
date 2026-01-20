@@ -60,6 +60,7 @@
 ### Bottle: Hook Behavior E2E Tests
 
 - [x] Burst 58-65: Create test-hooks.sh with all E2E hook tests (ff57d1d)
+- [x] Burst 66: Add sub-agent E2E tests (deny-list inheritance, state persistence, skipModes) (8036dc9)
 
 
 ## DONE

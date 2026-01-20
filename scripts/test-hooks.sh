@@ -279,17 +279,194 @@ test_prompt_reminder_returns_context() {
 }
 
 #-----------------------------------------------------------
+# Test: sub-agent inherits deny-list (permission_mode doesn't bypass)
+#-----------------------------------------------------------
+test_subagent_inherits_denylist() {
+    local name="sub-agent inherits deny-list protection"
+
+    # Backup state and deny list
+    local state_file="$PROJECT_ROOT/.claude.hooks.json"
+    local state_backup=""
+    if [[ -f "$state_file" ]]; then
+        state_backup=$(cat "$state_file")
+    fi
+
+    local deny_file="$PROJECT_ROOT/.claude/scripts/deny-list.txt"
+    local deny_backup=""
+    if [[ -f "$deny_file" ]]; then
+        deny_backup=$(cat "$deny_file")
+    fi
+
+    # Enable deny list and add test pattern
+    echo '{"denyList":{"enabled":true}}' > "$state_file"
+    echo "protected-file.txt" > "$deny_file"
+
+    # Simulate PreToolUse from a sub-agent (with permission_mode that might be different)
+    # Sub-agents should STILL be blocked by deny-list regardless of permission_mode
+    local input='{"tool_name":"Edit","tool_input":{"file_path":"protected-file.txt"},"permission_mode":"plan"}'
+
+    cd "$PROJECT_ROOT"
+    local output
+    output=$(echo "$input" | npx tsx "$PROJECT_ROOT/.claude/scripts/deny-list.ts" 2>/dev/null) || true
+
+    # Restore state and deny list
+    if [[ -n "$state_backup" ]]; then
+        echo "$state_backup" > "$state_file"
+    else
+        rm -f "$state_file"
+    fi
+
+    if [[ -n "$deny_backup" ]]; then
+        echo "$deny_backup" > "$deny_file"
+    else
+        rm -f "$deny_file"
+    fi
+
+    if echo "$output" | grep -q '"permissionDecision":"deny"'; then
+        pass "$name"
+    else
+        fail "$name" "sub-agent should still be blocked by deny-list"
+    fi
+}
+
+#-----------------------------------------------------------
+# Test: sub-agent state modifications persist
+#-----------------------------------------------------------
+test_subagent_state_persists() {
+    local name="sub-agent state modifications persist"
+
+    # Backup current state
+    local state_file="$PROJECT_ROOT/.claude.hooks.json"
+    local backup=""
+    if [[ -f "$state_file" ]]; then
+        backup=$(cat "$state_file")
+    fi
+
+    # Set initial state with iteration=5
+    echo '{"autoContinue":{"mode":"non-stop","maxIterations":10,"iteration":5}}' > "$state_file"
+
+    # Simulate a sub-agent call that would increment iteration
+    # (non-stop mode increments on each block)
+    local input='{"session_id":"subagent-test","permission_mode":"code"}'
+
+    cd "$PROJECT_ROOT"
+    echo "$input" | npx tsx "$PROJECT_ROOT/.claude/scripts/auto-continue.ts" 2>/dev/null || true
+
+    # Read back the state - iteration should now be 6
+    local new_state
+    new_state=$(cat "$state_file")
+
+    # Restore original state
+    if [[ -n "$backup" ]]; then
+        echo "$backup" > "$state_file"
+    else
+        rm -f "$state_file"
+    fi
+
+    if echo "$new_state" | grep -q '"iteration": 6'; then
+        pass "$name"
+    else
+        fail "$name" "state should persist iteration increment, got: $new_state"
+    fi
+}
+
+#-----------------------------------------------------------
+# Test: sub-agent respects skipModes configuration
+#-----------------------------------------------------------
+test_subagent_respects_skipmodes() {
+    local name="sub-agent respects custom skipModes"
+
+    # Backup current state
+    local state_file="$PROJECT_ROOT/.claude.hooks.json"
+    local backup=""
+    if [[ -f "$state_file" ]]; then
+        backup=$(cat "$state_file")
+    fi
+
+    # Set mode to non-stop but add "explore" to skipModes
+    # This simulates skipping auto-continue for explore sub-agents
+    echo '{"autoContinue":{"mode":"non-stop","skipModes":["plan","explore"]}}' > "$state_file"
+
+    # Simulate a sub-agent with permission_mode="explore"
+    local input='{"session_id":"explore-agent","permission_mode":"explore"}'
+
+    cd "$PROJECT_ROOT"
+    local output
+    output=$(echo "$input" | npx tsx "$PROJECT_ROOT/.claude/scripts/auto-continue.ts" 2>/dev/null) || true
+
+    # Restore state
+    if [[ -n "$backup" ]]; then
+        echo "$backup" > "$state_file"
+    else
+        rm -f "$state_file"
+    fi
+
+    # Should NOT block because "explore" is in skipModes
+    if echo "$output" | grep -q '"decision":"block"'; then
+        fail "$name" "should skip auto-continue for explore permission_mode"
+    else
+        pass "$name"
+    fi
+}
+
+#-----------------------------------------------------------
+# Test: sub-agent non-skipped mode still blocks
+#-----------------------------------------------------------
+test_subagent_nonskipped_blocks() {
+    local name="sub-agent non-skipped mode blocks correctly"
+
+    # Backup current state
+    local state_file="$PROJECT_ROOT/.claude.hooks.json"
+    local backup=""
+    if [[ -f "$state_file" ]]; then
+        backup=$(cat "$state_file")
+    fi
+
+    # Set mode to non-stop with only "plan" in skipModes
+    echo '{"autoContinue":{"mode":"non-stop","maxIterations":10,"skipModes":["plan"]}}' > "$state_file"
+
+    # Simulate a sub-agent with permission_mode="code" (NOT in skipModes)
+    local input='{"session_id":"code-agent","permission_mode":"code"}'
+
+    cd "$PROJECT_ROOT"
+    local output
+    output=$(echo "$input" | npx tsx "$PROJECT_ROOT/.claude/scripts/auto-continue.ts" 2>/dev/null) || true
+
+    # Restore state
+    if [[ -n "$backup" ]]; then
+        echo "$backup" > "$state_file"
+    else
+        rm -f "$state_file"
+    fi
+
+    # SHOULD block because "code" is not in skipModes
+    if echo "$output" | grep -q '"decision":"block"'; then
+        pass "$name"
+    else
+        fail "$name" "should block for non-skipped permission_mode"
+    fi
+}
+
+#-----------------------------------------------------------
 # Run all tests
 #-----------------------------------------------------------
 echo "Running hook E2E tests..."
 echo ""
 
+echo "=== Basic Hook Tests ==="
 test_autocontinue_mode_off
 test_autocontinue_skips_plan_mode
 test_autocontinue_nonstop_iterations
 test_denylist_denies
 test_denylist_allows_normal
 test_prompt_reminder_returns_context
+
+echo ""
+echo "=== Sub-Agent Hook Tests ==="
+test_subagent_inherits_denylist
+test_subagent_state_persists
+test_subagent_respects_skipmodes
+test_subagent_nonskipped_blocks
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
