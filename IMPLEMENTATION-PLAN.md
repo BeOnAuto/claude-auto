@@ -24,12 +24,12 @@ Build an npm package (`claude-ketchup`) that provides a Husky-style setup experi
 ### IN PROGRESS
 - [ ] Burst 3: findProjectRoot uses INIT_CWD when KETCHUP_ROOT not set (code done, need test for cwd fallback for 100% coverage)
 
-### TODO - Phase 1: Root Finder
+### TODO - Bottle: Root Finder
 - [ ] Burst 4: findProjectRoot walks up to find package.json
 - [ ] Burst 5: findProjectRoot walks up to find .git
 - [ ] Burst 6: findProjectRoot falls back to cwd (test needed for coverage)
 
-### TODO - Phase 1: Linker
+### TODO - Bottle: Linker
 - [ ] Burst 7: getPackageDir returns package directory
 - [ ] Burst 8: isLinkedMode detects pnpm link
 - [ ] Burst 9: createSymlink creates file symlink on Unix
@@ -39,13 +39,13 @@ Build an npm package (`claude-ketchup`) that provides a Husky-style setup experi
 - [ ] Burst 13: removeSymlink removes symlink but not real files
 - [ ] Burst 14: verifySymlink checks symlink target
 
-### TODO - Phase 1: Gitignore Manager
+### TODO - Bottle: Gitignore Manager
 - [ ] generateGitignore creates .claude/.gitignore
 - [ ] gitignore lists symlinked files from package
 - [ ] gitignore ignores *.local.* pattern
 - [ ] gitignore ignores runtime files (state.json, logs/, etc.)
 
-### TODO - Phase 1: Postinstall/Preuninstall
+### TODO - Bottle: Postinstall/Preuninstall
 - [ ] postinstall detects project root
 - [ ] postinstall creates .claude directory
 - [ ] postinstall symlinks scripts/, skills/, commands/ files
@@ -54,7 +54,7 @@ Build an npm package (`claude-ketchup`) that provides a Husky-style setup experi
 - [ ] preuninstall removes symlinks
 - [ ] preuninstall preserves local files
 
-### TODO - Phase 2: Merger
+### TODO - Bottle: Merger
 - [ ] mergeSettings loads package template
 - [ ] mergeSettings merges project overrides
 - [ ] mergeSettings merges local overrides
@@ -63,7 +63,7 @@ Build an npm package (`claude-ketchup`) that provides a Husky-style setup experi
 - [ ] mergeSettings dedupes by command
 - [ ] lock file prevents unnecessary re-merge
 
-### TODO - Phase 3: Runtime Hooks
+### TODO - Bottle: Runtime Hooks
 - [ ] state-manager reads/writes state.json
 - [ ] state-manager creates backup before write
 - [ ] skills-loader scans skills directories
@@ -76,7 +76,7 @@ Build an npm package (`claude-ketchup`) that provides a Husky-style setup experi
 - [ ] pre-tool-use.ts blocks denied paths
 - [ ] user-prompt-submit.ts injects reminders
 
-### TODO - Phase 4: CLI
+### TODO - Bottle: CLI
 - [ ] `claude-ketchup status` shows symlink status
 - [ ] `claude-ketchup repair` fixes broken symlinks
 - [ ] `claude-ketchup doctor` diagnoses issues

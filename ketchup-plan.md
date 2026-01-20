@@ -2,7 +2,7 @@
 
 ## TODO
 
-### Phase 2: Advanced Settings Merger
+### Bottle: Advanced Settings Merger
 
 - [x] Burst 26: mergeSettings loads settings.project.json and deep merges
 - [x] Burst 27: mergeSettings loads settings.local.json and deep merges (246e25a)
@@ -12,13 +12,13 @@
 - [x] Burst 31a: lock file created and skips merge when hash matches (da37d5e)
 - [x] Burst 31b: re-merges when lock file hash differs (3e9c2c7)
 
-### Phase 3: Runtime Hooks - State Manager
+### Bottle: Runtime Hooks - State Manager
 
 - [x] Burst 32: state-manager reads state.json (70f8db9)
 - [x] Burst 33: state-manager writes state.json (1cf1950)
 - [x] Burst 34: state-manager creates backup before write (72303b5)
 
-### Phase 3: Runtime Hooks - Skills Loader
+### Bottle: Runtime Hooks - Skills Loader
 
 - [x] Burst 35: skills-loader scans skills directories (39d07d9)
 - [x] Burst 36: skills-loader parses YAML frontmatter (0a5dcb4)
@@ -27,19 +27,19 @@
 - [x] Burst 39: skills-loader filters by state conditions (5016191)
 - [x] Burst 40: skills-loader sorts by priority (f9a10e1)
 
-### Phase 3: Runtime Hooks - Deny List
+### Bottle: Runtime Hooks - Deny List
 
 - [x] Burst 41: deny-list loads patterns from deny-list.project.txt (d4c2748)
 - [x] Burst 42: deny-list loads patterns from deny-list.local.txt (08b9419)
 - [x] Burst 43: deny-list checks paths against patterns (c630aae)
 
-### Phase 3: Runtime Hooks - Hook Scripts
+### Bottle: Runtime Hooks - Hook Scripts
 
 - [x] Burst 44: session-start.ts outputs filtered skills (c582a3b)
 - [x] Burst 45: pre-tool-use.ts blocks denied paths (3a1e9b3)
 - [x] Burst 46: user-prompt-submit.ts injects reminders (092fcf8)
 
-### Phase 4: CLI
+### Bottle: CLI
 
 - [x] Burst 47: `claude-ketchup status` shows symlink status (914bf73)
 - [x] Burst 48a: repair recreates symlinks for specified files (7a1d424)
@@ -48,7 +48,7 @@
 - [x] Burst 50: `claude-ketchup skills` lists skills with metadata (69c7019)
 - [x] Burst 51: `/ketchup` command definition (c593a6d)
 
-### Phase 5: Templates & Polish
+### Bottle: Templates & Polish
 
 - [x] Burst 52: Create templates/settings.json with default hooks (347afa1)
 - [x] Burst 53: Create scripts/session-start.ts hook script (0dc1826)
@@ -56,6 +56,17 @@
 - [x] Burst 55: Create scripts/user-prompt-submit.ts hook script (193844e)
 - [x] Burst 56: Create skills/ketchup.enforced.md (689994a)
 - [x] Burst 57: E2E test - all tests passing (104e8d6)
+
+### Bottle: Hook Behavior E2E Tests
+
+- [ ] Burst 58: Create test-hooks.sh script with test harness
+- [ ] Burst 59: Test auto-continue blocks with incomplete work
+- [ ] Burst 60: Test auto-continue allows when complete
+- [ ] Burst 61: Test auto-continue respects mode=off
+- [ ] Burst 62: Test auto-continue skips plan permission mode
+- [ ] Burst 63: Test auto-continue non-stop mode iterations
+- [ ] Burst 64: Test pre-tool-use denies paths on deny list
+- [ ] Burst 65: Test pre-tool-use allows normal paths
 
 
 ## DONE
