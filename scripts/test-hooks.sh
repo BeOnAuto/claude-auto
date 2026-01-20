@@ -448,6 +448,114 @@ test_subagent_nonskipped_blocks() {
 }
 
 #-----------------------------------------------------------
+# Test: subagent-classifier classifies explore tasks
+#-----------------------------------------------------------
+test_subagent_classifier_explore() {
+    local name="subagent-classifier classifies explore tasks"
+
+    cd "$PROJECT_ROOT"
+
+    # Create temp test file with absolute import
+    local test_file="$PROJECT_ROOT/scripts/_test-classify-explore.ts"
+    cat > "$test_file" << 'EOF'
+import { classifySubagent } from '../src/subagent-classifier.js';
+console.log(classifySubagent('Search for auth implementation'));
+EOF
+
+    local output
+    output=$(npx tsx "$test_file" 2>/dev/null) || true
+    rm -f "$test_file"
+
+    if [[ "$output" == "explore" ]]; then
+        pass "$name"
+    else
+        fail "$name" "expected 'explore', got '$output'"
+    fi
+}
+
+#-----------------------------------------------------------
+# Test: subagent-classifier classifies work tasks
+#-----------------------------------------------------------
+test_subagent_classifier_work() {
+    local name="subagent-classifier classifies work tasks"
+
+    cd "$PROJECT_ROOT"
+
+    # Create temp test file with absolute import
+    local test_file="$PROJECT_ROOT/scripts/_test-classify-work.ts"
+    cat > "$test_file" << 'EOF'
+import { classifySubagent } from '../src/subagent-classifier.js';
+console.log(classifySubagent('Implement the new feature'));
+EOF
+
+    local output
+    output=$(npx tsx "$test_file" 2>/dev/null) || true
+    rm -f "$test_file"
+
+    if [[ "$output" == "work" ]]; then
+        pass "$name"
+    else
+        fail "$name" "expected 'work', got '$output'"
+    fi
+}
+
+#-----------------------------------------------------------
+# Test: shouldValidateCommit respects subagentHooks state
+#-----------------------------------------------------------
+test_shouldvalidatecommit_respects_state() {
+    local name="shouldValidateCommit respects subagentHooks state"
+
+    cd "$PROJECT_ROOT"
+
+    # Create temp test file with absolute import
+    local test_file="$PROJECT_ROOT/scripts/_test-should-validate.ts"
+    cat > "$test_file" << 'EOF'
+import { shouldValidateCommit } from '../src/hooks/validate-commit.js';
+const state = { validateCommitOnExplore: false, validateCommitOnWork: true, validateCommitOnUnknown: true };
+console.log(shouldValidateCommit('explore', state) ? 'true' : 'false');
+console.log(shouldValidateCommit('work', state) ? 'true' : 'false');
+EOF
+
+    local output
+    output=$(npx tsx "$test_file" 2>/dev/null) || true
+    rm -f "$test_file"
+
+    local expected=$'false\ntrue'
+    if [[ "$output" == "$expected" ]]; then
+        pass "$name"
+    else
+        fail "$name" "expected 'false\\ntrue', got '$output'"
+    fi
+}
+
+#-----------------------------------------------------------
+# Test: extractTaskDescription parses Task invocations
+#-----------------------------------------------------------
+test_extract_task_description() {
+    local name="extractTaskDescription parses Task invocations"
+
+    cd "$PROJECT_ROOT"
+
+    # Create temp test file with absolute import
+    local test_file="$PROJECT_ROOT/scripts/_test-extract.ts"
+    cat > "$test_file" << 'EOF'
+import { extractTaskDescription } from '../src/subagent-classifier.js';
+const transcript = '<invoke name="Task"><parameter name="description">Search for files</parameter></invoke>';
+console.log(extractTaskDescription(transcript) || 'undefined');
+EOF
+
+    local output
+    output=$(npx tsx "$test_file" 2>/dev/null) || true
+    rm -f "$test_file"
+
+    if [[ "$output" == "Search for files" ]]; then
+        pass "$name"
+    else
+        fail "$name" "expected 'Search for files', got '$output'"
+    fi
+}
+
+#-----------------------------------------------------------
 # Run all tests
 #-----------------------------------------------------------
 echo "Running hook E2E tests..."
@@ -467,6 +575,13 @@ test_subagent_inherits_denylist
 test_subagent_state_persists
 test_subagent_respects_skipmodes
 test_subagent_nonskipped_blocks
+
+echo ""
+echo "=== Sub-Agent Classification Tests ==="
+test_subagent_classifier_explore
+test_subagent_classifier_work
+test_shouldvalidatecommit_respects_state
+test_extract_task_description
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
