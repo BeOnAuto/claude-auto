@@ -52,16 +52,16 @@ describe('postinstall', () => {
       );
     });
 
-    it('symlinks files from package scripts/, skills/, commands/ to .claude/', () => {
+    it('symlinks files from package dist/scripts/, skills/, commands/ to .claude/', () => {
       const projectDir = path.join(tempDir, 'my-project');
       const packageDir = path.join(tempDir, 'ketchup-package');
       fs.mkdirSync(projectDir, { recursive: true });
       fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
-      fs.mkdirSync(path.join(packageDir, 'scripts'), { recursive: true });
+      fs.mkdirSync(path.join(packageDir, 'dist', 'scripts'), { recursive: true });
       fs.mkdirSync(path.join(packageDir, 'skills'), { recursive: true });
       fs.mkdirSync(path.join(packageDir, 'commands'), { recursive: true });
       fs.writeFileSync(
-        path.join(packageDir, 'scripts', 'session-start.ts'),
+        path.join(packageDir, 'dist', 'scripts', 'session-start.js'),
         'export default {}'
       );
       fs.writeFileSync(
@@ -77,13 +77,13 @@ describe('postinstall', () => {
       const result = runPostinstall(packageDir);
 
       expect(result.symlinkedFiles).toEqual([
-        'scripts/session-start.ts',
+        'scripts/session-start.js',
         'skills/my-skill.md',
         'commands/my-command.md',
       ]);
       expect(
         fs.lstatSync(
-          path.join(projectDir, '.claude', 'scripts', 'session-start.ts')
+          path.join(projectDir, '.claude', 'scripts', 'session-start.js')
         ).isSymbolicLink()
       ).toBe(true);
       expect(
@@ -103,9 +103,9 @@ describe('postinstall', () => {
       const packageDir = path.join(tempDir, 'ketchup-package');
       fs.mkdirSync(projectDir, { recursive: true });
       fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
-      fs.mkdirSync(path.join(packageDir, 'scripts'), { recursive: true });
+      fs.mkdirSync(path.join(packageDir, 'dist', 'scripts'), { recursive: true });
       fs.writeFileSync(
-        path.join(packageDir, 'scripts', 'session-start.ts'),
+        path.join(packageDir, 'dist', 'scripts', 'session-start.js'),
         'export default {}'
       );
       process.env.KETCHUP_ROOT = projectDir;
@@ -117,7 +117,7 @@ describe('postinstall', () => {
         'utf-8'
       );
       expect(gitignoreContent).toBe(
-        ['scripts/session-start.ts', '*.local.*', 'state.json', 'logs/'].join(
+        ['scripts/session-start.js', '*.local.*', 'state.json', 'logs/'].join(
           '\n'
         )
       );
