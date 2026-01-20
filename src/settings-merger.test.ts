@@ -388,5 +388,149 @@ describe('settings-merger', () => {
         customKey: 'custom-value',
       });
     });
+
+    it('uses empty array when _mode is replace without _value', () => {
+      const packageDir = path.join(tempDir, 'package');
+      const targetDir = path.join(tempDir, 'target');
+      fs.mkdirSync(path.join(packageDir, 'templates'), { recursive: true });
+      fs.mkdirSync(targetDir, { recursive: true });
+
+      const packageSettings = {
+        hooks: {
+          SessionStart: [{ hooks: [{ type: 'command', command: 'pkg-cmd' }] }],
+        },
+      };
+      const projectSettings = {
+        hooks: {
+          SessionStart: { _mode: 'replace' },
+        },
+      };
+
+      fs.writeFileSync(
+        path.join(packageDir, 'templates', 'settings.json'),
+        JSON.stringify(packageSettings)
+      );
+      fs.writeFileSync(
+        path.join(targetDir, 'settings.project.json'),
+        JSON.stringify(projectSettings)
+      );
+
+      mergeSettings(packageDir, targetDir);
+
+      const result = JSON.parse(
+        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
+      );
+      expect(result).toEqual({
+        hooks: { SessionStart: [] },
+      });
+    });
+
+    it('uses empty array when _disabled without base hooks', () => {
+      const packageDir = path.join(tempDir, 'package');
+      const targetDir = path.join(tempDir, 'target');
+      fs.mkdirSync(path.join(packageDir, 'templates'), { recursive: true });
+      fs.mkdirSync(targetDir, { recursive: true });
+
+      const packageSettings = {
+        hooks: {},
+      };
+      const projectSettings = {
+        hooks: {
+          SessionStart: { _disabled: ['cmd-a'] },
+        },
+      };
+
+      fs.writeFileSync(
+        path.join(packageDir, 'templates', 'settings.json'),
+        JSON.stringify(packageSettings)
+      );
+      fs.writeFileSync(
+        path.join(targetDir, 'settings.project.json'),
+        JSON.stringify(projectSettings)
+      );
+
+      mergeSettings(packageDir, targetDir);
+
+      const result = JSON.parse(
+        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
+      );
+      expect(result).toEqual({
+        hooks: { SessionStart: [] },
+      });
+    });
+
+    it('uses empty disabled array when _mode is not replace', () => {
+      const packageDir = path.join(tempDir, 'package');
+      const targetDir = path.join(tempDir, 'target');
+      fs.mkdirSync(path.join(packageDir, 'templates'), { recursive: true });
+      fs.mkdirSync(targetDir, { recursive: true });
+
+      const packageSettings = {
+        hooks: {
+          SessionStart: [{ hooks: [{ type: 'command', command: 'pkg-cmd' }] }],
+        },
+      };
+      const projectSettings = {
+        hooks: {
+          SessionStart: { _mode: 'merge' },
+        },
+      };
+
+      fs.writeFileSync(
+        path.join(packageDir, 'templates', 'settings.json'),
+        JSON.stringify(packageSettings)
+      );
+      fs.writeFileSync(
+        path.join(targetDir, 'settings.project.json'),
+        JSON.stringify(projectSettings)
+      );
+
+      mergeSettings(packageDir, targetDir);
+
+      const result = JSON.parse(
+        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
+      );
+      expect(result).toEqual({
+        hooks: {
+          SessionStart: [{ hooks: [{ type: 'command', command: 'pkg-cmd' }] }],
+        },
+      });
+    });
+
+    it('uses empty array when merging hooks without base hooks', () => {
+      const packageDir = path.join(tempDir, 'package');
+      const targetDir = path.join(tempDir, 'target');
+      fs.mkdirSync(path.join(packageDir, 'templates'), { recursive: true });
+      fs.mkdirSync(targetDir, { recursive: true });
+
+      const packageSettings = {
+        hooks: {},
+      };
+      const projectSettings = {
+        hooks: {
+          SessionStart: [{ hooks: [{ type: 'command', command: 'new-cmd' }] }],
+        },
+      };
+
+      fs.writeFileSync(
+        path.join(packageDir, 'templates', 'settings.json'),
+        JSON.stringify(packageSettings)
+      );
+      fs.writeFileSync(
+        path.join(targetDir, 'settings.project.json'),
+        JSON.stringify(projectSettings)
+      );
+
+      mergeSettings(packageDir, targetDir);
+
+      const result = JSON.parse(
+        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
+      );
+      expect(result).toEqual({
+        hooks: {
+          SessionStart: [{ hooks: [{ type: 'command', command: 'new-cmd' }] }],
+        },
+      });
+    });
   });
 });
