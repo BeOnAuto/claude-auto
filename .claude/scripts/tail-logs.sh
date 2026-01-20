@@ -1,1 +1,0 @@
-/Users/sam/code/auto/claude-ketchup/scripts/tail-logs.sh
