@@ -62,6 +62,15 @@
 - [x] Burst 58-65: Create test-hooks.sh with all E2E hook tests (ff57d1d)
 - [x] Burst 66: Add sub-agent E2E tests (deny-list inheritance, state persistence, skipModes) (8036dc9)
 
+### Bottle: Publication Readiness
+
+- [x] Burst 67: Create bin/cli.ts with Commander wiring (1c0786b)
+- [x] Burst 68: Create src/index.ts barrel export (ac9b3e7)
+- [x] Burst 69: Fix package.json paths to match actual structure (8f49a40)
+- [x] Burst 70: Test settings-merger non-hooks key path (lines 78-79) (ecd85a4)
+- [x] Burst 71: Test skills-loader priority default (line 35) (a9b7d34)
+- [x] Burst 72: Test cli/skills priority default (line 24) (0c8f57d)
+- [x] Burst 73: Test settings-merger branch coverage gaps (e5b004b)
 
 ## DONE
 
