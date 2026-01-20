@@ -26,6 +26,7 @@
 - [x] Burst 98: Add extractTaskDescription for transcript parsing (303318a)
 - [x] Burst 99: Add SubagentHooksState to hook-state (e4dfe43)
 - [x] Burst 100: Add shouldValidateCommit for subagent-aware control (7859a9f)
+- [x] Burst 101: Add subagent classification E2E tests to test-hooks.sh (5c4cf22)
 
 ### Bottle: Debug Logging System
 
