@@ -6,7 +6,11 @@ import { createSymlink, getPackageDir } from './linker.js';
 import { findProjectRoot } from './root-finder.js';
 import { mergeSettings } from './settings-merger.js';
 
-const SYMLINK_DIRS = ['scripts', 'skills', 'commands'];
+const SYMLINK_DIRS = [
+  { name: 'scripts', sourcePath: 'dist/scripts' },
+  { name: 'skills', sourcePath: 'skills' },
+  { name: 'commands', sourcePath: 'commands' },
+];
 
 export interface PostinstallResult {
   projectRoot: string;
@@ -36,9 +40,9 @@ export function runPostinstall(packageDir?: string): PostinstallResult {
   const pkgDir = packageDir ?? getPackageDir();
   const symlinkedFiles: string[] = [];
 
-  for (const subdir of SYMLINK_DIRS) {
-    const sourceDir = path.join(pkgDir, subdir);
-    const targetDir = path.join(claudeDir, subdir);
+  for (const { name, sourcePath } of SYMLINK_DIRS) {
+    const sourceDir = path.join(pkgDir, sourcePath);
+    const targetDir = path.join(claudeDir, name);
     const files = collectFiles(sourceDir);
     if (files.length > 0) {
       fs.mkdirSync(targetDir, { recursive: true });
@@ -47,7 +51,7 @@ export function runPostinstall(packageDir?: string): PostinstallResult {
       const source = path.join(sourceDir, file);
       const target = path.join(targetDir, file);
       createSymlink(source, target);
-      symlinkedFiles.push(`${subdir}/${file}`);
+      symlinkedFiles.push(`${name}/${file}`);
     }
   }
 
