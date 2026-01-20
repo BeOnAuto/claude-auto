@@ -13,7 +13,10 @@
 - [x] Burst 85: Update logger.ts to write to logs/hooks/ subdirectory (c65e0a1)
 - [x] Burst 86a: Create validate-commit utility functions (findClaudeMd, getEffectiveCwd, extractGitCPath) (4116297)
 - [x] Burst 86b: Add findGitRoot to validate-commit (c28802f)
-- [x] Burst 87: Create auto-continue utility functions (getIncompleteBursts, buildPrompt)
+- [x] Burst 87: Create auto-continue utility functions (getIncompleteBursts, buildPrompt) (d505adc)
+- [x] Burst 88: Verify deny-list implementation is complete (pre-tool-use uses micromatch)
+- [x] Burst 89: prompt-reminder handled by user-prompt-submit skills (no separate module needed)
+- [x] Burst 90: Create clean-logs utility function
 
 ### Bottle: Debug Logging System
 
