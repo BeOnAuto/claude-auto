@@ -5,6 +5,9 @@ hero:
   name: Claude Ketchup
   text: Controlled Bursts for Claude Code
   tagline: Husky-style hooks and skills management implementing the Ketchup Technique
+  image:
+    src: /hero.png
+    alt: Claude Ketchup - Controlled Bursts
   actions:
     - theme: brand
       text: Get Started
