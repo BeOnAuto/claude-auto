@@ -17,7 +17,9 @@
 - [x] Burst 88: Verify deny-list implementation is complete (pre-tool-use uses micromatch)
 - [x] Burst 89: prompt-reminder handled by user-prompt-submit skills (no separate module needed)
 - [x] Burst 90: Create clean-logs utility function (f302eb2)
-- [x] Burst 91: Update templates/settings.json to include validate-commit and auto-continue hooks
+- [x] Burst 91: Update templates/settings.json to include validate-commit and auto-continue hooks (2495241)
+- [x] Burst 92: postinstall already handles scripts/ symlinks (no changes needed)
+- [x] Burst 93: settings-merger already handles Stop hook generically (no changes needed)
 
 ### Bottle: Debug Logging System
 
