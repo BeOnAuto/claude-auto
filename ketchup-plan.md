@@ -22,6 +22,7 @@
 - [x] Burst 93: settings-merger already handles Stop hook generically (no changes needed)
 - [x] Burst 94: Create scripts/tail-logs.sh helper (4d4ec79)
 - [x] Burst 95: .gitignore already includes logs/ pattern (no changes needed)
+- [x] Burst 96+97: Create subagent-classifier with explore and work patterns
 
 ### Bottle: Debug Logging System
 
