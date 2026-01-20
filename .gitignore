@@ -7,3 +7,4 @@ coverage/
 # VitePress
 docs/.vitepress/dist
 docs/.vitepress/cache
+.playwright-mcp
