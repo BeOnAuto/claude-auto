@@ -556,6 +556,316 @@ EOF
 }
 
 #-----------------------------------------------------------
+# Test: full integration - explore task skips validation
+#-----------------------------------------------------------
+test_integration_explore_skips_validation() {
+    local name="integration: explore task skips validation by default"
+
+    cd "$PROJECT_ROOT"
+
+    # Create integration test file
+    local test_file="$PROJECT_ROOT/scripts/_test-integration-explore.ts"
+    cat > "$test_file" << 'EOF'
+import { classifySubagent, extractTaskDescription } from '../src/subagent-classifier.js';
+import { shouldValidateCommit } from '../src/hooks/validate-commit.js';
+import { DEFAULT_HOOK_STATE } from '../src/hook-state.js';
+
+// Simulate a transcript with an explore task
+const transcript = '<invoke name="Task"><parameter name="description">Search for auth implementation</parameter></invoke>';
+
+// Extract and classify
+const description = extractTaskDescription(transcript);
+const subagentType = classifySubagent(description || '');
+
+// Check if validation should run with default state
+const shouldValidate = shouldValidateCommit(subagentType, DEFAULT_HOOK_STATE.subagentHooks);
+
+console.log(`description: ${description}`);
+console.log(`type: ${subagentType}`);
+console.log(`shouldValidate: ${shouldValidate}`);
+EOF
+
+    local output
+    output=$(npx tsx "$test_file" 2>/dev/null) || true
+    rm -f "$test_file"
+
+    if echo "$output" | grep -q "type: explore" && echo "$output" | grep -q "shouldValidate: false"; then
+        pass "$name"
+    else
+        fail "$name" "explore task should skip validation, got: $output"
+    fi
+}
+
+#-----------------------------------------------------------
+# Test: full integration - work task runs validation
+#-----------------------------------------------------------
+test_integration_work_runs_validation() {
+    local name="integration: work task runs validation by default"
+
+    cd "$PROJECT_ROOT"
+
+    # Create integration test file
+    local test_file="$PROJECT_ROOT/scripts/_test-integration-work.ts"
+    cat > "$test_file" << 'EOF'
+import { classifySubagent, extractTaskDescription } from '../src/subagent-classifier.js';
+import { shouldValidateCommit } from '../src/hooks/validate-commit.js';
+import { DEFAULT_HOOK_STATE } from '../src/hook-state.js';
+
+// Simulate a transcript with a work task
+const transcript = '<invoke name="Task"><parameter name="description">Implement the new feature</parameter></invoke>';
+
+// Extract and classify
+const description = extractTaskDescription(transcript);
+const subagentType = classifySubagent(description || '');
+
+// Check if validation should run with default state
+const shouldValidate = shouldValidateCommit(subagentType, DEFAULT_HOOK_STATE.subagentHooks);
+
+console.log(`description: ${description}`);
+console.log(`type: ${subagentType}`);
+console.log(`shouldValidate: ${shouldValidate}`);
+EOF
+
+    local output
+    output=$(npx tsx "$test_file" 2>/dev/null) || true
+    rm -f "$test_file"
+
+    if echo "$output" | grep -q "type: work" && echo "$output" | grep -q "shouldValidate: true"; then
+        pass "$name"
+    else
+        fail "$name" "work task should run validation, got: $output"
+    fi
+}
+
+#-----------------------------------------------------------
+# Test: full integration - unknown task runs validation (safe default)
+#-----------------------------------------------------------
+test_integration_unknown_runs_validation() {
+    local name="integration: unknown task runs validation (safe default)"
+
+    cd "$PROJECT_ROOT"
+
+    # Create integration test file
+    local test_file="$PROJECT_ROOT/scripts/_test-integration-unknown.ts"
+    cat > "$test_file" << 'EOF'
+import { classifySubagent, extractTaskDescription } from '../src/subagent-classifier.js';
+import { shouldValidateCommit } from '../src/hooks/validate-commit.js';
+import { DEFAULT_HOOK_STATE } from '../src/hook-state.js';
+
+// Simulate a transcript with an ambiguous task
+const transcript = '<invoke name="Task"><parameter name="description">Process the data</parameter></invoke>';
+
+// Extract and classify
+const description = extractTaskDescription(transcript);
+const subagentType = classifySubagent(description || '');
+
+// Check if validation should run with default state
+const shouldValidate = shouldValidateCommit(subagentType, DEFAULT_HOOK_STATE.subagentHooks);
+
+console.log(`description: ${description}`);
+console.log(`type: ${subagentType}`);
+console.log(`shouldValidate: ${shouldValidate}`);
+EOF
+
+    local output
+    output=$(npx tsx "$test_file" 2>/dev/null) || true
+    rm -f "$test_file"
+
+    if echo "$output" | grep -q "type: unknown" && echo "$output" | grep -q "shouldValidate: true"; then
+        pass "$name"
+    else
+        fail "$name" "unknown task should run validation (safe default), got: $output"
+    fi
+}
+
+#-----------------------------------------------------------
+# Test: state file controls subagent validation behavior
+#-----------------------------------------------------------
+test_integration_state_controls_behavior() {
+    local name="integration: state file controls subagent validation behavior"
+
+    # Backup current state
+    local state_file="$PROJECT_ROOT/.claude.hooks.json"
+    local backup=""
+    if [[ -f "$state_file" ]]; then
+        backup=$(cat "$state_file")
+    fi
+
+    # Set custom state: enable validation for explore, disable for work
+    echo '{"subagentHooks":{"validateCommitOnExplore":true,"validateCommitOnWork":false,"validateCommitOnUnknown":true}}' > "$state_file"
+
+    cd "$PROJECT_ROOT"
+
+    # Create integration test file
+    local test_file="$PROJECT_ROOT/scripts/_test-integration-state.ts"
+    cat > "$test_file" << 'EOF'
+import { classifySubagent } from '../src/subagent-classifier.js';
+import { shouldValidateCommit } from '../src/hooks/validate-commit.js';
+import { createHookState } from '../src/hook-state.js';
+
+const hookState = createHookState(process.cwd());
+const state = hookState.read();
+
+// Test explore
+const exploreType = classifySubagent('Search for files');
+const exploreValidate = shouldValidateCommit(exploreType, state.subagentHooks);
+
+// Test work
+const workType = classifySubagent('Implement feature');
+const workValidate = shouldValidateCommit(workType, state.subagentHooks);
+
+console.log(`explore: ${exploreValidate}`);
+console.log(`work: ${workValidate}`);
+EOF
+
+    local output
+    output=$(npx tsx "$test_file" 2>/dev/null) || true
+    rm -f "$test_file"
+
+    # Restore state
+    if [[ -n "$backup" ]]; then
+        echo "$backup" > "$state_file"
+    else
+        rm -f "$state_file"
+    fi
+
+    # With our custom state: explore=true, work=false (opposite of default)
+    if echo "$output" | grep -q "explore: true" && echo "$output" | grep -q "work: false"; then
+        pass "$name"
+    else
+        fail "$name" "state file should control behavior, got: $output"
+    fi
+}
+
+#-----------------------------------------------------------
+# Test: classifier handles all explore patterns
+#-----------------------------------------------------------
+test_classifier_all_explore_patterns() {
+    local name="classifier handles all explore patterns"
+
+    cd "$PROJECT_ROOT"
+
+    local test_file="$PROJECT_ROOT/scripts/_test-all-explore.ts"
+    cat > "$test_file" << 'EOF'
+import { classifySubagent } from '../src/subagent-classifier.js';
+
+const patterns = [
+    'Search for files matching pattern',
+    'Find the implementation',
+    'Understand how it works',
+    'Investigate the error',
+    'Analyze the codebase',
+    'Look for usages',
+    'Research existing patterns',
+    'Explore the architecture',
+    'Discover dependencies',
+    'Locate the config file',
+];
+
+let allExplore = true;
+for (const p of patterns) {
+    const result = classifySubagent(p);
+    if (result !== 'explore') {
+        console.log(`FAIL: "${p}" classified as ${result}`);
+        allExplore = false;
+    }
+}
+console.log(allExplore ? 'ALL_EXPLORE' : 'SOME_FAILED');
+EOF
+
+    local output
+    output=$(npx tsx "$test_file" 2>/dev/null) || true
+    rm -f "$test_file"
+
+    if [[ "$output" == "ALL_EXPLORE" ]]; then
+        pass "$name"
+    else
+        fail "$name" "not all explore patterns classified correctly: $output"
+    fi
+}
+
+#-----------------------------------------------------------
+# Test: classifier handles all work patterns
+#-----------------------------------------------------------
+test_classifier_all_work_patterns() {
+    local name="classifier handles all work patterns"
+
+    cd "$PROJECT_ROOT"
+
+    local test_file="$PROJECT_ROOT/scripts/_test-all-work.ts"
+    cat > "$test_file" << 'EOF'
+import { classifySubagent } from '../src/subagent-classifier.js';
+
+const patterns = [
+    'Implement the new feature',
+    'Create a user form',
+    'Write tests for login',
+    'Fix the bug in parser',
+    'Refactor the database layer',
+    'Update the configuration',
+    'Add error handling',
+    'Build the API endpoint',
+    'Modify the schema',
+    'Change the default value',
+    'Remove unused code',
+    'Delete the deprecated file',
+];
+
+let allWork = true;
+for (const p of patterns) {
+    const result = classifySubagent(p);
+    if (result !== 'work') {
+        console.log(`FAIL: "${p}" classified as ${result}`);
+        allWork = false;
+    }
+}
+console.log(allWork ? 'ALL_WORK' : 'SOME_FAILED');
+EOF
+
+    local output
+    output=$(npx tsx "$test_file" 2>/dev/null) || true
+    rm -f "$test_file"
+
+    if [[ "$output" == "ALL_WORK" ]]; then
+        pass "$name"
+    else
+        fail "$name" "not all work patterns classified correctly: $output"
+    fi
+}
+
+#-----------------------------------------------------------
+# Test: DEFAULT_HOOK_STATE has correct subagentHooks defaults
+#-----------------------------------------------------------
+test_default_state_subagent_hooks() {
+    local name="DEFAULT_HOOK_STATE has correct subagentHooks defaults"
+
+    cd "$PROJECT_ROOT"
+
+    local test_file="$PROJECT_ROOT/scripts/_test-default-state.ts"
+    cat > "$test_file" << 'EOF'
+import { DEFAULT_HOOK_STATE } from '../src/hook-state.js';
+
+const sh = DEFAULT_HOOK_STATE.subagentHooks;
+const correct =
+    sh.validateCommitOnExplore === false &&
+    sh.validateCommitOnWork === true &&
+    sh.validateCommitOnUnknown === true;
+
+console.log(correct ? 'CORRECT' : `WRONG: explore=${sh.validateCommitOnExplore}, work=${sh.validateCommitOnWork}, unknown=${sh.validateCommitOnUnknown}`);
+EOF
+
+    local output
+    output=$(npx tsx "$test_file" 2>/dev/null) || true
+    rm -f "$test_file"
+
+    if [[ "$output" == "CORRECT" ]]; then
+        pass "$name"
+    else
+        fail "$name" "$output"
+    fi
+}
+
+#-----------------------------------------------------------
 # Run all tests
 #-----------------------------------------------------------
 echo "Running hook E2E tests..."
@@ -582,6 +892,16 @@ test_subagent_classifier_explore
 test_subagent_classifier_work
 test_shouldvalidatecommit_respects_state
 test_extract_task_description
+
+echo ""
+echo "=== Classification Integration Tests ==="
+test_integration_explore_skips_validation
+test_integration_work_runs_validation
+test_integration_unknown_runs_validation
+test_integration_state_controls_behavior
+test_classifier_all_explore_patterns
+test_classifier_all_work_patterns
+test_default_state_subagent_hooks
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
