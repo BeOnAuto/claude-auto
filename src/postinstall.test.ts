@@ -52,21 +52,16 @@ describe('postinstall', () => {
       );
     });
 
-    it('symlinks files from package dist/scripts/, skills/, commands/ to .claude/', () => {
+    it('symlinks files from package dist/scripts/ and commands/ to .claude/', () => {
       const projectDir = path.join(tempDir, 'my-project');
       const packageDir = path.join(tempDir, 'ketchup-package');
       fs.mkdirSync(projectDir, { recursive: true });
       fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
       fs.mkdirSync(path.join(packageDir, 'dist', 'scripts'), { recursive: true });
-      fs.mkdirSync(path.join(packageDir, 'skills'), { recursive: true });
       fs.mkdirSync(path.join(packageDir, 'commands'), { recursive: true });
       fs.writeFileSync(
         path.join(packageDir, 'dist', 'scripts', 'session-start.js'),
         'export default {}'
-      );
-      fs.writeFileSync(
-        path.join(packageDir, 'skills', 'my-skill.md'),
-        '# Skill'
       );
       fs.writeFileSync(
         path.join(packageDir, 'commands', 'my-command.md'),
@@ -78,17 +73,11 @@ describe('postinstall', () => {
 
       expect(result.symlinkedFiles).toEqual([
         'scripts/session-start.js',
-        'skills/my-skill.md',
         'commands/my-command.md',
       ]);
       expect(
         fs.lstatSync(
           path.join(projectDir, '.claude', 'scripts', 'session-start.js')
-        ).isSymbolicLink()
-      ).toBe(true);
-      expect(
-        fs.lstatSync(
-          path.join(projectDir, '.claude', 'skills', 'my-skill.md')
         ).isSymbolicLink()
       ).toBe(true);
       expect(

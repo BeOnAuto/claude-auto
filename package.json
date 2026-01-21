@@ -51,8 +51,9 @@
     "bin/",
     "templates/",
     "scripts/",
-    "skills/",
-    "commands/"
+    "commands/",
+    "validators/",
+    "reminders/"
   ],
   "engines": {
     "node": ">=18.0.0"

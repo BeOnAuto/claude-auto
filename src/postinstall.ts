@@ -8,7 +8,6 @@ import { mergeSettings } from './settings-merger.js';
 
 const SYMLINK_DIRS = [
   { name: 'scripts', sourcePath: 'dist/scripts', filter: (f: string) => f.endsWith('.js') },
-  { name: 'skills', sourcePath: 'skills' },
   { name: 'commands', sourcePath: 'commands' },
   { name: 'validators', sourcePath: 'validators' },
   { name: 'reminders', sourcePath: 'reminders' },

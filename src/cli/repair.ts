@@ -8,7 +8,7 @@ type RepairResult = {
 };
 
 export function getExpectedSymlinks(packageDir: string): string[] {
-  const dirs = ['scripts', 'skills', 'commands', 'validators', 'reminders'];
+  const dirs = ['scripts', 'commands', 'validators', 'reminders'];
   const files: string[] = [];
 
   for (const dir of dirs) {

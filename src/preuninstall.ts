@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import { removeSymlink } from './linker.js';
 import { findProjectRoot } from './root-finder.js';
 
-const SYMLINK_DIRS = ['scripts', 'skills', 'commands'];
+const SYMLINK_DIRS = ['scripts', 'commands', 'validators', 'reminders'];
 
 function removeSymlinksInDir(dir: string): void {
   if (!fs.existsSync(dir)) {

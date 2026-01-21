@@ -20,10 +20,6 @@ export function createCli(): Command {
     .description('Recreate symlinks');
 
   program
-    .command('skills')
-    .description('List skills with metadata');
-
-  program
     .command('reminders')
     .description('List reminders with metadata');
 
