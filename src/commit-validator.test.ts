@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   extractAppeal,
   getCommitContext,
+  handleCommitValidation,
   isCommitCommand,
   isValidAppeal,
   runValidator,
@@ -292,5 +293,72 @@ describe('validateCommit', () => {
     expect(results).toEqual([
       { validator: 'no-dangerous-git', decision: 'NACK', reason: '--force is forbidden', appealable: false },
     ]);
+  });
+});
+
+describe('handleCommitValidation', () => {
+  it('allows commit when all validators ACK', () => {
+    const executor = vi.fn().mockReturnValue({ status: 0, stdout: '{"decision":"ACK"}' });
+    const validators: Validator[] = [
+      { name: 'v1', description: 'd', enabled: true, content: 'c', path: '/v.md' },
+    ];
+    const context = { diff: '+a', files: ['a.txt'], message: 'feat: add feature' };
+
+    const result = handleCommitValidation(validators, context, executor);
+
+    expect(result).toEqual({ allowed: true, results: expect.any(Array) });
+  });
+
+  it('blocks commit when validator NACKs without appeal', () => {
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: '{"decision":"NACK","reason":"Missing tests"}',
+    });
+    const validators: Validator[] = [
+      { name: 'coverage-rules', description: 'd', enabled: true, content: 'c', path: '/v.md' },
+    ];
+    const context = { diff: '+a', files: ['a.txt'], message: 'feat: add feature' };
+
+    const result = handleCommitValidation(validators, context, executor);
+
+    expect(result).toEqual({
+      allowed: false,
+      results: expect.any(Array),
+      blockedBy: ['coverage-rules'],
+    });
+  });
+
+  it('allows commit when valid appeal overrides appealable NACK', () => {
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: '{"decision":"NACK","reason":"Missing tests"}',
+    });
+    const validators: Validator[] = [
+      { name: 'coverage-rules', description: 'd', enabled: true, content: 'c', path: '/v.md' },
+    ];
+    const context = { diff: '+a', files: ['a.txt'], message: 'feat: add feature [appeal: coherence]' };
+
+    const result = handleCommitValidation(validators, context, executor);
+
+    expect(result).toEqual({ allowed: true, results: expect.any(Array), appeal: 'coherence' });
+  });
+
+  it('blocks commit when no-dangerous-git NACKs even with appeal', () => {
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: '{"decision":"NACK","reason":"--force forbidden"}',
+    });
+    const validators: Validator[] = [
+      { name: 'no-dangerous-git', description: 'd', enabled: true, content: 'c', path: '/v.md' },
+    ];
+    const context = { diff: '+a', files: ['a.txt'], message: 'feat: force push [appeal: coherence]' };
+
+    const result = handleCommitValidation(validators, context, executor);
+
+    expect(result).toEqual({
+      allowed: false,
+      results: expect.any(Array),
+      blockedBy: ['no-dangerous-git'],
+    });
   });
 });

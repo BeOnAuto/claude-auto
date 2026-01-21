@@ -104,3 +104,46 @@ export function validateCommit(
     };
   });
 }
+
+export interface HandleCommitValidationResult {
+  allowed: boolean;
+  results: CommitValidationResult[];
+  blockedBy?: string[];
+  appeal?: string;
+}
+
+export function handleCommitValidation(
+  validators: Validator[],
+  context: CommitContext,
+  executor: Executor = spawnSync
+): HandleCommitValidationResult {
+  const results = validateCommit(validators, context, executor);
+  const appeal = extractAppeal(context.message);
+  const validAppeal = appeal && isValidAppeal(appeal);
+
+  const nacks = results.filter((r) => r.decision === 'NACK');
+  const nonAppealableNacks = nacks.filter((r) => !r.appealable);
+  const appealableNacks = nacks.filter((r) => r.appealable);
+
+  if (nonAppealableNacks.length > 0) {
+    return {
+      allowed: false,
+      results,
+      blockedBy: nonAppealableNacks.map((r) => r.validator),
+    };
+  }
+
+  if (appealableNacks.length > 0 && !validAppeal) {
+    return {
+      allowed: false,
+      results,
+      blockedBy: appealableNacks.map((r) => r.validator),
+    };
+  }
+
+  if (validAppeal && appeal) {
+    return { allowed: true, results, appeal };
+  }
+
+  return { allowed: true, results };
+}
