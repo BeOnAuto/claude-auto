@@ -1,4 +1,3 @@
-import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
@@ -18,6 +17,19 @@ describe('default validators', () => {
       enabled: true,
       content: expect.stringContaining('CLAUDE.md'),
       path: path.join(validatorsDir, 'ketchup-rules.md'),
+    });
+  });
+
+  it('no-dangerous-git.md exists and is a valid enabled validator', () => {
+    const validators = loadValidators([validatorsDir]);
+    const noDangerousGit = validators.find((v) => v.name === 'no-dangerous-git');
+
+    expect(noDangerousGit).toEqual({
+      name: 'no-dangerous-git',
+      description: expect.any(String),
+      enabled: true,
+      content: expect.stringContaining('--force'),
+      path: path.join(validatorsDir, 'no-dangerous-git.md'),
     });
   });
 });
