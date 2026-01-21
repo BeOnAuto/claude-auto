@@ -144,4 +144,44 @@ describe('runValidator', () => {
     expect(prompt).toContain('<files>');
     expect(prompt).toContain('test.txt');
   });
+
+  it('parses ACK response', () => {
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: '{"decision":"ACK"}',
+    });
+
+    const validator: Validator = {
+      name: 'test',
+      description: 'Test',
+      enabled: true,
+      content: 'Check',
+      path: '/test.md',
+    };
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+
+    const result = runValidator(validator, context, executor);
+
+    expect(result).toEqual({ decision: 'ACK' });
+  });
+
+  it('parses NACK response with reason', () => {
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: '{"decision":"NACK","reason":"Missing tests"}',
+    });
+
+    const validator: Validator = {
+      name: 'test',
+      description: 'Test',
+      enabled: true,
+      content: 'Check',
+      path: '/test.md',
+    };
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+
+    const result = runValidator(validator, context, executor);
+
+    expect(result).toEqual({ decision: 'NACK', reason: 'Missing tests' });
+  });
 });
