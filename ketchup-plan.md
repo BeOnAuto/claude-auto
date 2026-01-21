@@ -72,6 +72,17 @@ Key decisions made:
 - [x] Burst 32: handleCommitValidation applies appeal logic [depends: 31]
 - [x] Burst 33: Block message includes appeal instructions [depends: 32]
 
+### Bottle: Reminders System (Replaces Skills)
+- [x] Burst 34-45: Core reminder-loader.ts with scan, parse, match, sort [depends: none]
+- [x] Burst 46: session-start uses reminder-loader [depends: 45]
+- [x] Burst 47: user-prompt-submit uses reminder-loader [depends: 45]
+- [x] Burst 48: pre-tool-use uses reminder-loader with toolName context [depends: 45]
+- [x] Burst 49-50: CLI reminders command [depends: 45]
+- [x] Burst 51: Create reminders/ketchup.md from skills/ketchup.enforced.md [depends: 45]
+- [x] Burst 52: Update index.ts exports [depends: 45]
+- [x] Burst 53: Update postinstall/repair to symlink reminders/ [depends: 51]
+- [x] Burst 54-57: Delete skills system (skills-loader, cli/skills, skills/) [depends: 46-53]
+
 ## Architecture Details
 
 ### Config Schema
@@ -138,6 +149,36 @@ Respond with JSON: {"decision":"ACK"} or {"decision":"NACK","reason":"..."}
 Valid appeals: `coherence`, `existing-gap`, `debug-branchless`
 Format: `[appeal: justification]` in commit message
 Non-appealable: `no-dangerous-git` (--force and --no-verify always blocked)
+
+### Reminders System
+Reminders replace the `.enforced.md` skills system with conditional injection based on context.
+
+**Frontmatter Schema:**
+```yaml
+---
+when:
+  hook: SessionStart | PreToolUse | UserPromptSubmit | Stop
+  mode: plan | explore | work | unknown
+  toolName: Bash | Edit | Write | Read | ...  # PreToolUse only
+  customKey: value  # any key from .claude.hooks.json state
+priority: 100  # higher = first (default: 0)
+---
+```
+
+**Matching Rules:**
+- No `when:` = unconditional, always matches
+- All conditions use implicit AND (all must match)
+- Unspecified keys = not checked (wildcard)
+
+**Files Created:**
+- `src/reminder-loader.ts` + tests
+- `src/cli/reminders.ts` + tests
+- `reminders/ketchup.md`
+
+**Files Deleted:**
+- `src/skills-loader.ts` + tests
+- `src/cli/skills.ts` + tests
+- `skills/` directory
 
 ### Note
 CLAUDE.md still uses "plea" terminology - needs manual update to "appeal" (protected by deny-list).
