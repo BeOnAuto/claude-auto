@@ -59,3 +59,16 @@ export function matchReminders(reminders: Reminder[], context: ReminderContext):
 export function sortByPriority(reminders: Reminder[]): Reminder[] {
   return [...reminders].sort((a, b) => b.priority - a.priority);
 }
+
+export function loadReminders(dir: string, context: ReminderContext): Reminder[] {
+  const remindersDir = path.join(dir, 'reminders');
+  const filenames = scanReminders(dir);
+
+  const reminders = filenames.map((filename) => {
+    const content = fs.readFileSync(path.join(remindersDir, filename), 'utf8');
+    return parseReminder(content, filename);
+  });
+
+  const matched = matchReminders(reminders, context);
+  return sortByPriority(matched);
+}

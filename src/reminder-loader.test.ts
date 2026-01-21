@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { matchReminders, parseReminder, scanReminders, sortByPriority } from './reminder-loader.js';
+import { loadReminders, matchReminders, parseReminder, scanReminders, sortByPriority } from './reminder-loader.js';
 import type { Reminder, ReminderContext } from './reminder-loader.js';
 
 describe('scanReminders', () => {
@@ -104,5 +104,51 @@ describe('sortByPriority', () => {
     const result = sortByPriority(reminders);
 
     expect(result.map((r: Reminder) => r.name)).toEqual(['high', 'medium', 'low', 'default']);
+  });
+});
+
+describe('loadReminders', () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-reminder-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  it('scans, parses, matches, and sorts reminders from directory', () => {
+    const remindersDir = path.join(tempDir, 'reminders');
+    fs.mkdirSync(remindersDir);
+
+    fs.writeFileSync(
+      path.join(remindersDir, 'always.md'),
+      `---
+priority: 10
+---
+Always shown`
+    );
+    fs.writeFileSync(
+      path.join(remindersDir, 'high-priority.md'),
+      `---
+priority: 100
+---
+High priority`
+    );
+    fs.writeFileSync(
+      path.join(remindersDir, 'session-only.md'),
+      `---
+when:
+  hook: PreToolUse
+priority: 50
+---
+Session only`
+    );
+
+    const context: ReminderContext = { hook: 'SessionStart' };
+    const result = loadReminders(tempDir, context);
+
+    expect(result.map((r) => r.name)).toEqual(['high-priority', 'always']);
   });
 });
