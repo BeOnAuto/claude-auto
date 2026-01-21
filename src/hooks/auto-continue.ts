@@ -1,6 +1,20 @@
 import { readFileSync } from 'node:fs';
 
 import type { ClueCollectorResult } from '../clue-collector.js';
+import { createHookState } from '../hook-state.js';
+
+export interface StopHookInput {
+  session_id?: string;
+  transcript_path?: string;
+  stop_hook_active?: boolean;
+  cwd?: string;
+  permission_mode?: string;
+}
+
+export interface StopHookResult {
+  decision: 'allow' | 'block';
+  reason: string;
+}
 
 export interface IncompleteBurstsResult {
   count: number;
@@ -65,4 +79,25 @@ STOP if:
 - No signals of remaining work
 
 Respond JSON only: {"decision":"CONTINUE","reason":"..."} or {"decision":"STOP","reason":"..."}`;
+}
+
+export function handleStop(projectDir: string, input: StopHookInput): StopHookResult {
+  const stateManager = createHookState(projectDir);
+  const state = stateManager.read();
+  const { mode, skipModes } = state.autoContinue;
+
+  if (mode === 'off') {
+    return { decision: 'allow', reason: 'auto-continue disabled' };
+  }
+
+  if (input.stop_hook_active) {
+    return { decision: 'allow', reason: 'stop hook already active' };
+  }
+
+  const modesToSkip = skipModes ?? ['plan'];
+  if (input.permission_mode && modesToSkip.includes(input.permission_mode)) {
+    return { decision: 'allow', reason: `skipping mode: ${input.permission_mode}` };
+  }
+
+  return { decision: 'allow', reason: 'no work remaining' };
 }

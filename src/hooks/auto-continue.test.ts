@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { getIncompleteBursts, buildPrompt } from './auto-continue.js';
+import { getIncompleteBursts, buildPrompt, handleStop, type StopHookInput } from './auto-continue.js';
 import type { ClueCollectorResult } from '../clue-collector.js';
 
 describe('auto-continue hook', () => {
@@ -123,6 +123,50 @@ describe('auto-continue hook', () => {
 
       expect(result).toContain('(no clues found)');
       expect(result).toContain('(no chats found)');
+    });
+  });
+
+  describe('handleStop', () => {
+    it('returns allow when mode is off', () => {
+      const claudeDir = path.join(tempDir, '.claude');
+      fs.mkdirSync(claudeDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(tempDir, '.claude.hooks.json'),
+        JSON.stringify({ autoContinue: { mode: 'off' } })
+      );
+
+      const input: StopHookInput = { session_id: 'test-session' };
+      const result = handleStop(tempDir, input);
+
+      expect(result).toEqual({ decision: 'allow', reason: 'auto-continue disabled' });
+    });
+
+    it('returns allow when stop_hook_active is true', () => {
+      const claudeDir = path.join(tempDir, '.claude');
+      fs.mkdirSync(claudeDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(tempDir, '.claude.hooks.json'),
+        JSON.stringify({ autoContinue: { mode: 'smart' } })
+      );
+
+      const input: StopHookInput = { session_id: 'test-session', stop_hook_active: true };
+      const result = handleStop(tempDir, input);
+
+      expect(result).toEqual({ decision: 'allow', reason: 'stop hook already active' });
+    });
+
+    it('returns allow when permission_mode is in skipModes', () => {
+      const claudeDir = path.join(tempDir, '.claude');
+      fs.mkdirSync(claudeDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(tempDir, '.claude.hooks.json'),
+        JSON.stringify({ autoContinue: { mode: 'smart', skipModes: ['plan'] } })
+      );
+
+      const input: StopHookInput = { session_id: 'test-session', permission_mode: 'plan' };
+      const result = handleStop(tempDir, input);
+
+      expect(result).toEqual({ decision: 'allow', reason: 'skipping mode: plan' });
     });
   });
 });
