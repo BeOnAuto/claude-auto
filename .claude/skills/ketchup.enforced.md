@@ -1,1 +1,0 @@
-/Users/sam/code/auto/claude-ketchup/skills/ketchup.enforced.md

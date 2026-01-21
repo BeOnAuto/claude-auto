@@ -1,8 +1,0 @@
-scripts/pre-tool-use.js
-scripts/session-start.js
-scripts/user-prompt-submit.js
-skills/ketchup.enforced.md
-commands/ketchup.md
-*.local.*
-state.json
-logs/

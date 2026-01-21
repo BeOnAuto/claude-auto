@@ -1,1 +1,0 @@
-/Users/sam/code/auto/claude-ketchup/commands/ketchup.md
