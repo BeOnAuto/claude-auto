@@ -45,4 +45,17 @@ describe('default validators', () => {
       path: path.join(validatorsDir, 'burst-atomicity.md'),
     });
   });
+
+  it('coverage-rules.md exists and enforces coverage requirements', () => {
+    const validators = loadValidators([validatorsDir]);
+    const coverageRules = validators.find((v) => v.name === 'coverage-rules');
+
+    expect(coverageRules).toEqual({
+      name: 'coverage-rules',
+      description: expect.any(String),
+      enabled: true,
+      content: expect.stringContaining('@ts-ignore'),
+      path: path.join(validatorsDir, 'coverage-rules.md'),
+    });
+  });
 });
