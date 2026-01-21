@@ -17,6 +17,13 @@ export interface Reminder {
   content: string;
 }
 
+export interface ReminderContext {
+  hook: string;
+  mode?: string;
+  toolName?: string;
+  [key: string]: unknown;
+}
+
 export function scanReminders(dir: string): string[] {
   const remindersDir = path.join(dir, 'reminders');
 
@@ -37,4 +44,14 @@ export function parseReminder(content: string, filename: string): Reminder {
     priority: (data.priority as number) || 0,
     content: body.trim(),
   };
+}
+
+export function matchReminders(reminders: Reminder[], context: ReminderContext): Reminder[] {
+  return reminders.filter((reminder) => {
+    const conditions = Object.entries(reminder.when);
+    if (conditions.length === 0) {
+      return true;
+    }
+    return conditions.every(([key, value]) => context[key] === value);
+  });
 }

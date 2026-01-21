@@ -4,7 +4,8 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { parseReminder, scanReminders } from './reminder-loader.js';
+import { matchReminders, parseReminder, scanReminders } from './reminder-loader.js';
+import type { Reminder, ReminderContext } from './reminder-loader.js';
 
 describe('scanReminders', () => {
   let tempDir: string;
@@ -70,5 +71,23 @@ Just some content without frontmatter.`;
       priority: 0,
       content: '# Simple Reminder\n\nJust some content without frontmatter.',
     });
+  });
+});
+
+describe('matchReminders', () => {
+  it('filters reminders by context with implicit AND on all when conditions', () => {
+    const reminders: Reminder[] = [
+      { name: 'always', when: {}, priority: 0, content: 'Always shown' },
+      { name: 'session-only', when: { hook: 'SessionStart' }, priority: 0, content: 'Session' },
+      { name: 'plan-mode', when: { mode: 'plan' }, priority: 0, content: 'Plan' },
+      { name: 'session-plan', when: { hook: 'SessionStart', mode: 'plan' }, priority: 0, content: 'Both' },
+      { name: 'bash-tool', when: { hook: 'PreToolUse', toolName: 'Bash' }, priority: 0, content: 'Bash' },
+      { name: 'custom-key', when: { customFlag: true }, priority: 0, content: 'Custom' },
+    ];
+
+    const context: ReminderContext = { hook: 'SessionStart', mode: 'plan' };
+    const result = matchReminders(reminders, context);
+
+    expect(result.map((r) => r.name)).toEqual(['always', 'session-only', 'plan-mode', 'session-plan']);
   });
 });
