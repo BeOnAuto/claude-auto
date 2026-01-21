@@ -7,7 +7,7 @@ export default defineConfig({
 	lang: "en-US",
 	title: "Claude Ketchup",
 	description:
-		"From AI Janitor to System Architect. The Quality Stack for Claude Code.",
+		"Stop Babysitting. Start Parallelizing. True automation with quality guarantees.",
 	appearance: "dark",
 
 	themeConfig: {
@@ -103,7 +103,7 @@ export default defineConfig({
 			"meta",
 			{
 				property: "og:title",
-				content: "Claude Ketchup - From AI Janitor to System Architect",
+				content: "Claude Ketchup - Stop Babysitting. Start Parallelizing.",
 			},
 		],
 		["meta", { property: "og:type", content: "website" }],
@@ -112,7 +112,7 @@ export default defineConfig({
 			{
 				property: "og:description",
 				content:
-					"Stop cleaning up after AI. Get Speed, Quality, AND Control with the Quality Stack: Auto-Planning, Parallel Execution, Supervisor Validation, TCR Discipline.",
+					"True automation with quality guarantees. Ketchup + Git Worktrees = 5-10x productivity. From Babysitter to Bionic.",
 			},
 		],
 		[
@@ -135,7 +135,7 @@ export default defineConfig({
 			"meta",
 			{
 				property: "og:image:alt",
-				content: "Claude Ketchup - From AI Janitor to System Architect",
+				content: "Claude Ketchup - Stop Babysitting. Start Parallelizing.",
 			},
 		],
 		["meta", { property: "og:site_name", content: "Claude Ketchup" }],
@@ -144,7 +144,7 @@ export default defineConfig({
 			"meta",
 			{
 				name: "twitter:title",
-				content: "Claude Ketchup - From AI Janitor to System Architect",
+				content: "Claude Ketchup - Stop Babysitting. Start Parallelizing.",
 			},
 		],
 		[
@@ -152,7 +152,7 @@ export default defineConfig({
 			{
 				name: "twitter:description",
 				content:
-					"Stop cleaning up after AI. Get Speed, Quality, AND Control with the Quality Stack.",
+					"AI-assisted coding made you a babysitter. Ketchup makes you Bionic. Supervisor AI validates commits. Auto-continue keeps going. Git worktrees multiply. 5-10 features/week.",
 			},
 		],
 		[

@@ -1,6 +1,6 @@
-# Become the System Architect
+# Getting Started
 
-In 5 minutes, you'll transform from AI Janitor to System Architect.
+Install the Quality Stack in 5 minutes.
 
 **What you'll accomplish:**
 
@@ -8,13 +8,14 @@ In 5 minutes, you'll transform from AI Janitor to System Architect.
 - See the supervisor system in action
 - Create your first skill (context injection)
 - Set up file protection
+- Understand how to parallelize with git worktrees
 
 ---
 
 ## Prerequisites
 
 - Node.js 18.0.0+
-- A project you're tired of cleaning up after AI
+- A project where you want to parallelize AI execution
 
 ---
 
@@ -61,7 +62,7 @@ Behind the scenes, claude-ketchup:
 claude-ketchup doctor
 ```
 
-All green? You're now the architect.
+All green? The Quality Stack is active. You can now walk away.
 
 ---
 
@@ -135,8 +136,43 @@ Start a Claude Code session. The supervisor will:
 1. **Inject** your guidelines at session start
 2. **Validate** every commit against your rules
 3. **ACK** clean commits, **NACK** rule violations
+4. **Auto-continue** until the plan is complete
 
-You review. You don't repair.
+You define. You release. You don't babysit.
+
+---
+
+## Step 7: Multiply with Git Worktrees
+
+Git worktrees let you have multiple working directories from the same repo:
+
+```bash
+# Create worktrees for parallel features
+git worktree add ../feature-auth feature/auth
+git worktree add ../feature-payments feature/payments
+git worktree add ../feature-dashboard feature/dashboard
+```
+
+Run a Ketchup instance in each worktree:
+
+```bash
+# Terminal 1 (feature-auth)
+cd ../feature-auth
+# Feed requirements, approve plan, start execution
+# Ketchup running...
+
+# Terminal 2 (feature-payments)
+cd ../feature-payments
+# Feed requirements, approve plan, start execution
+# Ketchup running...
+
+# Terminal 3 (feature-dashboard)
+cd ../feature-dashboard
+# Feed requirements, approve plan, start execution
+# Ketchup running...
+```
+
+Three features running simultaneously. All quality-validated.
 
 ---
 
@@ -144,12 +180,27 @@ You review. You don't repair.
 
 You installed the Quality Stack:
 
-| Component             | What It Does                  | You Just Enabled        |
-| --------------------- | ----------------------------- | ----------------------- |
-| Auto-Planning         | AI plans before coding        | ketchup-plan.md support |
-| Supervisor Validation | ACK/NACK every commit         | PreToolUse hooks        |
-| Context Injection     | Your rules, every session     | SessionStart skills     |
-| File Protection       | Deny-list for sensitive files | PreToolUse deny-list    |
+| Component         | What It Does                  | You Just Enabled        |
+| ----------------- | ----------------------------- | ----------------------- |
+| Auto-Planner      | AI plans before coding        | ketchup-plan.md support |
+| Supervisor AI     | ACK/NACK every commit         | PreToolUse hooks        |
+| Context Injection | Your rules, every session     | SessionStart skills     |
+| File Protection   | Deny-list for sensitive files | PreToolUse deny-list    |
+| Auto-Continue     | AI works until plan complete  | Stop hooks              |
+
+---
+
+## The Transformation
+
+| Before (Babysitter)              | After (Bionic)                   |
+| -------------------------------- | -------------------------------- |
+| Watching one AI session          | Directing multiple workstreams   |
+| Nudging, correcting in real-time | Defining, approving, releasing   |
+| Serial productivity              | Parallel productivity            |
+| Marginal gains (1.5x)            | Multiplicative gains (5-10x)     |
+| Brain captured by supervision    | Brain freed for the next thing   |
+
+From Babysitter to Bionic.
 
 ---
 
@@ -188,9 +239,9 @@ EOF
 
 ## Next Steps
 
-- [The Quality Stack](/ketchup-technique) - Understand the full methodology
-- [Hooks Guide](/hooks-guide) - Customize your supervision
-- [Origin Story](/origin-story) - Why this approach works
+- [The Quality Stack](/ketchup-technique) - Why you can walk away
+- [Hooks Guide](/hooks-guide) - Configure your supervision
+- [Origin Story](/origin-story) - The journey from babysitter to bionic
 
 ---
 

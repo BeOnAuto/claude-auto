@@ -3,11 +3,11 @@ layout: home
 
 hero:
   name: Claude Ketchup
-  text: From AI Janitor to System Architect
-  tagline: Stop cleaning up after AI. Start directing it.
+  text: Stop Babysitting. Start Parallelizing.
+  tagline: True automation with quality guarantees. Parallel productivity through trust.
   image:
     src: /hero.png
-    alt: Claude Ketchup - The Quality Stack
+    alt: Claude Ketchup - From Babysitter to Bionic
   actions:
     - theme: brand
       text: Get Started
@@ -22,45 +22,72 @@ hero:
 features:
   - icon:
       src: /icon-janitor.png
-    title: "The Problem: AI Janitor"
-    details: Ask for Hello World, get 10,000 lines of code. You spend more time cleaning up than building.
+    title: "The Problem: AI Babysitter"
+    details: Every AI session demands your full attention. Watching, nudging, correcting. You can't walk away.
   - icon:
       src: /icon-architect.png
-    title: "The Solution: System Architect"
-    details: Define requirements. Let the system execute. Review results, not repairs.
+    title: "The Solution: Parallel Execution"
+    details: Trust the system. Walk away. Open another worktree. Run 3-5 features in parallel.
   - icon:
       src: /icon-tcr.png
     title: TCR Discipline
-    details: "Every change earns its place or disappears through <code>test && commit || revert</code>"
+    details: "<code>test && commit || revert</code>. Bad code auto-reverts. Problems can't ship."
   - icon:
       src: /icon-supervisor.png
-    title: Supervisor Validation
-    details: ACK or NACK. Every commit is validated against your rules before it lands.
+    title: Supervisor AI
+    details: An impartial AI validates every commit against your criteria. It reviews so you don't have to.
   - icon:
       src: /icon-parallel.png
-    title: Parallel Execution
-    details: Independent bursts run simultaneously. Speed without sacrificing quality.
+    title: Auto-Continue
+    details: Keeps going until the plan is done. No nudging required.
   - icon:
       src: /icon-coverage.png
-    title: 100% Coverage by Construction
-    details: No untested code. As per TDD, it exists only if a test demanded it.
+    title: 100% Coverage
+    details: Enforced by construction. Quality is guaranteed.
 ---
 
-## The Quality Stack
+## The Quality Stack: Why You Can Walk Away
 
-Speed, Quality, AND Control. The Ketchup Technique delivers all three through:
+You can only parallelize if you trust the execution. The Quality Stack creates that trust:
 
-| Component                 | What It Does                                           |
-| ------------------------- | ------------------------------------------------------ |
-| **Auto-Planning**         | AI plans in `ketchup-plan.md` before writing code      |
-| **Parallel Execution**    | Sub-agents work on independent bursts simultaneously   |
-| **Supervisor Validation** | Every commit is ACK'd or NACK'd by the validator       |
-| **Auto-Continue**         | AI keeps working until the plan is complete            |
-| **TCR Discipline**        | Tests pass → commit. Tests fail → revert. No patching. |
+| Component          | What It Does                               | Result                          |
+| ------------------ | ------------------------------------------ | ------------------------------- |
+| **Auto-Planner**   | Generates plan from your requirements      | No need to specify every detail |
+| **Supervisor AI**  | Validates every commit against your criteria | Automated review               |
+| **TCR Discipline** | Test && Commit \|\| Revert                 | Bad code auto-reverts           |
+| **Auto-Continue**  | Keeps going until the plan is done         | No nudging required             |
 
-## Three Steps to Architect Mode
+The system is trustworthy. That's what frees you.
 
-### 1. Feed
+---
+
+## Git Worktrees: The Multiplier
+
+Git worktrees let you have multiple working directories from the same repo. Each on a different branch. Each isolated.
+
+Combine with Ketchup:
+
+| Worktree            | Feature               | Status               |
+| ------------------- | --------------------- | -------------------- |
+| `feature-auth`      | Authentication system | Ketchup executing... |
+| `feature-payments`  | Payment integration   | Ketchup executing... |
+| `feature-dashboard` | Admin dashboard       | Ketchup executing... |
+
+Three features running simultaneously. All quality-validated.
+
+| Approach                  | Features/Week |
+| ------------------------- | ------------- |
+| Manual coding             | 1             |
+| AI-assisted (babysitting) | 1-2           |
+| **Ketchup + Worktrees**   | **5-10**      |
+
+The bottleneck becomes defining requirements, not executing them.
+
+---
+
+## Three Steps
+
+### 1. Define
 
 ::: code-group
 
@@ -73,25 +100,23 @@ yarn add -D claude-ketchup
 ```
 
 ```bash [pnpm]
-# --allow-build permits the postinstall script to set up .claude/
 pnpm add -D claude-ketchup --allow-build=claude-ketchup
 ```
 
 ```bash [bun]
-# --trust permits the postinstall script to set up .claude/
 bun add -D claude-ketchup --trust claude-ketchup
 ```
 
 :::
 
-Install once. The hooks inject automatically.
+Feed your PRD, Architecture.md, or requirements. Ketchup auto-generates the plan with Bottles, Bursts, and Dependencies. Review and approve.
 
-### 2. Approve
+### 2. Release
 
-Define your requirements. The supervisor enforces them.
+Start execution and walk away. The Supervisor validates every commit. Auto-continue keeps it going until done.
 
-### 3. Watch
+### 3. Multiply
 
-Architecture emerges from passing tests. You review clean increments.
+Open another git worktree. Start another Ketchup instance. Three features. Five features. All in parallel.
 
-**[Start your transformation →](/getting-started)**
+**[Get Started →](/getting-started)**

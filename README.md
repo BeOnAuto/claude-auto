@@ -1,57 +1,92 @@
 # Claude Ketchup
 
-**From AI Janitor to System Architect**
+**Stop Babysitting. Start Parallelizing.**
 
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE) [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=flat-square)]()
 
 ---
 
-## The Problem: You're the AI Janitor
+## The Problem: You're an AI Babysitter
 
-Ask Claude for "Hello World" and you get a nav bar, login system, and comment section.
+AI-assisted coding captured your cognitive load.
 
-AI doesn't get tired. It over-executes. And you're left cleaning up the mess.
+Every session demands your full attention. Watching, nudging, correcting. You can't walk away because you don't trust the system.
 
-Without discipline:
+- You can't context-switch while supervising
+- One task at a time, full attention required
+- The bottleneck is your attention, not AI's speed
 
-- Features nobody asked for
-- Defensive code paths that never run
-- Enterprise architecture for throwaway scripts
-- Hours spent reviewing, reverting, and redoing
-
-**You wanted an AI partner. You got a mess-making machine.**
+That's not multiplication. That's marginally faster serial work.
 
 ---
 
 ## The Solution: The Quality Stack
 
-Claude Ketchup transforms your role. Stop cleaning up. Start directing.
+Claude Ketchup creates trust. Trust enables parallelization.
 
-| Component                 | What It Does                                            |
-| ------------------------- | ------------------------------------------------------- |
-| **Auto-Planning**         | AI plans in `ketchup-plan.md` before writing code       |
-| **Parallel Execution**    | Sub-agents work on independent bursts simultaneously    |
-| **Supervisor Validation** | Every commit is ACK'd or NACK'd by the validator        |
-| **Auto-Continue**         | AI keeps working until the plan is complete             |
-| **TCR Discipline**        | Test && Commit \|\| Revert. Tests pass or code reverts. |
+| Component          | What It Does                                 | Result                          |
+| ------------------ | -------------------------------------------- | ------------------------------- |
+| **Auto-Planner**   | Generates plan from your requirements        | No need to specify every detail |
+| **Supervisor AI**  | Validates every commit against your criteria | Automated review                |
+| **TCR Discipline** | Test && Commit \|\| Revert                   | Bad code auto-reverts           |
+| **Auto-Continue**  | Keeps going until the plan is done           | No nudging required             |
 
-**Speed. Quality. Control. All three.**
+The system is trustworthy. That's what frees you.
 
 ---
 
-## The Plan: Feed, Approve, Watch
+## The Multiplier: Git Worktrees
 
-### 1. Feed
+Git worktrees let you run multiple isolated workspaces from the same repo.
 
-Define requirements in `ketchup-plan.md`. Bottles (features) contain Bursts (atomic changes).
+```bash
+# Create worktrees for parallel features
+git worktree add ../feature-auth feature/auth
+git worktree add ../feature-payments feature/payments
+git worktree add ../feature-dashboard feature/dashboard
+```
 
-### 2. Approve
+Each runs a Ketchup instance. All quality-validated.
 
-The supervisor validates every commit against your rules. ACK proceeds. NACK reverts.
+| Approach                  | Features/Week |
+| ------------------------- | ------------- |
+| Manual coding             | 1             |
+| AI-assisted (babysitting) | 1-2           |
+| **Ketchup + Worktrees**   | **5-10**      |
 
-### 3. Watch
+---
 
-Architecture emerges from passing tests. You review results, not repairs.
+## Three Steps
+
+### 1. Define
+
+```bash
+pnpm add -D claude-ketchup
+```
+
+Feed your requirements. Ketchup auto-generates the plan with Bottles, Bursts, and Dependencies.
+
+### 2. Release
+
+Start execution and walk away. The Supervisor validates every commit. Auto-continue keeps it going until done.
+
+### 3. Multiply
+
+Open another worktree. Start another instance. Three features. Five features. All in parallel.
+
+---
+
+## The Transformation
+
+| Before (Babysitter)              | After (Bionic)                 |
+| -------------------------------- | ------------------------------ |
+| Watching one AI session          | Directing multiple workstreams |
+| Nudging, correcting in real-time | Defining, approving, releasing |
+| Serial productivity              | Parallel productivity          |
+| Marginal gains (1.5x)            | Multiplicative gains (5-10x)   |
+| Brain captured by supervision    | Brain freed for the next thing |
+
+From Babysitter to Bionic.
 
 ---
 
@@ -64,7 +99,7 @@ pnpm add -D claude-ketchup
 # Verify
 claude-ketchup doctor
 
-# You're now the architect
+# You're ready to become Bionic
 ```
 
 After installation, claude-ketchup automatically:
@@ -76,29 +111,11 @@ After installation, claude-ketchup automatically:
 
 ---
 
-## The Stakes
-
-### Without Claude Ketchup
-
-- Endless code review cycles
-- "Let me just fix this one thing" spirals
-- Coverage gaps and untested paths
-- AI that fights your architecture
-
-### With Claude Ketchup
-
-- Predictable, reviewable increments
-- 100% coverage by construction
-- Clean git history (one behavior per commit)
-- AI that follows your system
-
----
-
 ## Authority: Battle-Tested
 
-Built on foundations from Kent Beck's TCR and Extreme Programming principles. Refined through production features at Auto. Used daily by the creator on real codebases.
+Built on foundations from Kent Beck's TCR and Extreme Programming principles. Refined through production features at Auto.
 
-The technique evolved from constant refinement: notice where Claude misbehaves, automate a fix, repeat. Each problem became a feature.
+The on.auto team ships 5-10 features per week. Not 1-2.
 
 **[Read the origin story →](./docs/origin-story.md)**
 
@@ -119,10 +136,10 @@ The technique evolved from constant refinement: notice where Claude misbehaves, 
 
 | Guide                                            | Description                |
 | ------------------------------------------------ | -------------------------- |
-| [Getting Started](./docs/getting-started.md)     | 5-minute setup tutorial    |
-| [The Quality Stack](./docs/ketchup-technique.md) | The methodology explained  |
-| [Hooks Guide](./docs/hooks-guide.md)             | Practical how-to guides    |
-| [API Reference](./docs/api-reference.md)         | Complete API documentation |
+| [Become Bionic](./docs/getting-started.md)       | 5-minute transformation    |
+| [The Quality Stack](./docs/ketchup-technique.md) | Why you can walk away      |
+| [Hooks Guide](./docs/hooks-guide.md)             | Configure your supervision |
+| [API Reference](./docs/api-reference.md)         | Programmatic access        |
 | [Architecture](./docs/architecture.md)           | System design internals    |
 
 ---

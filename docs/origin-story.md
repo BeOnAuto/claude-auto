@@ -1,26 +1,34 @@
-# The Origin Story: From Janitor to Architect
+# The Origin Story: From Babysitter to Bionic
 
-> How one developer stopped cleaning up after AI
-
----
-
-## The Janitor Phase
-
-Ask Claude to write a script that posts something online. You get the script, a README you didn't need, helper functions for edge cases that don't exist, and maybe a logging framework.
-
-Ask for "Hello World" and receive a nav bar, login system, and comment section.
-
-**I was spending more time cleaning up than building.**
-
-AI doesn't get tired. It over-executes. And I was the janitor, sweeping up after every session.
-
-Claude Code would hallucinate features nobody asked for, add defensive code paths that would never run, and build enterprise architecture for throwaway scripts.
-
-I wanted precision. Something that could use the machine's output without drowning in it.
+> How I stopped supervising AI and started parallelizing
 
 ---
 
-## The Search for Discipline
+## The Babysitter Phase
+
+I was stuck in a loop.
+
+Every Claude session demanded my full attention. Watching for drift. Nudging it back on track. Correcting hallucinations in real-time.
+
+I couldn't walk away. I couldn't context-switch. I couldn't parallelize.
+
+AI-assisted coding had captured my cognitive load.
+
+I adopted AI to multiply my output. Instead, I was doing one thing at a time with help that required constant supervision.
+
+That's not multiplication. That's marginally faster serial work.
+
+---
+
+## The Search for Trust
+
+### The Problem Wasn't Speed
+
+The bottleneck wasn't AI's speed. It was my attention.
+
+You can only parallelize if you trust the execution. I didn't trust Claude to execute correctly without me watching. So I watched. One task. Full attention. Forever.
+
+I needed a system I could trust.
 
 ### Extreme Programming Roots
 
@@ -38,7 +46,7 @@ The revert isn't a problem. It's a tool.
 
 ---
 
-## The Birth of Ketchup
+## The Birth of the Quality Stack
 
 ### Why "Ketchup"?
 
@@ -58,13 +66,11 @@ A **Burst** is one test, one behavior, one commit. Atomic, independent, valuable
 
 A **Bottle** groups related bursts. Name it by capability, not sequence number.
 
-These terms have no baggage. No billions of parameters pulling them toward someone else's interpretation of what a "sprint" should contain or how a "story" should be sized. The LLM encounters them fresh.
+These terms have no baggage. No billions of parameters pulling them toward someone else's interpretation.
 
 ---
 
-## The Core Insight
-
-### Never Patch, Always Revert
+## The Core Insight: Never Patch, Always Revert
 
 Here's what Claude does when something breaks: Debug. Find the broken variable. Fix it. Now something else breaks. Fix that. The wiring's wrong. Fix the wiring. Keep going, keep patching, keep assuming the original design was correct.
 
@@ -72,25 +78,15 @@ Developers do this too. It's human nature to protect sunk costs.
 
 But I recognized the pattern from TDD practice: when code isn't flowing smoothly into place, the design is usually wrong. You're not debugging a mistake. You're polishing a flawed foundation.
 
-The Ketchup Technique enforces reversion. When tests fail, don't patch. Revert. The code disappears.
+The Quality Stack enforces reversion. When tests fail, don't patch. Revert. The code disappears.
 
 But the learning stays in the context window.
 
 The LLM still has all the context of why it failed. It's not forgetting the lesson. It has a clean slate to apply that lesson differently. It has space to think.
 
-The result is **emergent design**. Individual ants follow simple rules but colonies exhibit complex behavior. The Ketchup Technique produces architecture through simple, repeated cycles.
+The result is **emergent design**. Individual ants follow simple rules but colonies exhibit complex behavior. The Quality Stack produces architecture through simple, repeated cycles.
 
 Each burst is an ant. The system that emerges is something none of the individual bursts planned.
-
-### 100% Coverage for Free
-
-The 100% code coverage requirement sounds extreme. It would be extreme for humans: tedious, time-consuming, often impractical.
-
-But with true TDD, 100% coverage should be free.
-
-If you're genuinely driving every piece of your system with a test first, nothing should be uncovered. An uncovered line means you wrote code that wasn't demanded by a test. That's a smell.
-
-The coverage requirement isn't extra work. It's a check that the discipline is being followed.
 
 ---
 
@@ -98,9 +94,9 @@ The coverage requirement isn't extra work. It's a check that the discipline is b
 
 What changed wasn't the AI. It was my role.
 
-**Before:** I reviewed AI's work, caught problems, fixed them, reviewed again.
+**Before:** Watch AI's work, catch problems, nudge corrections, watch more.
 
-**After:** I define requirements. The system executes. I review clean increments.
+**After:** Define requirements. The system executes. Walk away. Review clean increments.
 
 The hooks enforce what I used to do manually:
 
@@ -109,23 +105,52 @@ The hooks enforce what I used to do manually:
 - Inject context at session start (skills)
 - Continue or stop intelligently (auto-continue)
 
-**I stopped being the janitor. I became the architect.**
+I stopped being the babysitter. I became Bionic.
+
+---
+
+## The Multiplier: Git Worktrees
+
+Then I discovered the real leverage.
+
+Git worktrees let you have multiple working directories from the same repo. Each on a different branch. Each isolated.
+
+Set Ketchup off on Feature A in worktree-1.
+Open worktree-2. Set Ketchup off on Feature B.
+Open worktree-3. Set Ketchup off on Feature C.
+
+Three features running simultaneously. All quality-validated.
+
+Not doing one thing faster. Doing many things at once.
+
+The on.auto team ships 5-10 features per week. Not 1-2.
 
 ---
 
 ## The Quality Stack
 
-Through refinement, five components emerged:
+Through refinement, four components emerged:
 
-| Component                 | What It Does                                |
-| ------------------------- | ------------------------------------------- |
-| **Auto-Planning**         | AI plans in `ketchup-plan.md` before coding |
-| **Parallel Execution**    | Sub-agents work on independent bursts       |
-| **Supervisor Validation** | Every commit is ACK'd or NACK'd             |
-| **Auto-Continue**         | AI keeps working until plan is complete     |
-| **TCR Discipline**        | Tests pass or code reverts                  |
+| Component          | What It Does                               | Result                          |
+| ------------------ | ------------------------------------------ | ------------------------------- |
+| **Auto-Planner**   | Generates plan from your requirements      | No need to specify every detail |
+| **Supervisor AI**  | Validates every commit against your criteria | Automated review               |
+| **TCR Discipline** | Test && Commit \|\| Revert                 | Bad code auto-reverts           |
+| **Auto-Continue**  | Keeps going until the plan is done         | No nudging required             |
 
-Together: **Speed, Quality, AND Control.**
+Together: Trust that enables parallelization.
+
+---
+
+## 100% Coverage for Free
+
+The 100% code coverage requirement sounds extreme. It would be extreme for humans: tedious, time-consuming, often impractical.
+
+But with true TDD, 100% coverage should be free.
+
+If you're genuinely driving every piece of your system with a test first, nothing should be uncovered. An uncovered line means you wrote code that wasn't demanded by a test. That's a smell.
+
+The coverage requirement isn't extra work. It's a check that the discipline is being followed.
 
 ---
 
@@ -143,8 +168,18 @@ The technique evolved to be collaborative. Team members can contribute without u
 
 ## Your Turn
 
-You don't have to be the janitor.
+You don't have to be the babysitter.
 
-**[Start your transformation →](/getting-started)**
+| Before (Babysitter)              | After (Bionic)                 |
+| -------------------------------- | ------------------------------ |
+| Watching one AI session          | Directing multiple workstreams |
+| Nudging, correcting in real-time | Defining, approving, releasing |
+| Serial productivity              | Parallel productivity          |
+| Marginal gains (1.5x)            | Multiplicative gains (5-10x)   |
+| Brain captured by supervision    | Brain freed for the next thing |
+
+From Babysitter to Bionic.
+
+**[Get Started →](/getting-started)**
 
 ---

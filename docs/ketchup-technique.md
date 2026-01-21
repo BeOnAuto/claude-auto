@@ -1,26 +1,30 @@
 # The Quality Stack
 
-> Speed, Quality, AND Control
+> Why You Can Walk Away
 
 ---
 
-## The Old Tradeoff
+## The Trap
 
-Pick two:
+AI-assisted coding promised multiplication.
 
-- Fast AI execution → Quality suffers, control lost
-- High quality code → Slow, micromanagement required
-- Tight control → Bottleneck, defeats AI purpose
+What it delivered was faster serial work with supervision requirements. You're still doing one thing at a time. You have help, but help that requires your constant attention.
 
-**The Quality Stack breaks this tradeoff. You get all three.**
+The bottleneck moved from typing speed to cognitive load.
+
+You're faster at producing, but you can't walk away. You can't parallelize.
+
+True multiplication requires trust. Trust that the system will execute correctly without you watching.
+
+The Quality Stack creates that trust.
 
 ---
 
-## The Five Components
+## The Four Components
 
-### 1. Auto-Planning
+### 1. Auto-Planner
 
-Before code, there's a plan.
+Feed your requirements. Get a complete plan.
 
 ```markdown
 # ketchup-plan.md
@@ -36,23 +40,11 @@ Before code, there's a plan.
 - [x] Burst 0: Project setup (abc123)
 ```
 
-**What it means for you:** AI thinks before it acts. You approve the plan, not the chaos.
+Define the goal, approve the plan. No need to specify every detail.
 
-### 2. Parallel Execution
+### 2. Supervisor AI
 
-Independent bursts run simultaneously.
-
-```
-[Burst 1] ─────► commit
-[Burst 2] ─────► commit     (parallel)
-[Burst 3] ───────────────► commit (waits for 2)
-```
-
-**What it means for you:** Speed without sacrificing quality. Sub-agents follow the same rules.
-
-### 3. Supervisor Validation
-
-Every commit faces the validator.
+An impartial AI validates every commit.
 
 ```
 Claude attempts commit
@@ -61,23 +53,37 @@ Claude attempts commit
 ┌───────────────────┐
 │  Supervisor Hook  │
 │  Checks:          │
-│  - Test coverage  │
-│  - CLAUDE.md rules│
-│  - Deny-list      │
+│  - TDD compliance │
+│  - 100% coverage  │
+│  - Your ADRs      │
 └────────┬──────────┘
          │
     ┌────┴────┐
     ▼         ▼
   ACK       NACK
-  Commit    Revert
-  lands     & rethink
+  Ships     Reverts
+            & learns
 ```
 
-**What it means for you:** Bad code never lands. The supervisor catches it.
+Automated review. Bad code never lands.
+
+### 3. TCR Discipline
+
+Test && Commit || Revert. No middle ground.
+
+```
+Red → Green → TCR → Refactor → TCR → Done
+```
+
+- Tests pass → Commit automatically
+- Tests fail → Revert completely
+- Never patch failing code
+
+Problems can't ship.
 
 ### 4. Auto-Continue
 
-AI doesn't stop until the plan is complete.
+Keeps going until the plan is done.
 
 ```
 Burst completes
@@ -97,21 +103,7 @@ Burst completes
   remains    complete
 ```
 
-**What it means for you:** No babysitting. Define the plan, walk away, review results.
-
-### 5. TCR Discipline
-
-Test && Commit || Revert. No middle ground.
-
-```
-Red → Green → TCR → Refactor → TCR → Done
-```
-
-- Tests pass → Commit automatically
-- Tests fail → Revert completely
-- Never patch failing code
-
-**What it means for you:** Every commit is proven working. No "fix the fix" commits.
+No nudging required.
 
 ---
 
@@ -210,6 +202,29 @@ Every burst ends with `[depends: ...]`:
 - `[depends: none]` - can start immediately, parallelizable
 - `[depends: N]` - must wait for burst N to complete
 - `[depends: N, M]` - must wait for bursts N and M to complete
+
+---
+
+## Git Worktrees: The Multiplier
+
+The Quality Stack creates trust. Trust enables walking away. Walking away enables parallelization.
+
+```bash
+# Create worktrees for parallel features
+git worktree add ../feature-auth feature/auth
+git worktree add ../feature-payments feature/payments
+git worktree add ../feature-dashboard feature/dashboard
+```
+
+Three isolated workspaces. Each running a Ketchup instance.
+
+| Worktree            | Feature               | Status               |
+| ------------------- | --------------------- | -------------------- |
+| `feature-auth`      | Authentication system | Ketchup executing... |
+| `feature-payments`  | Payment integration   | Ketchup executing... |
+| `feature-dashboard` | Admin dashboard       | Ketchup executing... |
+
+The bottleneck becomes defining requirements, not executing them.
 
 ---
 
@@ -327,12 +342,12 @@ pnpm test --run && git add -A && git commit -m "<MSG>" || git checkout -- .
 
 ## The Transformation
 
-| Before (AI Janitor)          | After (System Architect)        |
-| ---------------------------- | ------------------------------- |
-| Review massive PRs           | Review single-behavior commits  |
-| "Let me fix this..." spirals | System reverts, rethinks        |
-| Chase coverage gaps          | 100% by construction            |
-| Fight AI's architecture      | Architecture emerges from tests |
-| Clean up hallucinations      | Supervisor blocks bad commits   |
+| Before (Babysitter)              | After (Bionic)                   |
+| -------------------------------- | -------------------------------- |
+| Watching one AI session          | Directing multiple workstreams   |
+| Nudging, correcting in real-time | Defining, approving, releasing   |
+| Serial productivity              | Parallel productivity            |
+| Marginal gains (1.5x)            | Multiplicative gains (5-10x)     |
+| Brain captured by supervision    | Brain freed for the next thing   |
 
-**[Get started →](/getting-started)**
+**[Get Started →](/getting-started)**
