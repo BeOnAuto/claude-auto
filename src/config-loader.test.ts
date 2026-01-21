@@ -34,4 +34,19 @@ describe('loadConfig', () => {
 
     expect(result).toEqual({ validators: { enabled: true, mode: 'warn' } });
   });
+
+  it('reads config from package.json ketchup key', async () => {
+    const packageJson = {
+      name: 'test-project',
+      ketchup: { validators: { dirs: ['custom-validators'] } },
+    };
+    fs.writeFileSync(
+      path.join(tempDir, 'package.json'),
+      JSON.stringify(packageJson)
+    );
+
+    const result = await loadConfig(tempDir);
+
+    expect(result).toEqual({ validators: { dirs: ['custom-validators'] } });
+  });
 });
