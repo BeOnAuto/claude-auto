@@ -1,30 +1,20 @@
-import * as fs from 'node:fs';
-
 import { debugLog } from '../debug-logger.js';
-import {
-  filterByHook,
-  parseSkill,
-  scanSkills,
-  sortByPriority,
-} from '../skills-loader.js';
+import { loadReminders } from '../reminder-loader.js';
 
 type HookResult = {
   result: string;
 };
 
 export function handleSessionStart(claudeDir: string): HookResult {
-  const skillPaths = scanSkills(claudeDir);
-  const skills = skillPaths.map((p) => parseSkill(fs.readFileSync(p, 'utf-8')));
-  const filtered = filterByHook(skills, 'SessionStart');
-  const sorted = sortByPriority(filtered);
+  const reminders = loadReminders(claudeDir, { hook: 'SessionStart' });
 
   debugLog(
     claudeDir,
     'session-start',
-    `scanned ${skills.length} skills, filtered to ${filtered.length} for SessionStart`
+    `loaded ${reminders.length} reminders for SessionStart`
   );
 
-  const content = sorted.map((s) => s.content).join('\n\n');
+  const content = reminders.map((r) => r.content).join('\n\n');
 
   return { result: content };
 }

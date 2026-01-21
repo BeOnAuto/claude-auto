@@ -23,48 +23,51 @@ describe('session-start hook', () => {
     }
   });
 
-  it('outputs filtered skills content for SessionStart hook', () => {
-    const skillsDir = path.join(tempDir, 'skills');
-    fs.mkdirSync(skillsDir, { recursive: true });
+  it('outputs filtered reminders content for SessionStart hook', () => {
+    const remindersDir = path.join(tempDir, 'reminders');
+    fs.mkdirSync(remindersDir, { recursive: true });
     fs.writeFileSync(
-      path.join(skillsDir, 'my-skill.md'),
+      path.join(remindersDir, 'my-reminder.md'),
       `---
-hook: SessionStart
+when:
+  hook: SessionStart
 priority: 10
 ---
 
-# My Skill
+# My Reminder
 
-This is the skill content.`
+This is the reminder content.`
     );
 
     const result = handleSessionStart(tempDir);
 
     expect(result).toEqual({
-      result: '# My Skill\n\nThis is the skill content.',
+      result: '# My Reminder\n\nThis is the reminder content.',
     });
   });
 
-  it('logs skills loaded when DEBUG=ketchup', () => {
+  it('logs reminders loaded when DEBUG=ketchup', () => {
     process.env.DEBUG = 'ketchup';
-    const skillsDir = path.join(tempDir, 'skills');
-    fs.mkdirSync(skillsDir, { recursive: true });
+    const remindersDir = path.join(tempDir, 'reminders');
+    fs.mkdirSync(remindersDir, { recursive: true });
     fs.writeFileSync(
-      path.join(skillsDir, 'skill-a.md'),
+      path.join(remindersDir, 'reminder-a.md'),
       `---
-hook: SessionStart
+when:
+  hook: SessionStart
 priority: 10
 ---
 
-Skill A content.`
+Reminder A content.`
     );
     fs.writeFileSync(
-      path.join(skillsDir, 'skill-b.md'),
+      path.join(remindersDir, 'reminder-b.md'),
       `---
-hook: PreToolUse
+when:
+  hook: PreToolUse
 ---
 
-Skill B content.`
+Reminder B content.`
     );
 
     handleSessionStart(tempDir);
@@ -73,7 +76,6 @@ Skill B content.`
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[session-start]');
-    expect(content).toContain('scanned 2 skills');
-    expect(content).toContain('filtered to 1 for SessionStart');
+    expect(content).toContain('loaded 1 reminders for SessionStart');
   });
 });
