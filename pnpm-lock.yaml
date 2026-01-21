@@ -11,15 +11,9 @@ importers:
 
   .:
     dependencies:
-      claude-ketchup:
-        specifier: 0.1.1
-        version: 0.1.1
       commander:
         specifier: ^12.0.0
         version: 12.1.0
-      global:
-        specifier: link:../../../Library/pnpm/global/5/node_modules/global
-        version: link:../../../Library/pnpm/global/5/node_modules/global
       micromatch:
         specifier: ^4.0.8
         version: 4.0.8
@@ -815,11 +809,6 @@ packages:
 
   check-error@1.0.3:
     resolution: {integrity: sha512-iKEoDYaRmd1mxM90a2OEfWhjsjPpYPuQ+lMYsoxB126+t8fw7ySEO48nmDg5COTjxDI65/Y2OWpeEHk3ZOe8zg==}
-
-  claude-ketchup@0.1.1:
-    resolution: {integrity: sha512-IsBxdqfN4IQgHxVATDBbnZ4xygXi4XAvyVivqaHB1OKoXRasuJMW5rpftHnyBD7kRlytf71oGbaKaqSi2QnIzw==}
-    engines: {node: '>=18.0.0'}
-    hasBin: true
 
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
@@ -1956,12 +1945,6 @@ snapshots:
   check-error@1.0.3:
     dependencies:
       get-func-name: 2.0.2
-
-  claude-ketchup@0.1.1:
-    dependencies:
-      commander: 12.1.0
-      micromatch: 4.0.8
-      yaml: 2.8.2
 
   comma-separated-tokens@2.0.3: {}
 
