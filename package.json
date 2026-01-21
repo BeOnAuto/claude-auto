@@ -1,6 +1,6 @@
 {
   "name": "claude-ketchup",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "authors": [
     {
       "name": "Sam Hatoum"
@@ -16,8 +16,8 @@
     "build": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
-    "postinstall": "npx tsx bin/postinstall.ts",
-    "preuninstall": "npx tsx bin/preuninstall.ts",
+    "postinstall": "node dist/bin/postinstall.js",
+    "preuninstall": "node dist/bin/preuninstall.js",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
@@ -32,9 +32,7 @@
   "author": "Sam Hatoum",
   "license": "MIT",
   "dependencies": {
-    "claude-ketchup": "0.1.1",
     "commander": "^12.0.0",
-    "global": "link:../../../Library/pnpm/global/5/node_modules/global",
     "micromatch": "^4.0.8",
     "yaml": "^2.3.0"
   },

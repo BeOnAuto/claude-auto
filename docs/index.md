@@ -62,9 +62,27 @@ Speed, Quality, AND Control. The Ketchup Technique delivers all three through:
 
 ### 1. Feed
 
-```bash
-pnpm add -D claude-ketchup
+::: code-group
+
+```bash [npm]
+npm install -D claude-ketchup
 ```
+
+```bash [yarn]
+yarn add -D claude-ketchup
+```
+
+```bash [pnpm]
+# --allow-build permits the postinstall script to set up .claude/
+pnpm add -D claude-ketchup --allow-build=claude-ketchup
+```
+
+```bash [bun]
+# --trust permits the postinstall script to set up .claude/
+bun add -D claude-ketchup --trust claude-ketchup
+```
+
+:::
 
 Install once. The hooks inject automatically.
 

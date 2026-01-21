@@ -20,15 +20,31 @@ In 5 minutes, you'll transform from AI Janitor to System Architect.
 
 ## Step 1: Install the Quality Stack
 
-```bash
-pnpm add -D claude-ketchup
+::: code-group
+
+```bash [npm]
+npm install -D claude-ketchup
 ```
 
-Or with npm:
-
-```bash
-npm install claude-ketchup
+```bash [yarn]
+yarn add -D claude-ketchup
 ```
+
+```bash [pnpm]
+# --allow-build permits the postinstall script to set up .claude/
+pnpm add -D claude-ketchup --allow-build=claude-ketchup
+```
+
+```bash [bun]
+# --trust permits the postinstall script to set up .claude/
+bun add -D claude-ketchup --trust claude-ketchup
+```
+
+:::
+
+::: tip pnpm & Bun Security
+Both pnpm v10+ and Bun block lifecycle scripts by default for security. The flags above (`--allow-build` for pnpm, `--trust` for bun) allow claude-ketchup's postinstall script to run, which sets up the `.claude` directory with hooks and skills.
+:::
 
 Behind the scenes, claude-ketchup:
 
