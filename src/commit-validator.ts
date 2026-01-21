@@ -80,10 +80,13 @@ ${context.files.join('\n')}
 ${validator.content}`;
 }
 
+const NON_APPEALABLE_VALIDATORS = ['no-dangerous-git'];
+
 export interface CommitValidationResult {
   validator: string;
   decision: 'ACK' | 'NACK';
   reason?: string;
+  appealable: boolean;
 }
 
 export function validateCommit(
@@ -97,6 +100,7 @@ export function validateCommit(
       validator: validator.name,
       decision: result.decision,
       reason: result.reason,
+      appealable: !NON_APPEALABLE_VALIDATORS.includes(validator.name),
     };
   });
 }

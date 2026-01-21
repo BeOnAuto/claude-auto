@@ -241,8 +241,8 @@ describe('validateCommit', () => {
     const results = validateCommit(validators, context, executor);
 
     expect(results).toEqual([
-      { validator: 'v1', decision: 'ACK' },
-      { validator: 'v2', decision: 'ACK' },
+      { validator: 'v1', decision: 'ACK', appealable: true },
+      { validator: 'v2', decision: 'ACK', appealable: true },
     ]);
     expect(executor).toHaveBeenCalledTimes(2);
   });
@@ -270,9 +270,27 @@ describe('validateCommit', () => {
     const results = validateCommit(validators, context, executor);
 
     expect(results).toEqual([
-      { validator: 'v1', decision: 'ACK' },
-      { validator: 'v2', decision: 'NACK', reason: 'Missing tests' },
-      { validator: 'v3', decision: 'NACK', reason: 'No coverage' },
+      { validator: 'v1', decision: 'ACK', appealable: true },
+      { validator: 'v2', decision: 'NACK', reason: 'Missing tests', appealable: true },
+      { validator: 'v3', decision: 'NACK', reason: 'No coverage', appealable: true },
+    ]);
+  });
+
+  it('marks no-dangerous-git validator as not appealable', () => {
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: '{"decision":"NACK","reason":"--force is forbidden"}',
+    });
+
+    const validators: Validator[] = [
+      { name: 'no-dangerous-git', description: 'd', enabled: true, content: 'c', path: '/v.md' },
+    ];
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+
+    const results = validateCommit(validators, context, executor);
+
+    expect(results).toEqual([
+      { validator: 'no-dangerous-git', decision: 'NACK', reason: '--force is forbidden', appealable: false },
     ]);
   });
 });
