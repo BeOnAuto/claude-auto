@@ -55,3 +55,7 @@ export function matchReminders(reminders: Reminder[], context: ReminderContext):
     return conditions.every(([key, value]) => context[key] === value);
   });
 }
+
+export function sortByPriority(reminders: Reminder[]): Reminder[] {
+  return [...reminders].sort((a, b) => b.priority - a.priority);
+}

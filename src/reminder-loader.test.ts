@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { matchReminders, parseReminder, scanReminders } from './reminder-loader.js';
+import { matchReminders, parseReminder, scanReminders, sortByPriority } from './reminder-loader.js';
 import type { Reminder, ReminderContext } from './reminder-loader.js';
 
 describe('scanReminders', () => {
@@ -89,5 +89,20 @@ describe('matchReminders', () => {
     const result = matchReminders(reminders, context);
 
     expect(result.map((r) => r.name)).toEqual(['always', 'session-only', 'plan-mode', 'session-plan']);
+  });
+});
+
+describe('sortByPriority', () => {
+  it('sorts reminders by priority descending with default 0', () => {
+    const reminders: Reminder[] = [
+      { name: 'low', when: {}, priority: 10, content: 'Low' },
+      { name: 'default', when: {}, priority: 0, content: 'Default' },
+      { name: 'high', when: {}, priority: 100, content: 'High' },
+      { name: 'medium', when: {}, priority: 50, content: 'Medium' },
+    ];
+
+    const result = sortByPriority(reminders);
+
+    expect(result.map((r: Reminder) => r.name)).toEqual(['high', 'medium', 'low', 'default']);
   });
 });
