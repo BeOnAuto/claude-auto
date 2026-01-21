@@ -1,12 +1,5 @@
-import * as fs from 'node:fs';
-
 import { debugLog } from '../debug-logger.js';
-import {
-  filterByHook,
-  parseSkill,
-  scanSkills,
-  sortByPriority,
-} from '../skills-loader.js';
+import { loadReminders } from '../reminder-loader.js';
 
 type HookResult = {
   result: string;
@@ -16,22 +9,19 @@ export function handleUserPromptSubmit(
   claudeDir: string,
   userPrompt: string
 ): HookResult {
-  const skillPaths = scanSkills(claudeDir);
-  const skills = skillPaths.map((p) => parseSkill(fs.readFileSync(p, 'utf-8')));
-  const filtered = filterByHook(skills, 'UserPromptSubmit');
-  const sorted = sortByPriority(filtered);
+  const reminders = loadReminders(claudeDir, { hook: 'UserPromptSubmit' });
 
-  const reminders = sorted.map((s) => s.content).join('\n\n');
+  const reminderContent = reminders.map((r) => r.content).join('\n\n');
 
   debugLog(
     claudeDir,
     'user-prompt-submit',
-    `injected ${sorted.length} reminder${sorted.length === 1 ? '' : 's'}`
+    `injected ${reminders.length} reminder${reminders.length === 1 ? '' : 's'}`
   );
 
-  if (reminders) {
+  if (reminderContent) {
     return {
-      result: `${userPrompt}\n\n<system-reminder>\n${reminders}\n</system-reminder>`,
+      result: `${userPrompt}\n\n<system-reminder>\n${reminderContent}\n</system-reminder>`,
     };
   }
 

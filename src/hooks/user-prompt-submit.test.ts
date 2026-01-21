@@ -23,13 +23,14 @@ describe('user-prompt-submit hook', () => {
     }
   });
 
-  it('injects reminder skills into user prompt', () => {
-    const skillsDir = path.join(tempDir, 'skills');
-    fs.mkdirSync(skillsDir, { recursive: true });
+  it('injects reminders into user prompt', () => {
+    const remindersDir = path.join(tempDir, 'reminders');
+    fs.mkdirSync(remindersDir, { recursive: true });
     fs.writeFileSync(
-      path.join(skillsDir, 'reminder.md'),
+      path.join(remindersDir, 'coding-standards.md'),
       `---
-hook: UserPromptSubmit
+when:
+  hook: UserPromptSubmit
 priority: 10
 ---
 
@@ -43,7 +44,7 @@ Remember to follow coding standards.`
     });
   });
 
-  it('returns prompt unchanged when no reminder skills exist', () => {
+  it('returns prompt unchanged when no reminders exist', () => {
     const result = handleUserPromptSubmit(tempDir, 'Help me fix this bug');
 
     expect(result).toEqual({ result: 'Help me fix this bug' });
@@ -51,12 +52,13 @@ Remember to follow coding standards.`
 
   it('logs reminders injected when DEBUG=ketchup', () => {
     process.env.DEBUG = 'ketchup';
-    const skillsDir = path.join(tempDir, 'skills');
-    fs.mkdirSync(skillsDir, { recursive: true });
+    const remindersDir = path.join(tempDir, 'reminders');
+    fs.mkdirSync(remindersDir, { recursive: true });
     fs.writeFileSync(
-      path.join(skillsDir, 'reminder.md'),
+      path.join(remindersDir, 'coding-standards.md'),
       `---
-hook: UserPromptSubmit
+when:
+  hook: UserPromptSubmit
 priority: 10
 ---
 
