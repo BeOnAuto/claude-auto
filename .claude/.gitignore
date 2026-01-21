@@ -1,0 +1,16 @@
+scripts/auto-continue.js
+scripts/pre-tool-use.js
+scripts/session-start.js
+scripts/user-prompt-submit.js
+commands/ketchup.md
+validators/backwards-compat.md
+validators/burst-atomicity.md
+validators/coverage-rules.md
+validators/infra-commit-format.md
+validators/no-comments.md
+validators/no-dangerous-git.md
+validators/testing-practices.md
+reminders/ketchup.md
+*.local.*
+state.json
+logs/
