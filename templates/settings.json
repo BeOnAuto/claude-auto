@@ -39,7 +39,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npx tsx .claude/scripts/auto-continue.ts"
+            "command": "node .claude/scripts/auto-continue.js"
           }
         ]
       }
