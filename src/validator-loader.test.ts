@@ -86,4 +86,48 @@ Content`
       },
     ]);
   });
+
+  it('loads from multiple directories', () => {
+    const dir1 = path.join(tempDir, 'validators1');
+    const dir2 = path.join(tempDir, 'validators2');
+    fs.mkdirSync(dir1);
+    fs.mkdirSync(dir2);
+    fs.writeFileSync(
+      path.join(dir1, 'first.md'),
+      `---
+name: first
+description: First validator
+enabled: true
+---
+First content`
+    );
+    fs.writeFileSync(
+      path.join(dir2, 'second.md'),
+      `---
+name: second
+description: Second validator
+enabled: true
+---
+Second content`
+    );
+
+    const result = loadValidators([dir1, dir2]);
+
+    expect(result).toEqual([
+      {
+        name: 'first',
+        description: 'First validator',
+        enabled: true,
+        content: 'First content',
+        path: path.join(dir1, 'first.md'),
+      },
+      {
+        name: 'second',
+        description: 'Second validator',
+        enabled: true,
+        content: 'Second content',
+        path: path.join(dir2, 'second.md'),
+      },
+    ]);
+  });
 });
