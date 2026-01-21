@@ -22,4 +22,16 @@ describe('loadConfig', () => {
 
     expect(result).toEqual({});
   });
+
+  it('reads config from .ketchuprc.json', async () => {
+    const config = { validators: { enabled: true, mode: 'warn' } };
+    fs.writeFileSync(
+      path.join(tempDir, '.ketchuprc.json'),
+      JSON.stringify(config)
+    );
+
+    const result = await loadConfig(tempDir);
+
+    expect(result).toEqual({ validators: { enabled: true, mode: 'warn' } });
+  });
 });
