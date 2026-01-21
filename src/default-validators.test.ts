@@ -84,4 +84,17 @@ describe('default validators', () => {
       path: path.join(validatorsDir, 'no-comments.md'),
     });
   });
+
+  it('backwards-compat.md exists and enforces clean breaks', () => {
+    const validators = loadValidators([validatorsDir]);
+    const backwardsCompat = validators.find((v) => v.name === 'backwards-compat');
+
+    expect(backwardsCompat).toEqual({
+      name: 'backwards-compat',
+      description: expect.any(String),
+      enabled: true,
+      content: expect.stringContaining('re-export'),
+      path: path.join(validatorsDir, 'backwards-compat.md'),
+    });
+  });
 });
