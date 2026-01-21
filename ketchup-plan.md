@@ -83,6 +83,11 @@ Key decisions made:
 - [x] Burst 53: Update postinstall/repair to symlink reminders/ [depends: 51]
 - [x] Burst 54-57: Delete skills system (skills-loader, cli/skills, skills/) [depends: 46-53]
 
+### Bottle: Auto-Continue Stop Hook
+- [x] Burst 58: Add handleStop() to src/hooks/auto-continue.ts [depends: none]
+- [x] Burst 59: Create scripts/auto-continue.ts entry point [depends: 58]
+- [x] Burst 60: Update templates/settings.json to use .js [depends: 59]
+
 ## Architecture Details
 
 ### Config Schema
