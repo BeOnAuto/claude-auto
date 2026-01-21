@@ -1,15 +1,6 @@
-scripts/pre-tool-use.d.ts
-scripts/pre-tool-use.d.ts.map
 scripts/pre-tool-use.js
-scripts/pre-tool-use.js.map
-scripts/session-start.d.ts
-scripts/session-start.d.ts.map
 scripts/session-start.js
-scripts/session-start.js.map
-scripts/user-prompt-submit.d.ts
-scripts/user-prompt-submit.d.ts.map
 scripts/user-prompt-submit.js
-scripts/user-prompt-submit.js.map
 skills/ketchup.enforced.md
 commands/ketchup.md
 *.local.*

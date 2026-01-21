@@ -1,1 +1,0 @@
-/Users/sam/code/auto/claude-ketchup/dist/scripts/pre-tool-use.d.ts
