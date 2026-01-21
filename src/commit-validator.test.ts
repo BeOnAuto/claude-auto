@@ -208,4 +208,33 @@ describe('validateCommit', () => {
     ]);
     expect(executor).toHaveBeenCalledTimes(2);
   });
+
+  it('aggregates NACK reasons from multiple validators', () => {
+    const executor = vi
+      .fn()
+      .mockReturnValueOnce({ status: 0, stdout: '{"decision":"ACK"}' })
+      .mockReturnValueOnce({
+        status: 0,
+        stdout: '{"decision":"NACK","reason":"Missing tests"}',
+      })
+      .mockReturnValueOnce({
+        status: 0,
+        stdout: '{"decision":"NACK","reason":"No coverage"}',
+      });
+
+    const validators: Validator[] = [
+      { name: 'v1', description: 'd1', enabled: true, content: 'c1', path: '/v1.md' },
+      { name: 'v2', description: 'd2', enabled: true, content: 'c2', path: '/v2.md' },
+      { name: 'v3', description: 'd3', enabled: true, content: 'c3', path: '/v3.md' },
+    ];
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+
+    const results = validateCommit(validators, context, executor);
+
+    expect(results).toEqual([
+      { validator: 'v1', decision: 'ACK' },
+      { validator: 'v2', decision: 'NACK', reason: 'Missing tests' },
+      { validator: 'v3', decision: 'NACK', reason: 'No coverage' },
+    ]);
+  });
 });
