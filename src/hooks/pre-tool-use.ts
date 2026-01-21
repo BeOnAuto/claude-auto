@@ -8,6 +8,7 @@ import {
 } from '../commit-validator.js';
 import { debugLog } from '../debug-logger.js';
 import { isDenied, loadDenyPatterns } from '../deny-list.js';
+import { loadReminders } from '../reminder-loader.js';
 import { loadValidators } from '../validator-loader.js';
 
 type ToolInput = Record<string, unknown>;
@@ -15,10 +16,12 @@ type ToolInput = Record<string, unknown>;
 type HookResult = {
   decision: 'block' | 'allow';
   reason?: string;
+  result?: string;
 };
 
 interface PreToolUseOptions {
   executor?: Executor;
+  toolName?: string;
 }
 
 export function handlePreToolUse(
@@ -43,7 +46,23 @@ export function handlePreToolUse(
     };
   }
 
-  debugLog(claudeDir, 'pre-tool-use', `${filePath ?? command} allowed`);
+  const reminders = loadReminders(claudeDir, {
+    hook: 'PreToolUse',
+    toolName: options.toolName,
+  });
+
+  const reminderContent = reminders.map((r) => r.content).join('\n\n');
+
+  debugLog(
+    claudeDir,
+    'pre-tool-use',
+    `${filePath ?? command} allowed, ${reminders.length} reminder(s)`
+  );
+
+  if (reminderContent) {
+    return { decision: 'allow', result: reminderContent };
+  }
+
   return { decision: 'allow' };
 }
 

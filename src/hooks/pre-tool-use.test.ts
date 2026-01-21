@@ -124,4 +124,38 @@ Validate this commit`
 
     expect(result).toEqual({ decision: 'allow' });
   });
+
+  it('injects reminders matching PreToolUse hook and toolName', () => {
+    const remindersDir = path.join(tempDir, 'reminders');
+    fs.mkdirSync(remindersDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(remindersDir, 'bash-reminder.md'),
+      `---
+when:
+  hook: PreToolUse
+  toolName: Bash
+priority: 10
+---
+
+Remember: test && commit || revert`
+    );
+    fs.writeFileSync(
+      path.join(remindersDir, 'edit-reminder.md'),
+      `---
+when:
+  hook: PreToolUse
+  toolName: Edit
+---
+
+Check for typos.`
+    );
+
+    const toolInput = { command: 'echo hello' };
+    const result = handlePreToolUse(tempDir, toolInput, { toolName: 'Bash' });
+
+    expect(result).toEqual({
+      decision: 'allow',
+      result: 'Remember: test && commit || revert',
+    });
+  });
 });
