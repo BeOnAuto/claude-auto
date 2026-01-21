@@ -47,4 +47,16 @@ describe('settings template', () => {
       }
     }
   });
+
+  it('PreToolUse handles Bash via pre-tool-use.js, not separate validate-commit.ts', () => {
+    const templatePath = path.resolve(__dirname, '..', 'templates', 'settings.json');
+    const template = JSON.parse(fs.readFileSync(templatePath, 'utf-8'));
+
+    const preToolUseHooks = template.hooks.PreToolUse;
+    expect(preToolUseHooks).toHaveLength(1);
+
+    const hook = preToolUseHooks[0];
+    expect(hook.matcher).toBe('Edit|Write|NotebookEdit|Bash');
+    expect(hook.hooks[0].command).toBe('node .claude/scripts/pre-tool-use.js');
+  });
 });
