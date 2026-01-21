@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { handlePreToolUse } from './pre-tool-use.js';
 
@@ -66,5 +66,62 @@ describe('pre-tool-use hook', () => {
     expect(content).toContain('[pre-tool-use]');
     expect(content).toContain('/project/config.secret');
     expect(content).toContain('blocked');
+  });
+
+  it('routes Bash git commit to validator and blocks on NACK', () => {
+    const validatorsDir = path.join(tempDir, 'validators');
+    fs.mkdirSync(validatorsDir);
+    fs.writeFileSync(
+      path.join(validatorsDir, 'test.md'),
+      `---
+name: test-validator
+description: Test
+enabled: true
+---
+Validate this commit`
+    );
+
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: '{"decision":"NACK","reason":"Missing tests"}',
+    });
+
+    const toolInput = {
+      command: 'git commit -m "Test commit"',
+    };
+
+    const result = handlePreToolUse(tempDir, toolInput, { executor });
+
+    expect(result).toEqual({
+      decision: 'block',
+      reason: 'test-validator: Missing tests',
+    });
+  });
+
+  it('allows git commit when all validators ACK', () => {
+    const validatorsDir = path.join(tempDir, 'validators');
+    fs.mkdirSync(validatorsDir);
+    fs.writeFileSync(
+      path.join(validatorsDir, 'test.md'),
+      `---
+name: test-validator
+description: Test
+enabled: true
+---
+Validate this commit`
+    );
+
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: '{"decision":"ACK"}',
+    });
+
+    const toolInput = {
+      command: 'git commit -m "Test commit"',
+    };
+
+    const result = handlePreToolUse(tempDir, toolInput, { executor });
+
+    expect(result).toEqual({ decision: 'allow' });
   });
 });
