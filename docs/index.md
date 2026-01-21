@@ -43,7 +43,7 @@ features:
   - icon:
       src: /icon-coverage.png
     title: 100% Coverage by Construction
-    details: No untested code. If it exists, a test demanded it.
+    details: No untested code. As per TDD, it exists only if a test demanded it.
 ---
 
 ## The Quality Stack
