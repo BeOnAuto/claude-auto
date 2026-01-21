@@ -58,4 +58,17 @@ describe('default validators', () => {
       path: path.join(validatorsDir, 'coverage-rules.md'),
     });
   });
+
+  it('testing-practices.md exists and enforces test quality', () => {
+    const validators = loadValidators([validatorsDir]);
+    const testingPractices = validators.find((v) => v.name === 'testing-practices');
+
+    expect(testingPractices).toEqual({
+      name: 'testing-practices',
+      description: expect.any(String),
+      enabled: true,
+      content: expect.stringContaining('toBeDefined'),
+      path: path.join(validatorsDir, 'testing-practices.md'),
+    });
+  });
 });
