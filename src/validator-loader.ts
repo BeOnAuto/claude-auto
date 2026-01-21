@@ -29,6 +29,10 @@ export function loadValidators(dirs: string[]): Validator[] {
       const fileContent = fs.readFileSync(filePath, 'utf8');
       const { data, content } = matter(fileContent);
 
+      if (data.enabled === false) {
+        continue;
+      }
+
       validators.push({
         name: data.name,
         description: data.description,

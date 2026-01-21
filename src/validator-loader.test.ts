@@ -51,4 +51,39 @@ Respond with JSON: {"decision":"ACK"} or {"decision":"NACK","reason":"..."}`;
       },
     ]);
   });
+
+  it('filters disabled validators', () => {
+    const validatorsDir = path.join(tempDir, 'validators');
+    fs.mkdirSync(validatorsDir);
+    fs.writeFileSync(
+      path.join(validatorsDir, 'enabled.md'),
+      `---
+name: enabled-validator
+description: Enabled
+enabled: true
+---
+Content`
+    );
+    fs.writeFileSync(
+      path.join(validatorsDir, 'disabled.md'),
+      `---
+name: disabled-validator
+description: Disabled
+enabled: false
+---
+Content`
+    );
+
+    const result = loadValidators([validatorsDir]);
+
+    expect(result).toEqual([
+      {
+        name: 'enabled-validator',
+        description: 'Enabled',
+        enabled: true,
+        content: 'Content',
+        path: path.join(validatorsDir, 'enabled.md'),
+      },
+    ]);
+  });
 });
