@@ -24,4 +24,31 @@ describe('loadValidators', () => {
 
     expect(result).toEqual([]);
   });
+
+  it('parses single .md file with frontmatter', () => {
+    const validatorsDir = path.join(tempDir, 'validators');
+    fs.mkdirSync(validatorsDir);
+    const validatorContent = `---
+name: test-validator
+description: A test validator
+enabled: true
+---
+
+Check that tests pass.
+
+Respond with JSON: {"decision":"ACK"} or {"decision":"NACK","reason":"..."}`;
+    fs.writeFileSync(path.join(validatorsDir, 'test.md'), validatorContent);
+
+    const result = loadValidators([validatorsDir]);
+
+    expect(result).toEqual([
+      {
+        name: 'test-validator',
+        description: 'A test validator',
+        enabled: true,
+        content: 'Check that tests pass.\n\nRespond with JSON: {"decision":"ACK"} or {"decision":"NACK","reason":"..."}',
+        path: path.join(validatorsDir, 'test.md'),
+      },
+    ]);
+  });
 });
