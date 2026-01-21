@@ -71,4 +71,17 @@ describe('default validators', () => {
       path: path.join(validatorsDir, 'testing-practices.md'),
     });
   });
+
+  it('no-comments.md exists and enforces self-documenting code', () => {
+    const validators = loadValidators([validatorsDir]);
+    const noComments = validators.find((v) => v.name === 'no-comments');
+
+    expect(noComments).toEqual({
+      name: 'no-comments',
+      description: expect.any(String),
+      enabled: true,
+      content: expect.stringContaining('inline comment'),
+      path: path.join(validatorsDir, 'no-comments.md'),
+    });
+  });
 });
