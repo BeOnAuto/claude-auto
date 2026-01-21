@@ -68,3 +68,24 @@ ${context.files.join('\n')}
 
 ${validator.content}`;
 }
+
+export interface CommitValidationResult {
+  validator: string;
+  decision: 'ACK' | 'NACK';
+  reason?: string;
+}
+
+export function validateCommit(
+  validators: Validator[],
+  context: CommitContext,
+  executor: Executor = spawnSync
+): CommitValidationResult[] {
+  return validators.map((validator) => {
+    const result = runValidator(validator, context, executor);
+    return {
+      validator: validator.name,
+      decision: result.decision,
+      reason: result.reason,
+    };
+  });
+}
