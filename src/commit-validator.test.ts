@@ -2,9 +2,14 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { getCommitContext, isCommitCommand } from './commit-validator.js';
+import {
+  getCommitContext,
+  isCommitCommand,
+  runValidator,
+} from './commit-validator.js';
+import type { Validator } from './validator-loader.js';
 
 describe('isCommitCommand', () => {
   it('detects simple git commit', () => {
@@ -77,5 +82,66 @@ describe('getCommitContext', () => {
       files: ['test.txt'],
       message: '',
     });
+  });
+});
+
+describe('runValidator', () => {
+  it('calls executor with formatted prompt', () => {
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: '{"decision":"ACK"}',
+    });
+
+    const validator: Validator = {
+      name: 'test-validator',
+      description: 'Test',
+      enabled: true,
+      content: 'Check the commit',
+      path: '/validators/test.md',
+    };
+    const context = {
+      diff: '+hello world',
+      files: ['test.txt'],
+      message: 'Add test',
+    };
+
+    runValidator(validator, context, executor);
+
+    expect(executor).toHaveBeenCalledWith(
+      'claude',
+      ['-p', expect.stringContaining('<diff>'), '--output-format', 'json'],
+      expect.objectContaining({ encoding: 'utf8' })
+    );
+  });
+
+  it('includes validator content in prompt', () => {
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: '{"decision":"ACK"}',
+    });
+
+    const validator: Validator = {
+      name: 'test-validator',
+      description: 'Test',
+      enabled: true,
+      content: 'Check that tests pass',
+      path: '/validators/test.md',
+    };
+    const context = {
+      diff: '+hello',
+      files: ['test.txt'],
+      message: 'Test commit',
+    };
+
+    runValidator(validator, context, executor);
+
+    const prompt = executor.mock.calls[0][1][1];
+    expect(prompt).toContain('Check that tests pass');
+    expect(prompt).toContain('<diff>');
+    expect(prompt).toContain('+hello');
+    expect(prompt).toContain('<commit-message>');
+    expect(prompt).toContain('Test commit');
+    expect(prompt).toContain('<files>');
+    expect(prompt).toContain('test.txt');
   });
 });
