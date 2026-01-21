@@ -162,6 +162,28 @@ describe('postinstall', () => {
       );
     });
 
+    it('symlinks files from package validators/ to .claude/validators/', () => {
+      const projectDir = path.join(tempDir, 'my-project');
+      const packageDir = path.join(tempDir, 'ketchup-package');
+      fs.mkdirSync(projectDir, { recursive: true });
+      fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
+      fs.mkdirSync(path.join(packageDir, 'validators'), { recursive: true });
+      fs.writeFileSync(
+        path.join(packageDir, 'validators', 'ketchup-rules.md'),
+        '---\nname: ketchup-rules\n---\nContent'
+      );
+      process.env.KETCHUP_ROOT = projectDir;
+
+      const result = runPostinstall(packageDir);
+
+      expect(result.symlinkedFiles).toContain('validators/ketchup-rules.md');
+      expect(
+        fs.lstatSync(
+          path.join(projectDir, '.claude', 'validators', 'ketchup-rules.md')
+        ).isSymbolicLink()
+      ).toBe(true);
+    });
+
     it('merges settings from package templates to .claude directory', () => {
       const projectDir = path.join(tempDir, 'my-project');
       const packageDir = path.join(tempDir, 'ketchup-package');
