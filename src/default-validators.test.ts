@@ -32,4 +32,17 @@ describe('default validators', () => {
       path: path.join(validatorsDir, 'no-dangerous-git.md'),
     });
   });
+
+  it('burst-atomicity.md exists and validates single focused changes', () => {
+    const validators = loadValidators([validatorsDir]);
+    const burstAtomicity = validators.find((v) => v.name === 'burst-atomicity');
+
+    expect(burstAtomicity).toEqual({
+      name: 'burst-atomicity',
+      description: expect.any(String),
+      enabled: true,
+      content: expect.stringContaining('single focused change'),
+      path: path.join(validatorsDir, 'burst-atomicity.md'),
+    });
+  });
 });
