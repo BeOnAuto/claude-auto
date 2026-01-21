@@ -98,6 +98,45 @@ describe('postinstall', () => {
       ).toBe(true);
     });
 
+    it('symlinks only .js files from dist/scripts, not .d.ts or .map files', () => {
+      const projectDir = path.join(tempDir, 'my-project');
+      const packageDir = path.join(tempDir, 'ketchup-package');
+      fs.mkdirSync(projectDir, { recursive: true });
+      fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
+      fs.mkdirSync(path.join(packageDir, 'dist', 'scripts'), { recursive: true });
+      fs.writeFileSync(
+        path.join(packageDir, 'dist', 'scripts', 'session-start.js'),
+        'export default {}'
+      );
+      fs.writeFileSync(
+        path.join(packageDir, 'dist', 'scripts', 'session-start.d.ts'),
+        'export default {}'
+      );
+      fs.writeFileSync(
+        path.join(packageDir, 'dist', 'scripts', 'session-start.d.ts.map'),
+        '{}'
+      );
+      fs.writeFileSync(
+        path.join(packageDir, 'dist', 'scripts', 'session-start.js.map'),
+        '{}'
+      );
+      process.env.KETCHUP_ROOT = projectDir;
+
+      const result = runPostinstall(packageDir);
+
+      expect(result.symlinkedFiles).toEqual(['scripts/session-start.js']);
+      expect(
+        fs.existsSync(
+          path.join(projectDir, '.claude', 'scripts', 'session-start.d.ts')
+        )
+      ).toBe(false);
+      expect(
+        fs.existsSync(
+          path.join(projectDir, '.claude', 'scripts', 'session-start.js.map')
+        )
+      ).toBe(false);
+    });
+
     it('generates .gitignore in .claude directory with symlinked files and runtime patterns', () => {
       const projectDir = path.join(tempDir, 'my-project');
       const packageDir = path.join(tempDir, 'ketchup-package');
