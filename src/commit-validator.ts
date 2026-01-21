@@ -147,3 +147,28 @@ export function handleCommitValidation(
 
   return { allowed: true, results };
 }
+
+export function formatBlockMessage(results: CommitValidationResult[]): string {
+  const nacks = results.filter((r) => r.decision === 'NACK');
+  const lines: string[] = [];
+
+  for (const nack of nacks) {
+    lines.push(`${nack.validator}: ${nack.reason}`);
+  }
+
+  const hasNonAppealable = nacks.some((r) => !r.appealable);
+  const hasAppealable = nacks.some((r) => r.appealable);
+
+  if (hasNonAppealable) {
+    lines.push('');
+    lines.push('This violation cannot be appealed.');
+  }
+
+  if (hasAppealable) {
+    lines.push('');
+    lines.push('To appeal, add [appeal: justification] to your commit message.');
+    lines.push(`Valid appeals: ${VALID_APPEALS.join(', ')}`);
+  }
+
+  return lines.join('\n');
+}

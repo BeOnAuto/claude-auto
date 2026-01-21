@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   extractAppeal,
+  formatBlockMessage,
   getCommitContext,
   handleCommitValidation,
   isCommitCommand,
@@ -360,5 +361,32 @@ describe('handleCommitValidation', () => {
       results: expect.any(Array),
       blockedBy: ['no-dangerous-git'],
     });
+  });
+});
+
+describe('formatBlockMessage', () => {
+  it('formats block message with validator reasons and appeal instructions', () => {
+    const results = [
+      { validator: 'coverage-rules', decision: 'NACK' as const, reason: 'Missing tests', appealable: true },
+    ];
+
+    const message = formatBlockMessage(results);
+
+    expect(message).toContain('coverage-rules: Missing tests');
+    expect(message).toContain('[appeal: justification]');
+    expect(message).toContain('coherence');
+    expect(message).toContain('existing-gap');
+    expect(message).toContain('debug-branchless');
+  });
+
+  it('omits appeal instructions for non-appealable validators', () => {
+    const results = [
+      { validator: 'no-dangerous-git', decision: 'NACK' as const, reason: '--force forbidden', appealable: false },
+    ];
+
+    const message = formatBlockMessage(results);
+
+    expect(message).toContain('no-dangerous-git: --force forbidden');
+    expect(message).toContain('cannot be appealed');
   });
 });
