@@ -8,6 +8,7 @@ import {
   extractAppeal,
   getCommitContext,
   isCommitCommand,
+  isValidAppeal,
   runValidator,
   validateCommit,
 } from './commit-validator.js';
@@ -28,6 +29,24 @@ describe('extractAppeal', () => {
     const result = extractAppeal(message);
 
     expect(result).toBe(null);
+  });
+});
+
+describe('isValidAppeal', () => {
+  it('returns true for coherence appeal', () => {
+    expect(isValidAppeal('coherence')).toBe(true);
+  });
+
+  it('returns true for existing-gap appeal', () => {
+    expect(isValidAppeal('existing-gap')).toBe(true);
+  });
+
+  it('returns true for debug-branchless appeal', () => {
+    expect(isValidAppeal('debug-branchless')).toBe(true);
+  });
+
+  it('returns false for invalid appeal', () => {
+    expect(isValidAppeal('skip-tests')).toBe(false);
   });
 });
 

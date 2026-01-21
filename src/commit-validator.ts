@@ -34,6 +34,12 @@ export function extractAppeal(message: string): string | null {
   return match ? match[1].trim() : null;
 }
 
+const VALID_APPEALS = ['coherence', 'existing-gap', 'debug-branchless'];
+
+export function isValidAppeal(appeal: string): boolean {
+  return VALID_APPEALS.includes(appeal);
+}
+
 export type Executor = (
   cmd: string,
   args: string[],
