@@ -97,4 +97,17 @@ describe('default validators', () => {
       path: path.join(validatorsDir, 'backwards-compat.md'),
     });
   });
+
+  it('infra-commit-format.md exists and validates config-only commits', () => {
+    const validators = loadValidators([validatorsDir]);
+    const infraCommitFormat = validators.find((v) => v.name === 'infra-commit-format');
+
+    expect(infraCommitFormat).toEqual({
+      name: 'infra-commit-format',
+      description: expect.any(String),
+      enabled: true,
+      content: expect.stringContaining('chore('),
+      path: path.join(validatorsDir, 'infra-commit-format.md'),
+    });
+  });
 });
