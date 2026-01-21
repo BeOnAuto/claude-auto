@@ -35,13 +35,25 @@ describe('cli repair', () => {
     expect(fs.readlinkSync(path.join(claudeDir, 'scripts', 'session-start.ts'))).toBe(sourceFile);
   });
 
-  it('getExpectedSymlinks finds files in scripts, skills, and commands directories', () => {
+  it('getExpectedSymlinks finds files in scripts, skills, commands, validators, and reminders directories', () => {
     fs.writeFileSync(path.join(packageDir, 'scripts', 'hook.ts'), '');
     fs.mkdirSync(path.join(packageDir, 'skills'), { recursive: true });
     fs.writeFileSync(path.join(packageDir, 'skills', 'skill.md'), '');
+    fs.mkdirSync(path.join(packageDir, 'commands'), { recursive: true });
+    fs.writeFileSync(path.join(packageDir, 'commands', 'cmd.md'), '');
+    fs.mkdirSync(path.join(packageDir, 'validators'), { recursive: true });
+    fs.writeFileSync(path.join(packageDir, 'validators', 'rule.md'), '');
+    fs.mkdirSync(path.join(packageDir, 'reminders'), { recursive: true });
+    fs.writeFileSync(path.join(packageDir, 'reminders', 'reminder.md'), '');
 
     const result = getExpectedSymlinks(packageDir);
 
-    expect(result).toEqual(['scripts/hook.ts', 'skills/skill.md']);
+    expect(result).toEqual([
+      'scripts/hook.ts',
+      'skills/skill.md',
+      'commands/cmd.md',
+      'validators/rule.md',
+      'reminders/reminder.md',
+    ]);
   });
 });

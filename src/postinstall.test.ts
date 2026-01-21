@@ -184,6 +184,28 @@ describe('postinstall', () => {
       ).toBe(true);
     });
 
+    it('symlinks files from package reminders/ to .claude/reminders/', () => {
+      const projectDir = path.join(tempDir, 'my-project');
+      const packageDir = path.join(tempDir, 'ketchup-package');
+      fs.mkdirSync(projectDir, { recursive: true });
+      fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
+      fs.mkdirSync(path.join(packageDir, 'reminders'), { recursive: true });
+      fs.writeFileSync(
+        path.join(packageDir, 'reminders', 'ketchup.md'),
+        '---\npriority: 100\n---\nContent'
+      );
+      process.env.KETCHUP_ROOT = projectDir;
+
+      const result = runPostinstall(packageDir);
+
+      expect(result.symlinkedFiles).toContain('reminders/ketchup.md');
+      expect(
+        fs.lstatSync(
+          path.join(projectDir, '.claude', 'reminders', 'ketchup.md')
+        ).isSymbolicLink()
+      ).toBe(true);
+    });
+
     it('merges settings from package templates to .claude directory', () => {
       const projectDir = path.join(tempDir, 'my-project');
       const packageDir = path.join(tempDir, 'ketchup-package');

@@ -11,6 +11,7 @@ const SYMLINK_DIRS = [
   { name: 'skills', sourcePath: 'skills' },
   { name: 'commands', sourcePath: 'commands' },
   { name: 'validators', sourcePath: 'validators' },
+  { name: 'reminders', sourcePath: 'reminders' },
 ];
 
 export interface PostinstallResult {
