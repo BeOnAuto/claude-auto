@@ -1,1 +1,1 @@
-/Users/sam/code/auto/claude-ketchup/node_modules/.pnpm/claude-ketchup@0.1.1/node_modules/claude-ketchup/skills/ketchup.enforced.md
+/Users/sam/code/auto/claude-ketchup/skills/ketchup.enforced.md
