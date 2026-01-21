@@ -5,12 +5,31 @@ import * as path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  extractAppeal,
   getCommitContext,
   isCommitCommand,
   runValidator,
   validateCommit,
 } from './commit-validator.js';
 import type { Validator } from './validator-loader.js';
+
+describe('extractAppeal', () => {
+  it('extracts appeal from commit message with [appeal: reason]', () => {
+    const message = 'feat: add feature [appeal: coherence]';
+
+    const result = extractAppeal(message);
+
+    expect(result).toBe('coherence');
+  });
+
+  it('returns null when no appeal present', () => {
+    const message = 'feat: add feature';
+
+    const result = extractAppeal(message);
+
+    expect(result).toBe(null);
+  });
+});
 
 describe('isCommitCommand', () => {
   it('detects simple git commit', () => {

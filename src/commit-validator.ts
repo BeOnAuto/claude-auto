@@ -29,6 +29,11 @@ function extractCommitMessage(command: string): string {
   return match ? match[1] : '';
 }
 
+export function extractAppeal(message: string): string | null {
+  const match = message.match(/\[appeal:\s*([^\]]+)\]/);
+  return match ? match[1].trim() : null;
+}
+
 export type Executor = (
   cmd: string,
   args: string[],
