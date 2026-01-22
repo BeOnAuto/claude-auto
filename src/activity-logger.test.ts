@@ -28,7 +28,7 @@ describe('activity-logger', () => {
     expect(content).toContain('test message');
   });
 
-  it('formats log with ISO timestamp and last 8 chars of session ID', () => {
+  it('formats log with short date+time and last 8 chars of session ID', () => {
     const claudeDir = path.join(tempDir, '.claude');
     fs.mkdirSync(claudeDir, { recursive: true });
 
@@ -36,7 +36,7 @@ describe('activity-logger', () => {
 
     const logPath = path.join(claudeDir, 'logs', 'activity.log');
     const content = fs.readFileSync(logPath, 'utf8');
-    expect(content).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+    expect(content).toMatch(/^\d{2}-\d{2} \d{2}:\d{2}:\d{2}/);
     expect(content).toContain('[789-defg]');
     expect(content).toContain('session-start:');
     expect(content).toContain('loaded reminders');
