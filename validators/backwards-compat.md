@@ -12,7 +12,7 @@ Valid responses:
 
 **Scope:** Validate any .ts file changes in the diff.
 
-Enforce clean breaks over backwards compatibility hacks:
+Default to clean breaks. No silent preservation of old APIs.
 
 **NACK if the diff contains:**
 - Re-exports of moved/renamed symbols for backwards compatibility
@@ -20,12 +20,14 @@ Enforce clean breaks over backwards compatibility hacks:
 - Wrapper functions that only delegate to new implementations
 - Unused parameters with `_` prefix kept for signature compatibility
 - Shim files that import from new location and re-export
+- `// removed` or similar comments for deleted code
 
 **ACK if:**
 - The diff makes clean changes without compatibility layers
 - Old code is simply removed, not shimmed
 - The diff only contains non-.ts files
+- Refactoring removes old code entirely
 
-**Note:** If files must be committed together for coherence during a rename/refactor, the appeal system can override this validator with `[appeal: coherence]`.
+**Plea override:** If files must be committed together for coherence during a rename/refactor, use `plea: files must be committed together for coherence` in the commit message.
 
 RESPOND WITH JSON ONLY - NO PROSE, NO MARKDOWN, NO EXPLANATION OUTSIDE THE JSON.

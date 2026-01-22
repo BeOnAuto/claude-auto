@@ -28,7 +28,7 @@ describe('default validators', () => {
       name: 'burst-atomicity',
       description: expect.any(String),
       enabled: true,
-      content: expect.stringContaining('single focused change'),
+      content: expect.stringContaining('single, focused burst'),
       path: path.join(validatorsDir, 'burst-atomicity.md'),
     });
   });
@@ -46,16 +46,16 @@ describe('default validators', () => {
     });
   });
 
-  it('testing-practices.md exists and enforces test quality', () => {
+  it('testing-weak-assertions.md exists and enforces test quality', () => {
     const validators = loadValidators([validatorsDir]);
-    const testingPractices = validators.find((v) => v.name === 'testing-practices');
+    const testingWeakAssertions = validators.find((v) => v.name === 'testing-weak-assertions');
 
-    expect(testingPractices).toEqual({
-      name: 'testing-practices',
+    expect(testingWeakAssertions).toEqual({
+      name: 'testing-weak-assertions',
       description: expect.any(String),
       enabled: true,
       content: expect.stringContaining('toBeDefined'),
-      path: path.join(validatorsDir, 'testing-practices.md'),
+      path: path.join(validatorsDir, 'testing-weak-assertions.md'),
     });
   });
 

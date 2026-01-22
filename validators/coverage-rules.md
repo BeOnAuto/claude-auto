@@ -12,20 +12,23 @@ Valid responses:
 
 **Scope:** Only validate .ts and .tsx files in the diff (ignore .md, .json, config files).
 
-Enforce these coverage rules:
+Enforce 100% coverage with no escape hatches:
 
 **NACK if the diff contains:**
 - `@ts-ignore` or `@ts-expect-error` comments
-- `any` type annotations (except in test mocks at boundaries)
+- `any` type annotations (except in test mocks at system boundaries)
 - `as SomeType` type casts that bypass type safety
-- Coverage exclusion patterns like `/* istanbul ignore */` or `/* c8 ignore */`
-- New conditional branches (`if`, `else`, `? :`, `??`, `||`) that appear untested
+- Coverage exclusion patterns: `/* istanbul ignore */`, `/* c8 ignore */`, `/* v8 ignore */`
+
+**Allowed exclusions (do not NACK):**
+- Barrel `index.ts` files that only contain re-exports
+- `*.test.ts` and `*.test.tsx` files
 
 **ACK if:**
-- No forbidden patterns are found in .ts/.tsx files
+- No forbidden patterns are found in .ts/.tsx source files
 - The diff only contains .md, .json, or config files
-- New branches are accompanied by corresponding test cases
+- The forbidden patterns appear only in allowed exclusion files
 
-**Exception:** Error path coverage via observable behavior (return values, thrown exceptions, callbacks) is valid. Testing via mocks at system boundaries is acceptable.
+**Note:** This validator checks for escape hatches. Actual coverage percentage is verified by the test runner.
 
 RESPOND WITH JSON ONLY - NO PROSE, NO MARKDOWN, NO EXPLANATION OUTSIDE THE JSON.

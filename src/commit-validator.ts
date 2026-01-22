@@ -34,12 +34,6 @@ export function extractAppeal(message: string): string | null {
   return match ? match[1].trim() : null;
 }
 
-const VALID_APPEALS = ['coherence', 'existing-gap', 'debug-branchless'];
-
-export function isValidAppeal(appeal: string): boolean {
-  return VALID_APPEALS.includes(appeal);
-}
-
 export type Executor = (
   cmd: string,
   args: string[],
@@ -80,6 +74,54 @@ ${context.files.join('\n')}
 ${validator.content}`;
 }
 
+function buildAppealPrompt(
+  appealValidator: Validator,
+  context: CommitContext,
+  results: CommitValidationResult[],
+  appeal: string
+): string {
+  const resultsText = results
+    .map((r) => `${r.validator}: ${r.decision}${r.reason ? ` - ${r.reason}` : ''}`)
+    .join('\n');
+
+  return `<diff>
+${context.diff}
+</diff>
+
+<commit-message>
+${context.message}
+</commit-message>
+
+<files>
+${context.files.join('\n')}
+</files>
+
+<validator-results>
+${resultsText}
+</validator-results>
+
+<appeal>
+${appeal}
+</appeal>
+
+${appealValidator.content}`;
+}
+
+export function runAppealValidator(
+  appealValidator: Validator,
+  context: CommitContext,
+  results: CommitValidationResult[],
+  appeal: string,
+  executor: Executor = spawnSync
+): ValidatorResult {
+  const prompt = buildAppealPrompt(appealValidator, context, results, appeal);
+  const result = executor('claude', ['-p', prompt, '--output-format', 'json'], {
+    encoding: 'utf8',
+  });
+
+  return JSON.parse(result.stdout);
+}
+
 const NON_APPEALABLE_VALIDATORS = ['no-dangerous-git'];
 
 export interface CommitValidationResult {
@@ -115,37 +157,51 @@ export interface HandleCommitValidationResult {
 export function handleCommitValidation(
   validators: Validator[],
   context: CommitContext,
-  executor: Executor = spawnSync
+  executor: Executor = spawnSync,
+  appealValidator?: Validator
 ): HandleCommitValidationResult {
   const results = validateCommit(validators, context, executor);
   const appeal = extractAppeal(context.message);
-  const validAppeal = appeal && isValidAppeal(appeal);
 
   const nacks = results.filter((r) => r.decision === 'NACK');
-  const nonAppealableNacks = nacks.filter((r) => !r.appealable);
-  const appealableNacks = nacks.filter((r) => r.appealable);
 
-  if (nonAppealableNacks.length > 0) {
+  if (nacks.length === 0) {
+    return { allowed: true, results };
+  }
+
+  if (!appeal) {
     return {
       allowed: false,
       results,
-      blockedBy: nonAppealableNacks.map((r) => r.validator),
+      blockedBy: nacks.map((r) => r.validator),
     };
   }
 
-  if (appealableNacks.length > 0 && !validAppeal) {
+  if (!appealValidator) {
     return {
       allowed: false,
       results,
-      blockedBy: appealableNacks.map((r) => r.validator),
+      blockedBy: nacks.map((r) => r.validator),
     };
   }
 
-  if (validAppeal && appeal) {
+  const appealResult = runAppealValidator(
+    appealValidator,
+    context,
+    results,
+    appeal,
+    executor
+  );
+
+  if (appealResult.decision === 'ACK') {
     return { allowed: true, results, appeal };
   }
 
-  return { allowed: true, results };
+  return {
+    allowed: false,
+    results,
+    blockedBy: nacks.map((r) => r.validator),
+  };
 }
 
 export function formatBlockMessage(results: CommitValidationResult[]): string {
@@ -166,8 +222,7 @@ export function formatBlockMessage(results: CommitValidationResult[]): string {
 
   if (hasAppealable) {
     lines.push('');
-    lines.push('To appeal, add [appeal: justification] to your commit message.');
-    lines.push(`Valid appeals: ${VALID_APPEALS.join(', ')}`);
+    lines.push('To appeal, add [appeal: your justification] to your commit message.');
   }
 
   return lines.join('\n');

@@ -16,18 +16,22 @@ Valid responses:
 - package.json, package-lock.json, pnpm-lock.yaml
 - tsconfig.json, tsconfig.*.json
 - *.config.ts, *.config.js (vite.config.ts, vitest.config.ts, etc.)
+- wrangler.toml
 - .gitignore, .npmignore, .eslintrc*, .prettierrc*
 - ketchup-plan.md
 - Any file in .claude/ directory
 
 **ACK immediately if:**
-- ANY .ts or .tsx file (not .config.ts) is in the changed files list
+- ANY .ts or .tsx file (not *.config.ts) is in the changed files list
 - The commit includes behavioral code, not just config
 
 **When ONLY config files are changed:**
 - ACK if commit message starts with `chore(scope):` or `chore:` format
 - NACK if commit message uses `feat:`, `fix:`, `test:` for config-only changes
 
-**Important:** Commits that include BOTH code and config (like ketchup-plan.md updates with code) should ACK - this validator only enforces format when the commit is config-only.
+**Examples:**
+- Good: `chore(deps): update vitest to 1.0`
+- Good: `chore: add ketchup-plan.md`
+- Bad: `feat: update package.json` (for config-only commit)
 
 RESPOND WITH JSON ONLY - NO PROSE, NO MARKDOWN, NO EXPLANATION OUTSIDE THE JSON.
