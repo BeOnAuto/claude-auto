@@ -1,0 +1,20 @@
+import { describe, it, expect } from 'vitest';
+import { parseHookInput } from './hook-input.js';
+
+describe('hook-input', () => {
+  it('parses JSON string to HookInput object', () => {
+    const json = JSON.stringify({
+      session_id: 'abc-123',
+      cwd: '/some/path',
+      hook_event_name: 'SessionStart',
+    });
+
+    const result = parseHookInput(json);
+
+    expect(result).toEqual({
+      session_id: 'abc-123',
+      cwd: '/some/path',
+      hook_event_name: 'SessionStart',
+    });
+  });
+});
