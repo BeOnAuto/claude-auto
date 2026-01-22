@@ -44,7 +44,8 @@ export async function runPostinstall(packageDir?: string): Promise<PostinstallRe
   fs.mkdirSync(claudeDir, { recursive: true });
 
   const pkgDir = packageDir ?? getPackageDir();
-  const symlinkedFiles: string[] = [];
+  const claudeSymlinks: string[] = [];
+  const ketchupSymlinks: string[] = [];
 
   // Load config to get ketchupDir setting
   const config = await loadConfig(projectRoot);
@@ -64,7 +65,7 @@ export async function runPostinstall(packageDir?: string): Promise<PostinstallRe
       const source = path.join(sourceDir, file);
       const target = path.join(targetDir, file);
       createSymlink(source, target);
-      symlinkedFiles.push(`${name}/${file}`);
+      claudeSymlinks.push(`${name}/${file}`);
     }
   }
 
@@ -80,12 +81,13 @@ export async function runPostinstall(packageDir?: string): Promise<PostinstallRe
       const source = path.join(sourceDir, file);
       const target = path.join(targetDir, file);
       createSymlink(source, target);
-      symlinkedFiles.push(`${ketchupDirName}/${name}/${file}`);
+      ketchupSymlinks.push(`${ketchupDirName}/${name}/${file}`);
     }
   }
 
-  generateGitignore(claudeDir, symlinkedFiles);
+  // Only include claude symlinks in .claude/.gitignore
+  generateGitignore(claudeDir, claudeSymlinks);
   mergeSettings(pkgDir, claudeDir);
 
-  return { projectRoot, claudeDir, ketchupDir, symlinkedFiles };
+  return { projectRoot, claudeDir, ketchupDir, symlinkedFiles: [...claudeSymlinks, ...ketchupSymlinks] };
 }

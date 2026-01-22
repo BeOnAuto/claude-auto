@@ -166,6 +166,43 @@ describe('postinstall', () => {
       );
     });
 
+    it('does not include ketchup files (validators/reminders) in .claude/.gitignore', async () => {
+      const projectDir = path.join(tempDir, 'my-project');
+      const packageDir = path.join(tempDir, 'ketchup-package');
+      fs.mkdirSync(projectDir, { recursive: true });
+      fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
+      fs.mkdirSync(path.join(packageDir, 'dist', 'scripts'), { recursive: true });
+      fs.mkdirSync(path.join(packageDir, 'validators'), { recursive: true });
+      fs.mkdirSync(path.join(packageDir, 'reminders'), { recursive: true });
+      fs.writeFileSync(
+        path.join(packageDir, 'dist', 'scripts', 'session-start.js'),
+        'export default {}'
+      );
+      fs.writeFileSync(
+        path.join(packageDir, 'validators', 'my-rule.md'),
+        '---\nname: my-rule\n---\nContent'
+      );
+      fs.writeFileSync(
+        path.join(packageDir, 'reminders', 'my-reminder.md'),
+        '---\npriority: 100\n---\nContent'
+      );
+      process.env.KETCHUP_ROOT = projectDir;
+
+      await runPostinstall(packageDir);
+
+      const gitignoreContent = fs.readFileSync(
+        path.join(projectDir, '.claude', '.gitignore'),
+        'utf-8'
+      );
+      expect(gitignoreContent).not.toContain('validators');
+      expect(gitignoreContent).not.toContain('reminders');
+      expect(gitignoreContent).toBe(
+        ['scripts/session-start.js', '*.local.*', 'state.json', 'logs/'].join(
+          '\n'
+        )
+      );
+    });
+
     it('symlinks files from package validators/ to ketchup/validators/', async () => {
       const projectDir = path.join(tempDir, 'my-project');
       const packageDir = path.join(tempDir, 'ketchup-package');
