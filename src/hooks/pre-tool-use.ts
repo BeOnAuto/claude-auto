@@ -1,5 +1,6 @@
 import * as path from 'node:path';
 
+import { activityLog } from '../activity-logger.js';
 import {
   getCommitContext,
   isCommitCommand,
@@ -26,19 +27,21 @@ interface PreToolUseOptions {
 
 export function handlePreToolUse(
   claudeDir: string,
+  sessionId: string,
   toolInput: ToolInput,
   options: PreToolUseOptions = {}
 ): HookResult {
   const command = toolInput.command as string | undefined;
 
   if (command && isCommitCommand(command)) {
-    return handleCommitValidation(claudeDir, command, options);
+    return handleCommitValidation(claudeDir, sessionId, command, options);
   }
 
   const patterns = loadDenyPatterns(claudeDir);
   const filePath = toolInput.file_path as string;
 
   if (filePath && isDenied(filePath, patterns)) {
+    activityLog(claudeDir, sessionId, 'pre-tool-use', `blocked: ${filePath}`);
     debugLog(claudeDir, 'pre-tool-use', `${filePath} blocked by deny-list`);
     return {
       decision: 'block',
@@ -52,6 +55,13 @@ export function handlePreToolUse(
   });
 
   const reminderContent = reminders.map((r) => r.content).join('\n\n');
+
+  activityLog(
+    claudeDir,
+    sessionId,
+    'pre-tool-use',
+    `allowed: ${filePath ?? command}, ${reminders.length} reminder(s)`
+  );
 
   debugLog(
     claudeDir,
@@ -68,6 +78,7 @@ export function handlePreToolUse(
 
 function handleCommitValidation(
   claudeDir: string,
+  sessionId: string,
   command: string,
   options: PreToolUseOptions
 ): HookResult {
@@ -75,6 +86,7 @@ function handleCommitValidation(
   const validators = loadValidators([validatorsDir]);
 
   if (validators.length === 0) {
+    activityLog(claudeDir, sessionId, 'pre-tool-use', 'commit allowed (no validators)');
     return { decision: 'allow' };
   }
 
@@ -87,6 +99,7 @@ function handleCommitValidation(
     const reasons = nacks
       .map((n) => `${n.validator}: ${n.reason}`)
       .join('\n');
+    activityLog(claudeDir, sessionId, 'pre-tool-use', `commit blocked: ${reasons}`);
     debugLog(claudeDir, 'pre-tool-use', `commit blocked: ${reasons}`);
     return {
       decision: 'block',
@@ -94,6 +107,7 @@ function handleCommitValidation(
     };
   }
 
+  activityLog(claudeDir, sessionId, 'pre-tool-use', 'commit allowed');
   debugLog(claudeDir, 'pre-tool-use', 'commit allowed');
   return { decision: 'allow' };
 }

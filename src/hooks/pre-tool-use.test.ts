@@ -30,7 +30,7 @@ describe('pre-tool-use hook', () => {
     );
     const toolInput = { file_path: '/project/config.secret' };
 
-    const result = handlePreToolUse(tempDir, toolInput);
+    const result = handlePreToolUse(tempDir, 'session-1', toolInput);
 
     expect(result).toEqual({
       decision: 'block',
@@ -45,9 +45,25 @@ describe('pre-tool-use hook', () => {
     );
     const toolInput = { file_path: '/project/config.json' };
 
-    const result = handlePreToolUse(tempDir, toolInput);
+    const result = handlePreToolUse(tempDir, 'session-2', toolInput);
 
     expect(result).toEqual({ decision: 'allow' });
+  });
+
+  it('logs to activity.log with session ID', () => {
+    fs.writeFileSync(
+      path.join(tempDir, 'deny-list.project.txt'),
+      '*.secret\n'
+    );
+    const toolInput = { file_path: '/project/config.secret' };
+
+    handlePreToolUse(tempDir, 'my-session-id', toolInput);
+
+    const logPath = path.join(tempDir, 'logs', 'activity.log');
+    expect(fs.existsSync(logPath)).toBe(true);
+    const content = fs.readFileSync(logPath, 'utf8');
+    expect(content).toContain('[ssion-id]');
+    expect(content).toContain('pre-tool-use:');
   });
 
   it('logs deny-list check when DEBUG=ketchup', () => {
@@ -58,7 +74,7 @@ describe('pre-tool-use hook', () => {
     );
     const toolInput = { file_path: '/project/config.secret' };
 
-    handlePreToolUse(tempDir, toolInput);
+    handlePreToolUse(tempDir, 'debug-session', toolInput);
 
     const logPath = path.join(tempDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
@@ -90,7 +106,7 @@ Validate this commit`
       command: 'git commit -m "Test commit"',
     };
 
-    const result = handlePreToolUse(tempDir, toolInput, { executor });
+    const result = handlePreToolUse(tempDir, 'session-3', toolInput, { executor });
 
     expect(result).toEqual({
       decision: 'block',
@@ -120,7 +136,7 @@ Validate this commit`
       command: 'git commit -m "Test commit"',
     };
 
-    const result = handlePreToolUse(tempDir, toolInput, { executor });
+    const result = handlePreToolUse(tempDir, 'session-4', toolInput, { executor });
 
     expect(result).toEqual({ decision: 'allow' });
   });
@@ -151,7 +167,7 @@ Check for typos.`
     );
 
     const toolInput = { command: 'echo hello' };
-    const result = handlePreToolUse(tempDir, toolInput, { toolName: 'Bash' });
+    const result = handlePreToolUse(tempDir, 'session-5', toolInput, { toolName: 'Bash' });
 
     expect(result).toEqual({
       decision: 'allow',
