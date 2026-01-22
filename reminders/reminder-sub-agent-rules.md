@@ -1,7 +1,7 @@
 ---
-name: reminder-sub-agent-rules
-description: Reminder for sub-agent context requirements
-type: reminder
+when:
+  hook: SessionStart
+priority: 100
 ---
 
 # Sub-Agent Rules Reminder

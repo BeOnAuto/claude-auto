@@ -1,7 +1,7 @@
 ---
-name: reminder-rethink-after-revert
-description: Reminder to rethink approach after a revert
-type: reminder
+when:
+  hook: SessionStart
+priority: 100
 ---
 
 # RETHINK After Revert Reminder

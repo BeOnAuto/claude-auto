@@ -1,7 +1,7 @@
 ---
-name: reminder-ide-diagnostics
-description: Reminder to check IDE diagnostics before committing
-type: reminder
+when:
+  hook: SessionStart
+priority: 100
 ---
 
 # IDE Diagnostics Reminder

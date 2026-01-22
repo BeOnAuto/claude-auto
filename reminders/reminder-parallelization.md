@@ -1,7 +1,7 @@
 ---
-name: reminder-parallelization
-description: Reminder for maximizing parallel execution
-type: reminder
+when:
+  hook: SessionStart
+priority: 100
 ---
 
 # Parallelization Reminder

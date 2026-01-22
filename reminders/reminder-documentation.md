@@ -1,7 +1,7 @@
 ---
-name: reminder-documentation
-description: Reminder for documentation maintenance
-type: reminder
+when:
+  hook: SessionStart
+priority: 100
 ---
 
 # Documentation Reminder

@@ -1,7 +1,7 @@
 ---
-name: reminder-test-title-matches-spec
-description: Reminder that test body must prove what the title claims
-type: reminder
+when:
+  hook: SessionStart
+priority: 100
 ---
 
 # Test Title = Spec Reminder

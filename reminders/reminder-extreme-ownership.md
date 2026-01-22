@@ -1,7 +1,7 @@
 ---
-name: reminder-extreme-ownership
-description: Reminder for taking ownership of all problems
-type: reminder
+when:
+  hook: SessionStart
+priority: 100
 ---
 
 # Extreme Ownership Reminder

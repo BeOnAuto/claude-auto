@@ -1,7 +1,7 @@
 ---
-name: reminder-emergent-design
-description: Reminder that types emerge from tests, not upfront design
-type: reminder
+when:
+  hook: SessionStart
+priority: 100
 ---
 
 # Emergent Design Reminder
