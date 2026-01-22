@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import { loadConfig } from './config-loader.js';
+import { DEFAULT_KETCHUP_DIR, loadConfig } from './config-loader.js';
 import { generateGitignore } from './gitignore-manager.js';
 import { createSymlink, getPackageDir } from './linker.js';
 import { findProjectRoot } from './root-finder.js';
@@ -48,7 +48,7 @@ export async function runPostinstall(packageDir?: string): Promise<PostinstallRe
 
   // Load config to get ketchupDir setting
   const config = await loadConfig(projectRoot);
-  const ketchupDirName = config.ketchupDir ?? 'ketchup';
+  const ketchupDirName = config.ketchupDir ?? DEFAULT_KETCHUP_DIR;
   const ketchupDir = path.join(projectRoot, ketchupDirName);
   fs.mkdirSync(ketchupDir, { recursive: true });
 

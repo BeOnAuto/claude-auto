@@ -296,10 +296,15 @@ For advanced configuration, Ketchup supports cosmiconfig.
 
 ```typescript
 interface KetchupConfig {
+  /** Directory for ketchup data (reminders, validators). Default: '.ketchup' */
+  ketchupDir?: string;
   validators?: {
     dirs?: string[];       // Additional validator directories
     enabled?: boolean;     // Enable/disable validators globally
     mode?: 'on' | 'off' | 'warn';
+  };
+  reminders?: {
+    dirs?: string[];       // Additional reminder directories
   };
 }
 ```
@@ -308,6 +313,7 @@ interface KetchupConfig {
 
 ```json
 {
+  "ketchupDir": ".ketchup",
   "validators": {
     "dirs": ["./custom-validators"],
     "mode": "strict"
@@ -457,8 +463,8 @@ Reminders are Markdown files with YAML frontmatter.
 
 ### Location
 
-- Package reminders: `node_modules/claude-ketchup/reminders/` (symlinked)
-- Custom reminders: `.claude/reminders/`
+- Package reminders: `node_modules/claude-ketchup/reminders/` (symlinked to `.ketchup/reminders/`)
+- Custom reminders: `.ketchup/reminders/`
 
 ### Frontmatter Schema
 
@@ -479,8 +485,8 @@ Validators are Markdown files with YAML frontmatter.
 
 ### Location
 
-- Package validators: `node_modules/claude-ketchup/validators/` (symlinked)
-- Custom validators: `.claude/validators/`
+- Package validators: `node_modules/claude-ketchup/validators/` (symlinked to `.ketchup/validators/`)
+- Custom validators: `.ketchup/validators/`
 
 ### Frontmatter Schema
 

@@ -4,6 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { DEFAULT_KETCHUP_DIR } from '../config-loader.js';
 import { getExpectedSymlinks, repair } from './repair.js';
 
 describe('cli repair', () => {
@@ -52,8 +53,8 @@ describe('cli repair', () => {
       ketchupFiles: ['validators/rule.md'],
     });
 
-    expect(result.repaired).toContain('ketchup/validators/rule.md');
-    expect(fs.readlinkSync(path.join(tempDir, 'ketchup', 'validators', 'rule.md'))).toBe(sourceFile);
+    expect(result.repaired).toContain(`${DEFAULT_KETCHUP_DIR}/validators/rule.md`);
+    expect(fs.readlinkSync(path.join(tempDir, DEFAULT_KETCHUP_DIR, 'validators', 'rule.md'))).toBe(sourceFile);
   });
 
   it('getExpectedSymlinks separates claude and ketchup files', () => {

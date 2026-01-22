@@ -4,6 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { DEFAULT_KETCHUP_DIR } from '../config-loader.js';
 import { handlePreToolUse } from './pre-tool-use.js';
 
 describe('pre-tool-use hook', () => {
@@ -15,7 +16,7 @@ describe('pre-tool-use hook', () => {
   beforeEach(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-pretool-'));
     claudeDir = path.join(tempDir, '.claude');
-    ketchupDir = path.join(tempDir, 'ketchup');
+    ketchupDir = path.join(tempDir, DEFAULT_KETCHUP_DIR);
     fs.mkdirSync(claudeDir, { recursive: true });
     fs.mkdirSync(ketchupDir, { recursive: true });
     fs.writeFileSync(path.join(tempDir, 'package.json'), '{}');

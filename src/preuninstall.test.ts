@@ -4,6 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { DEFAULT_KETCHUP_DIR } from './config-loader.js';
 import { runPreuninstallSync } from './preuninstall.js';
 
 describe('preuninstall', () => {
@@ -42,7 +43,7 @@ describe('preuninstall', () => {
 
     it('removes symlinks from ketchup directory', () => {
       const projectDir = path.join(tempDir, 'my-project');
-      const ketchupDir = path.join(projectDir, 'ketchup');
+      const ketchupDir = path.join(projectDir, DEFAULT_KETCHUP_DIR);
       const remindersDir = path.join(ketchupDir, 'reminders');
       const sourceFile = path.join(tempDir, 'source.md');
       const symlinkFile = path.join(remindersDir, 'reminder.md');

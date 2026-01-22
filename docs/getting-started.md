@@ -69,7 +69,7 @@ All green? The Quality Stack is active. You can now walk away.
 ## Step 3: Explore What Was Created
 
 ```bash
-ls -la .claude/
+ls -la .claude/ .ketchup/
 ```
 
 You should see:
@@ -81,6 +81,10 @@ You should see:
 ├── commands/          # Command definitions (symlinked)
 ├── settings.json      # Merged Claude configuration
 └── .gitignore         # Ignores symlinks and runtime files
+
+.ketchup/
+├── reminders/         # Prompt reminders (symlinked)
+└── validators/        # Commit validators (symlinked)
 ```
 
 ---

@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import { loadConfig } from '../config-loader.js';
+import { DEFAULT_KETCHUP_DIR, loadConfig } from '../config-loader.js';
 import { createSymlink } from '../linker.js';
 
 type RepairResult = {
@@ -50,7 +50,7 @@ export async function repair(
 ): Promise<RepairResult> {
   const projectRoot = path.dirname(claudeDir);
   const config = await loadConfig(projectRoot);
-  const ketchupDirName = config.ketchupDir ?? 'ketchup';
+  const ketchupDirName = config.ketchupDir ?? DEFAULT_KETCHUP_DIR;
   const ketchupDir = path.join(projectRoot, ketchupDirName);
 
   const repaired: string[] = [];

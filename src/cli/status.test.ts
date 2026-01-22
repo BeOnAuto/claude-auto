@@ -4,6 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { DEFAULT_KETCHUP_DIR } from '../config-loader.js';
 import { getStatus } from './status.js';
 
 describe('cli status', () => {
@@ -53,8 +54,8 @@ describe('cli status', () => {
 
     const result = await getStatus(packageDir, claudeDir);
 
-    expect(result.symlinks).toContainEqual({ path: 'ketchup/validators/rule.md', status: 'ok' });
-    expect(result.symlinks).toContainEqual({ path: 'ketchup/reminders/reminder.md', status: 'ok' });
+    expect(result.symlinks).toContainEqual({ path: `${DEFAULT_KETCHUP_DIR}/validators/rule.md`, status: 'ok' });
+    expect(result.symlinks).toContainEqual({ path: `${DEFAULT_KETCHUP_DIR}/reminders/reminder.md`, status: 'ok' });
   });
 
   it('returns empty symlinks when no directories exist', async () => {

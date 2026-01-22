@@ -4,6 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { DEFAULT_KETCHUP_DIR } from './config-loader.js';
 import { runPostinstall } from './postinstall.js';
 import { runPreuninstallSync } from './preuninstall.js';
 
@@ -53,12 +54,12 @@ describe('e2e', () => {
 
       expect(result.projectRoot).toBe(projectDir);
       expect(result.claudeDir).toBe(path.join(projectDir, '.claude'));
-      expect(result.ketchupDir).toBe(path.join(projectDir, 'ketchup'));
+      expect(result.ketchupDir).toBe(path.join(projectDir, DEFAULT_KETCHUP_DIR));
       expect(result.symlinkedFiles).toContain('scripts/session-start.js');
-      expect(result.symlinkedFiles).toContain('ketchup/reminders/my-reminder.md');
+      expect(result.symlinkedFiles).toContain(`${DEFAULT_KETCHUP_DIR}/reminders/my-reminder.md`);
 
       expect(fs.existsSync(path.join(projectDir, '.claude'))).toBe(true);
-      expect(fs.existsSync(path.join(projectDir, 'ketchup'))).toBe(true);
+      expect(fs.existsSync(path.join(projectDir, DEFAULT_KETCHUP_DIR))).toBe(true);
       expect(
         fs.lstatSync(
           path.join(projectDir, '.claude', 'scripts', 'session-start.js')
@@ -66,7 +67,7 @@ describe('e2e', () => {
       ).toBe(true);
       expect(
         fs.lstatSync(
-          path.join(projectDir, 'ketchup', 'reminders', 'my-reminder.md')
+          path.join(projectDir, DEFAULT_KETCHUP_DIR, 'reminders', 'my-reminder.md')
         ).isSymbolicLink()
       ).toBe(true);
       expect(
@@ -85,7 +86,7 @@ describe('e2e', () => {
       ).toBe(false);
       expect(
         fs.existsSync(
-          path.join(projectDir, 'ketchup', 'reminders', 'my-reminder.md')
+          path.join(projectDir, DEFAULT_KETCHUP_DIR, 'reminders', 'my-reminder.md')
         )
       ).toBe(false);
       expect(

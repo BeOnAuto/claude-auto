@@ -4,6 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { DEFAULT_KETCHUP_DIR } from '../config-loader.js';
 import { doctor } from './doctor.js';
 
 describe('cli doctor', () => {
@@ -16,7 +17,7 @@ describe('cli doctor', () => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-doctor-'));
     packageDir = path.join(tempDir, 'node_modules', 'claude-ketchup');
     claudeDir = path.join(tempDir, '.claude');
-    ketchupDir = path.join(tempDir, 'ketchup');
+    ketchupDir = path.join(tempDir, DEFAULT_KETCHUP_DIR);
     fs.mkdirSync(packageDir, { recursive: true });
     fs.mkdirSync(claudeDir, { recursive: true });
     fs.mkdirSync(ketchupDir, { recursive: true });

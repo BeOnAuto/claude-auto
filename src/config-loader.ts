@@ -1,7 +1,9 @@
 import { cosmiconfig } from 'cosmiconfig';
 
+export const DEFAULT_KETCHUP_DIR = '.ketchup';
+
 export interface KetchupConfig {
-  /** Directory for ketchup data (reminders, validators). Default: 'ketchup' */
+  /** Directory for ketchup data (reminders, validators). Default: '.ketchup' */
   ketchupDir?: string;
   validators?: {
     dirs?: string[];

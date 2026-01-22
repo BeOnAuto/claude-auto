@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import { loadConfig } from './config-loader.js';
+import { DEFAULT_KETCHUP_DIR, loadConfig } from './config-loader.js';
 import { removeSymlink } from './linker.js';
 import { findProjectRoot } from './root-finder.js';
 
@@ -26,7 +26,7 @@ export async function runPreuninstall(): Promise<void> {
   const claudeDir = path.join(projectRoot, '.claude');
 
   const config = await loadConfig(projectRoot);
-  const ketchupDirName = config.ketchupDir ?? 'ketchup';
+  const ketchupDirName = config.ketchupDir ?? DEFAULT_KETCHUP_DIR;
   const ketchupDir = path.join(projectRoot, ketchupDirName);
 
   for (const subdir of CLAUDE_SYMLINK_DIRS) {
@@ -43,7 +43,7 @@ export async function runPreuninstall(): Promise<void> {
 export function runPreuninstallSync(): void {
   const projectRoot = findProjectRoot();
   const claudeDir = path.join(projectRoot, '.claude');
-  const ketchupDir = path.join(projectRoot, 'ketchup');
+  const ketchupDir = path.join(projectRoot, DEFAULT_KETCHUP_DIR);
 
   for (const subdir of CLAUDE_SYMLINK_DIRS) {
     const targetDir = path.join(claudeDir, subdir);

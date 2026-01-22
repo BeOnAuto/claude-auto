@@ -4,6 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { DEFAULT_KETCHUP_DIR } from '../config-loader.js';
 import { handleSessionStart } from './session-start.js';
 
 describe('session-start hook', () => {
@@ -15,7 +16,7 @@ describe('session-start hook', () => {
   beforeEach(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-session-'));
     claudeDir = path.join(tempDir, '.claude');
-    ketchupDir = path.join(tempDir, 'ketchup');
+    ketchupDir = path.join(tempDir, DEFAULT_KETCHUP_DIR);
     fs.mkdirSync(claudeDir, { recursive: true });
     fs.mkdirSync(ketchupDir, { recursive: true });
     fs.writeFileSync(path.join(tempDir, 'package.json'), '{}');

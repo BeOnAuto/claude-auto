@@ -4,6 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { DEFAULT_KETCHUP_DIR } from './config-loader.js';
 import { runPostinstall } from './postinstall.js';
 
 describe('postinstall', () => {
@@ -34,7 +35,7 @@ describe('postinstall', () => {
       expect(result).toEqual({
         projectRoot: projectDir,
         claudeDir: path.join(projectDir, '.claude'),
-        ketchupDir: path.join(projectDir, 'ketchup'),
+        ketchupDir: path.join(projectDir, DEFAULT_KETCHUP_DIR),
         symlinkedFiles: [],
       });
     });
@@ -61,8 +62,8 @@ describe('postinstall', () => {
 
       await runPostinstall();
 
-      expect(fs.existsSync(path.join(projectDir, 'ketchup'))).toBe(true);
-      expect(fs.statSync(path.join(projectDir, 'ketchup')).isDirectory()).toBe(
+      expect(fs.existsSync(path.join(projectDir, DEFAULT_KETCHUP_DIR))).toBe(true);
+      expect(fs.statSync(path.join(projectDir, DEFAULT_KETCHUP_DIR)).isDirectory()).toBe(
         true
       );
     });
@@ -179,10 +180,10 @@ describe('postinstall', () => {
 
       const result = await runPostinstall(packageDir);
 
-      expect(result.symlinkedFiles).toContain('ketchup/validators/ketchup-rules.md');
+      expect(result.symlinkedFiles).toContain(`${DEFAULT_KETCHUP_DIR}/validators/ketchup-rules.md`);
       expect(
         fs.lstatSync(
-          path.join(projectDir, 'ketchup', 'validators', 'ketchup-rules.md')
+          path.join(projectDir, DEFAULT_KETCHUP_DIR, 'validators', 'ketchup-rules.md')
         ).isSymbolicLink()
       ).toBe(true);
     });
@@ -201,10 +202,10 @@ describe('postinstall', () => {
 
       const result = await runPostinstall(packageDir);
 
-      expect(result.symlinkedFiles).toContain('ketchup/reminders/ketchup.md');
+      expect(result.symlinkedFiles).toContain(`${DEFAULT_KETCHUP_DIR}/reminders/ketchup.md`);
       expect(
         fs.lstatSync(
-          path.join(projectDir, 'ketchup', 'reminders', 'ketchup.md')
+          path.join(projectDir, DEFAULT_KETCHUP_DIR, 'reminders', 'ketchup.md')
         ).isSymbolicLink()
       ).toBe(true);
     });
