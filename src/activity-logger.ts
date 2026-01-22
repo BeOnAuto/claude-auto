@@ -13,6 +13,8 @@ export function activityLog(
   }
 
   const logPath = path.join(logsDir, 'activity.log');
-  const entry = `[${hookName}] ${message}\n`;
+  const timestamp = new Date().toISOString();
+  const shortSessionId = sessionId.slice(-8);
+  const entry = `${timestamp} [${shortSessionId}] ${hookName}: ${message}\n`;
   fs.appendFileSync(logPath, entry);
 }
