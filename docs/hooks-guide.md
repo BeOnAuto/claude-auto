@@ -4,6 +4,10 @@ Configure your supervision. Define your architecture.
 
 Hooks are how you define "the rules." The supervisor enforces them.
 
+::: tip Configuration Reference
+For a complete reference of all configuration files and options, see the [Configuration Reference](/configuration).
+:::
+
 | Hook | When It Fires | What You Control |
 |------|---------------|------------------|
 | SessionStart | Session begins | What context Claude receives |

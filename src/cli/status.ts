@@ -1,5 +1,8 @@
-import * as fs from 'node:fs';
 import * as path from 'node:path';
+
+import { loadConfig } from '../config-loader.js';
+
+import { getExpectedSymlinks } from './repair.js';
 
 type SymlinkStatus = {
   path: string;
@@ -10,32 +13,22 @@ type StatusResult = {
   symlinks: SymlinkStatus[];
 };
 
-function getExpectedSymlinks(packageDir: string): string[] {
-  const dirs = ['scripts', 'skills', 'commands'];
-  const files: string[] = [];
+export async function getStatus(packageDir: string, claudeDir: string): Promise<StatusResult> {
+  const projectRoot = path.dirname(claudeDir);
+  const config = await loadConfig(projectRoot);
+  const ketchupDirName = config.ketchupDir ?? 'ketchup';
 
-  for (const dir of dirs) {
-    const dirPath = path.join(packageDir, dir);
-    if (fs.existsSync(dirPath)) {
-      const entries = fs.readdirSync(dirPath);
-      for (const entry of entries) {
-        files.push(path.join(dir, entry));
-      }
-    }
-  }
-
-  return files;
-}
-
-export function getStatus(packageDir: string): StatusResult {
   const expectedFiles = getExpectedSymlinks(packageDir);
 
-  const symlinks: SymlinkStatus[] = expectedFiles.map((file) => {
-    return {
-      path: file,
-      status: 'ok',
-    };
-  });
+  const claudeSymlinks: SymlinkStatus[] = expectedFiles.claudeFiles.map((file) => ({
+    path: file,
+    status: 'ok',
+  }));
 
-  return { symlinks };
+  const ketchupSymlinks: SymlinkStatus[] = expectedFiles.ketchupFiles.map((file) => ({
+    path: `${ketchupDirName}/${file}`,
+    status: 'ok',
+  }));
+
+  return { symlinks: [...claudeSymlinks, ...ketchupSymlinks] };
 }

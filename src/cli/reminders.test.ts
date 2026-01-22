@@ -32,7 +32,7 @@ priority: 100
 Ask clarifying questions.`
     );
 
-    const result = listReminders(tempDir);
+    const result = listReminders(remindersDir);
 
     expect(result).toEqual({
       reminders: [

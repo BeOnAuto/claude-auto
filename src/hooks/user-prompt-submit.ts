@@ -1,17 +1,19 @@
 import { activityLog } from '../activity-logger.js';
 import { debugLog } from '../debug-logger.js';
+import { resolvePaths } from '../path-resolver.js';
 import { loadReminders } from '../reminder-loader.js';
 
 type HookResult = {
   result: string;
 };
 
-export function handleUserPromptSubmit(
+export async function handleUserPromptSubmit(
   claudeDir: string,
   sessionId: string,
   userPrompt: string
-): HookResult {
-  const reminders = loadReminders(claudeDir, { hook: 'UserPromptSubmit' });
+): Promise<HookResult> {
+  const paths = await resolvePaths(claudeDir);
+  const reminders = loadReminders(paths.remindersDir, { hook: 'UserPromptSubmit' });
 
   const reminderContent = reminders.map((r) => r.content).join('\n\n');
 

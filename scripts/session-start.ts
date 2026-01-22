@@ -7,6 +7,10 @@ import { handleSessionStart } from '../src/hooks/session-start.js';
 
 const input = parseHookInput(fs.readFileSync(0, 'utf-8'));
 const claudeDir = path.resolve(process.cwd(), '.claude');
-const result = handleSessionStart(claudeDir, input.session_id);
 
-console.log(JSON.stringify(result));
+handleSessionStart(claudeDir, input.session_id)
+  .then((result) => console.log(JSON.stringify(result)))
+  .catch((err) => {
+    console.error('session-start hook failed:', err);
+    process.exit(1);
+  });

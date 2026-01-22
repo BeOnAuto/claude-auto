@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { runPostinstall } from './postinstall.js';
 
@@ -21,7 +21,7 @@ describe('postinstall', () => {
       process.env = originalEnv;
     });
 
-    it('detects project root and returns it', () => {
+    it('detects project root and returns it', async () => {
       const projectDir = path.join(tempDir, 'my-project');
       const packageDir = path.join(tempDir, 'empty-package');
       fs.mkdirSync(projectDir, { recursive: true });
@@ -29,22 +29,23 @@ describe('postinstall', () => {
       fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
       process.env.KETCHUP_ROOT = projectDir;
 
-      const result = runPostinstall(packageDir);
+      const result = await runPostinstall(packageDir);
 
       expect(result).toEqual({
         projectRoot: projectDir,
         claudeDir: path.join(projectDir, '.claude'),
+        ketchupDir: path.join(projectDir, 'ketchup'),
         symlinkedFiles: [],
       });
     });
 
-    it('creates .claude directory in project root', () => {
+    it('creates .claude directory in project root', async () => {
       const projectDir = path.join(tempDir, 'my-project');
       fs.mkdirSync(projectDir, { recursive: true });
       fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
       process.env.KETCHUP_ROOT = projectDir;
 
-      runPostinstall();
+      await runPostinstall();
 
       expect(fs.existsSync(path.join(projectDir, '.claude'))).toBe(true);
       expect(fs.statSync(path.join(projectDir, '.claude')).isDirectory()).toBe(
@@ -52,7 +53,21 @@ describe('postinstall', () => {
       );
     });
 
-    it('symlinks files from package dist/scripts/ and commands/ to .claude/', () => {
+    it('creates ketchup directory in project root', async () => {
+      const projectDir = path.join(tempDir, 'my-project');
+      fs.mkdirSync(projectDir, { recursive: true });
+      fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
+      process.env.KETCHUP_ROOT = projectDir;
+
+      await runPostinstall();
+
+      expect(fs.existsSync(path.join(projectDir, 'ketchup'))).toBe(true);
+      expect(fs.statSync(path.join(projectDir, 'ketchup')).isDirectory()).toBe(
+        true
+      );
+    });
+
+    it('symlinks files from package dist/scripts/ and commands/ to .claude/', async () => {
       const projectDir = path.join(tempDir, 'my-project');
       const packageDir = path.join(tempDir, 'ketchup-package');
       fs.mkdirSync(projectDir, { recursive: true });
@@ -69,12 +84,10 @@ describe('postinstall', () => {
       );
       process.env.KETCHUP_ROOT = projectDir;
 
-      const result = runPostinstall(packageDir);
+      const result = await runPostinstall(packageDir);
 
-      expect(result.symlinkedFiles).toEqual([
-        'scripts/session-start.js',
-        'commands/my-command.md',
-      ]);
+      expect(result.symlinkedFiles).toContain('scripts/session-start.js');
+      expect(result.symlinkedFiles).toContain('commands/my-command.md');
       expect(
         fs.lstatSync(
           path.join(projectDir, '.claude', 'scripts', 'session-start.js')
@@ -87,7 +100,7 @@ describe('postinstall', () => {
       ).toBe(true);
     });
 
-    it('symlinks only .js files from dist/scripts, not .d.ts or .map files', () => {
+    it('symlinks only .js files from dist/scripts, not .d.ts or .map files', async () => {
       const projectDir = path.join(tempDir, 'my-project');
       const packageDir = path.join(tempDir, 'ketchup-package');
       fs.mkdirSync(projectDir, { recursive: true });
@@ -111,9 +124,10 @@ describe('postinstall', () => {
       );
       process.env.KETCHUP_ROOT = projectDir;
 
-      const result = runPostinstall(packageDir);
+      const result = await runPostinstall(packageDir);
 
-      expect(result.symlinkedFiles).toEqual(['scripts/session-start.js']);
+      expect(result.symlinkedFiles).toContain('scripts/session-start.js');
+      expect(result.symlinkedFiles).not.toContain('scripts/session-start.d.ts');
       expect(
         fs.existsSync(
           path.join(projectDir, '.claude', 'scripts', 'session-start.d.ts')
@@ -126,7 +140,7 @@ describe('postinstall', () => {
       ).toBe(false);
     });
 
-    it('generates .gitignore in .claude directory with symlinked files and runtime patterns', () => {
+    it('generates .gitignore in .claude directory with symlinked files and runtime patterns', async () => {
       const projectDir = path.join(tempDir, 'my-project');
       const packageDir = path.join(tempDir, 'ketchup-package');
       fs.mkdirSync(projectDir, { recursive: true });
@@ -138,7 +152,7 @@ describe('postinstall', () => {
       );
       process.env.KETCHUP_ROOT = projectDir;
 
-      runPostinstall(packageDir);
+      await runPostinstall(packageDir);
 
       const gitignoreContent = fs.readFileSync(
         path.join(projectDir, '.claude', '.gitignore'),
@@ -151,7 +165,7 @@ describe('postinstall', () => {
       );
     });
 
-    it('symlinks files from package validators/ to .claude/validators/', () => {
+    it('symlinks files from package validators/ to ketchup/validators/', async () => {
       const projectDir = path.join(tempDir, 'my-project');
       const packageDir = path.join(tempDir, 'ketchup-package');
       fs.mkdirSync(projectDir, { recursive: true });
@@ -163,17 +177,17 @@ describe('postinstall', () => {
       );
       process.env.KETCHUP_ROOT = projectDir;
 
-      const result = runPostinstall(packageDir);
+      const result = await runPostinstall(packageDir);
 
-      expect(result.symlinkedFiles).toContain('validators/ketchup-rules.md');
+      expect(result.symlinkedFiles).toContain('ketchup/validators/ketchup-rules.md');
       expect(
         fs.lstatSync(
-          path.join(projectDir, '.claude', 'validators', 'ketchup-rules.md')
+          path.join(projectDir, 'ketchup', 'validators', 'ketchup-rules.md')
         ).isSymbolicLink()
       ).toBe(true);
     });
 
-    it('symlinks files from package reminders/ to .claude/reminders/', () => {
+    it('symlinks files from package reminders/ to ketchup/reminders/', async () => {
       const projectDir = path.join(tempDir, 'my-project');
       const packageDir = path.join(tempDir, 'ketchup-package');
       fs.mkdirSync(projectDir, { recursive: true });
@@ -185,17 +199,44 @@ describe('postinstall', () => {
       );
       process.env.KETCHUP_ROOT = projectDir;
 
-      const result = runPostinstall(packageDir);
+      const result = await runPostinstall(packageDir);
 
-      expect(result.symlinkedFiles).toContain('reminders/ketchup.md');
+      expect(result.symlinkedFiles).toContain('ketchup/reminders/ketchup.md');
       expect(
         fs.lstatSync(
-          path.join(projectDir, '.claude', 'reminders', 'ketchup.md')
+          path.join(projectDir, 'ketchup', 'reminders', 'ketchup.md')
         ).isSymbolicLink()
       ).toBe(true);
     });
 
-    it('merges settings from package templates to .claude directory', () => {
+    it('uses custom ketchupDir from config', async () => {
+      const projectDir = path.join(tempDir, 'my-project');
+      const packageDir = path.join(tempDir, 'ketchup-package');
+      fs.mkdirSync(projectDir, { recursive: true });
+      fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
+      fs.writeFileSync(
+        path.join(projectDir, '.ketchuprc.json'),
+        JSON.stringify({ ketchupDir: '.ketchup-custom' })
+      );
+      fs.mkdirSync(path.join(packageDir, 'reminders'), { recursive: true });
+      fs.writeFileSync(
+        path.join(packageDir, 'reminders', 'test.md'),
+        '---\npriority: 100\n---\nContent'
+      );
+      process.env.KETCHUP_ROOT = projectDir;
+
+      const result = await runPostinstall(packageDir);
+
+      expect(result.ketchupDir).toBe(path.join(projectDir, '.ketchup-custom'));
+      expect(result.symlinkedFiles).toContain('.ketchup-custom/reminders/test.md');
+      expect(
+        fs.lstatSync(
+          path.join(projectDir, '.ketchup-custom', 'reminders', 'test.md')
+        ).isSymbolicLink()
+      ).toBe(true);
+    });
+
+    it('merges settings from package templates to .claude directory', async () => {
       const projectDir = path.join(tempDir, 'my-project');
       const packageDir = path.join(tempDir, 'ketchup-package');
       fs.mkdirSync(projectDir, { recursive: true });
@@ -208,7 +249,7 @@ describe('postinstall', () => {
       );
       process.env.KETCHUP_ROOT = projectDir;
 
-      runPostinstall(packageDir);
+      await runPostinstall(packageDir);
 
       const result = JSON.parse(
         fs.readFileSync(

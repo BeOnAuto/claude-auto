@@ -1,16 +1,18 @@
 import { activityLog } from '../activity-logger.js';
 import { debugLog } from '../debug-logger.js';
+import { resolvePaths } from '../path-resolver.js';
 import { loadReminders } from '../reminder-loader.js';
 
 type HookResult = {
   result: string;
 };
 
-export function handleSessionStart(
+export async function handleSessionStart(
   claudeDir: string,
   sessionId: string = ''
-): HookResult {
-  const reminders = loadReminders(claudeDir, { hook: 'SessionStart' });
+): Promise<HookResult> {
+  const paths = await resolvePaths(claudeDir);
+  const reminders = loadReminders(paths.remindersDir, { hook: 'SessionStart' });
 
   activityLog(
     claudeDir,

@@ -239,6 +239,7 @@ EOF
 
 ## Next Steps
 
+- [Configuration Reference](/configuration) - All configuration options
 - [The Quality Stack](/ketchup-technique) - Why you can walk away
 - [Hooks Guide](/hooks-guide) - Configure your supervision
 - [Origin Story](/origin-story) - The journey from babysitter to bionic

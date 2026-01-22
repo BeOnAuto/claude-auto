@@ -19,7 +19,8 @@ describe('scanReminders', () => {
   });
 
   it('returns empty array when reminders directory does not exist', () => {
-    const result = scanReminders(tempDir);
+    const nonExistentDir = path.join(tempDir, 'reminders');
+    const result = scanReminders(nonExistentDir);
 
     expect(result).toEqual([]);
   });
@@ -31,7 +32,7 @@ describe('scanReminders', () => {
     fs.writeFileSync(path.join(remindersDir, 'plan-mode.md'), '# Plan');
     fs.writeFileSync(path.join(remindersDir, 'ignore.txt'), 'not a reminder');
 
-    const result = scanReminders(tempDir);
+    const result = scanReminders(remindersDir);
 
     expect(result).toEqual(['ketchup.md', 'plan-mode.md']);
   });
@@ -147,7 +148,7 @@ Session only`
     );
 
     const context: ReminderContext = { hook: 'SessionStart' };
-    const result = loadReminders(tempDir, context);
+    const result = loadReminders(remindersDir, context);
 
     expect(result.map((r) => r.name)).toEqual(['high-priority', 'always']);
   });

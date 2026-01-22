@@ -4,10 +4,10 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { runPreuninstall } from './preuninstall.js';
+import { runPreuninstallSync } from './preuninstall.js';
 
 describe('preuninstall', () => {
-  describe('runPreuninstall', () => {
+  describe('runPreuninstallSync', () => {
     let tempDir: string;
     const originalEnv = process.env;
 
@@ -34,7 +34,27 @@ describe('preuninstall', () => {
       fs.symlinkSync(sourceFile, symlinkFile);
       process.env.KETCHUP_ROOT = projectDir;
 
-      runPreuninstall();
+      runPreuninstallSync();
+
+      expect(fs.existsSync(symlinkFile)).toBe(false);
+      expect(fs.existsSync(sourceFile)).toBe(true);
+    });
+
+    it('removes symlinks from ketchup directory', () => {
+      const projectDir = path.join(tempDir, 'my-project');
+      const ketchupDir = path.join(projectDir, 'ketchup');
+      const remindersDir = path.join(ketchupDir, 'reminders');
+      const sourceFile = path.join(tempDir, 'source.md');
+      const symlinkFile = path.join(remindersDir, 'reminder.md');
+
+      fs.mkdirSync(remindersDir, { recursive: true });
+      fs.mkdirSync(path.join(projectDir, '.claude'), { recursive: true });
+      fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
+      fs.writeFileSync(sourceFile, '# Reminder');
+      fs.symlinkSync(sourceFile, symlinkFile);
+      process.env.KETCHUP_ROOT = projectDir;
+
+      runPreuninstallSync();
 
       expect(fs.existsSync(symlinkFile)).toBe(false);
       expect(fs.existsSync(sourceFile)).toBe(true);
@@ -47,7 +67,7 @@ describe('preuninstall', () => {
       fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
       process.env.KETCHUP_ROOT = projectDir;
 
-      runPreuninstall();
+      runPreuninstallSync();
 
       expect(fs.existsSync(claudeDir)).toBe(true);
     });
@@ -67,7 +87,7 @@ describe('preuninstall', () => {
       fs.symlinkSync(sourceFile, symlinkFile);
       process.env.KETCHUP_ROOT = projectDir;
 
-      runPreuninstall();
+      runPreuninstallSync();
 
       expect(fs.existsSync(symlinkFile)).toBe(false);
       expect(fs.existsSync(regularFile)).toBe(true);

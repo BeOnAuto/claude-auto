@@ -5,7 +5,7 @@ import * as path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { runPostinstall } from './postinstall.js';
-import { runPreuninstall } from './preuninstall.js';
+import { runPreuninstallSync } from './preuninstall.js';
 
 describe('e2e', () => {
   describe('full installation flow', () => {
@@ -48,17 +48,17 @@ describe('e2e', () => {
       process.env = originalEnv;
     });
 
-    it('installs and uninstalls cleanly', () => {
-      const result = runPostinstall(packageDir);
+    it('installs and uninstalls cleanly', async () => {
+      const result = await runPostinstall(packageDir);
 
       expect(result.projectRoot).toBe(projectDir);
       expect(result.claudeDir).toBe(path.join(projectDir, '.claude'));
-      expect(result.symlinkedFiles).toEqual([
-        'scripts/session-start.js',
-        'reminders/my-reminder.md',
-      ]);
+      expect(result.ketchupDir).toBe(path.join(projectDir, 'ketchup'));
+      expect(result.symlinkedFiles).toContain('scripts/session-start.js');
+      expect(result.symlinkedFiles).toContain('ketchup/reminders/my-reminder.md');
 
       expect(fs.existsSync(path.join(projectDir, '.claude'))).toBe(true);
+      expect(fs.existsSync(path.join(projectDir, 'ketchup'))).toBe(true);
       expect(
         fs.lstatSync(
           path.join(projectDir, '.claude', 'scripts', 'session-start.js')
@@ -66,7 +66,7 @@ describe('e2e', () => {
       ).toBe(true);
       expect(
         fs.lstatSync(
-          path.join(projectDir, '.claude', 'reminders', 'my-reminder.md')
+          path.join(projectDir, 'ketchup', 'reminders', 'my-reminder.md')
         ).isSymbolicLink()
       ).toBe(true);
       expect(
@@ -76,7 +76,7 @@ describe('e2e', () => {
         fs.existsSync(path.join(projectDir, '.claude', '.gitignore'))
       ).toBe(true);
 
-      runPreuninstall();
+      runPreuninstallSync();
 
       expect(
         fs.existsSync(
@@ -85,7 +85,7 @@ describe('e2e', () => {
       ).toBe(false);
       expect(
         fs.existsSync(
-          path.join(projectDir, '.claude', 'reminders', 'my-reminder.md')
+          path.join(projectDir, 'ketchup', 'reminders', 'my-reminder.md')
         )
       ).toBe(false);
       expect(

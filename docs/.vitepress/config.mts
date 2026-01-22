@@ -17,6 +17,7 @@ export default defineConfig({
 				text: "Documentation",
 				items: [
 					{ text: "Getting Started", link: "/getting-started" },
+					{ text: "Configuration", link: "/configuration" },
 					{ text: "Hooks Guide", link: "/hooks-guide" },
 					{ text: "API Reference", link: "/api-reference" },
 					{ text: "Architecture", link: "/architecture" },
@@ -52,6 +53,7 @@ export default defineConfig({
 			{
 				text: "Reference",
 				items: [
+					{ text: "Configuration", link: "/configuration" },
 					{ text: "API Reference", link: "/api-reference" },
 					{ text: "Architecture", link: "/architecture" },
 				],

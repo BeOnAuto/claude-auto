@@ -1,10 +1,15 @@
 import { cosmiconfig } from 'cosmiconfig';
 
 export interface KetchupConfig {
+  /** Directory for ketchup data (reminders, validators). Default: 'ketchup' */
+  ketchupDir?: string;
   validators?: {
     dirs?: string[];
     enabled?: boolean;
     mode?: 'on' | 'off' | 'warn';
+  };
+  reminders?: {
+    dirs?: string[];
   };
 }
 

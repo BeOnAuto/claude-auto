@@ -1,5 +1,6 @@
 import * as path from 'node:path';
 
+import { loadConfig } from '../config-loader.js';
 import { verifySymlink } from '../linker.js';
 
 import { getExpectedSymlinks } from './repair.js';
@@ -9,17 +10,33 @@ type DoctorResult = {
   issues: string[];
 };
 
-export function doctor(packageDir: string, claudeDir: string): DoctorResult {
-  const expectedFiles = getExpectedSymlinks(packageDir);
+export async function doctor(packageDir: string, claudeDir: string): Promise<DoctorResult> {
+  const projectRoot = path.dirname(claudeDir);
+  const config = await loadConfig(projectRoot);
+  const ketchupDirName = config.ketchupDir ?? 'ketchup';
+  const ketchupDir = path.join(projectRoot, ketchupDirName);
 
-  const allValid = expectedFiles.every((file) => {
+  const expectedFiles = getExpectedSymlinks(packageDir);
+  const issues: string[] = [];
+
+  for (const file of expectedFiles.claudeFiles) {
     const source = path.join(packageDir, file);
     const target = path.join(claudeDir, file);
-    return verifySymlink(target, source);
-  });
+    if (!verifySymlink(target, source)) {
+      issues.push(`Missing or invalid symlink: ${target}`);
+    }
+  }
+
+  for (const file of expectedFiles.ketchupFiles) {
+    const source = path.join(packageDir, file);
+    const target = path.join(ketchupDir, file);
+    if (!verifySymlink(target, source)) {
+      issues.push(`Missing or invalid symlink: ${target}`);
+    }
+  }
 
   return {
-    healthy: allValid,
-    issues: [],
+    healthy: issues.length === 0,
+    issues,
   };
 }

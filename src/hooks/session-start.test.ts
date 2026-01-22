@@ -8,10 +8,17 @@ import { handleSessionStart } from './session-start.js';
 
 describe('session-start hook', () => {
   let tempDir: string;
+  let claudeDir: string;
+  let ketchupDir: string;
   const originalEnv = process.env.DEBUG;
 
   beforeEach(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-session-'));
+    claudeDir = path.join(tempDir, '.claude');
+    ketchupDir = path.join(tempDir, 'ketchup');
+    fs.mkdirSync(claudeDir, { recursive: true });
+    fs.mkdirSync(ketchupDir, { recursive: true });
+    fs.writeFileSync(path.join(tempDir, 'package.json'), '{}');
   });
 
   afterEach(() => {
@@ -23,8 +30,8 @@ describe('session-start hook', () => {
     }
   });
 
-  it('outputs filtered reminders content for SessionStart hook', () => {
-    const remindersDir = path.join(tempDir, 'reminders');
+  it('outputs filtered reminders content for SessionStart hook', async () => {
+    const remindersDir = path.join(ketchupDir, 'reminders');
     fs.mkdirSync(remindersDir, { recursive: true });
     fs.writeFileSync(
       path.join(remindersDir, 'my-reminder.md'),
@@ -39,15 +46,15 @@ priority: 10
 This is the reminder content.`
     );
 
-    const result = handleSessionStart(tempDir, 'test-session-id');
+    const result = await handleSessionStart(claudeDir, 'test-session-id');
 
     expect(result).toEqual({
       result: '# My Reminder\n\nThis is the reminder content.',
     });
   });
 
-  it('logs to activity.log with session ID', () => {
-    const remindersDir = path.join(tempDir, 'reminders');
+  it('logs to activity.log with session ID', async () => {
+    const remindersDir = path.join(ketchupDir, 'reminders');
     fs.mkdirSync(remindersDir, { recursive: true });
     fs.writeFileSync(
       path.join(remindersDir, 'reminder.md'),
@@ -59,18 +66,18 @@ when:
 Content.`
     );
 
-    handleSessionStart(tempDir, 'abc12345-session');
+    await handleSessionStart(claudeDir, 'abc12345-session');
 
-    const logPath = path.join(tempDir, 'logs', 'activity.log');
+    const logPath = path.join(claudeDir, 'logs', 'activity.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[-session]');
     expect(content).toContain('session-start:');
   });
 
-  it('logs reminders loaded when DEBUG=ketchup', () => {
+  it('logs reminders loaded when DEBUG=ketchup', async () => {
     process.env.DEBUG = 'ketchup';
-    const remindersDir = path.join(tempDir, 'reminders');
+    const remindersDir = path.join(ketchupDir, 'reminders');
     fs.mkdirSync(remindersDir, { recursive: true });
     fs.writeFileSync(
       path.join(remindersDir, 'reminder-a.md'),
@@ -92,9 +99,9 @@ when:
 Reminder B content.`
     );
 
-    handleSessionStart(tempDir, 'debug-session');
+    await handleSessionStart(claudeDir, 'debug-session');
 
-    const logPath = path.join(tempDir, 'logs', 'ketchup', 'debug.log');
+    const logPath = path.join(claudeDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[session-start]');

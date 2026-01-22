@@ -1,5 +1,4 @@
 import * as fs from 'node:fs';
-import * as path from 'node:path';
 
 import { parseReminder, scanReminders, type ReminderWhen } from '../reminder-loader.js';
 
@@ -13,12 +12,11 @@ type RemindersResult = {
   reminders: ReminderInfo[];
 };
 
-export function listReminders(claudeDir: string): RemindersResult {
-  const filenames = scanReminders(claudeDir);
-  const remindersDir = path.join(claudeDir, 'reminders');
+export function listReminders(remindersDir: string): RemindersResult {
+  const filenames = scanReminders(remindersDir);
 
   const reminders: ReminderInfo[] = filenames.map((filename) => {
-    const content = fs.readFileSync(path.join(remindersDir, filename), 'utf-8');
+    const content = fs.readFileSync(`${remindersDir}/${filename}`, 'utf-8');
     const parsed = parseReminder(content, filename);
     return {
       name: parsed.name,

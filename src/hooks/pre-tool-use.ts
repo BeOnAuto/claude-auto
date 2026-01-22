@@ -1,5 +1,3 @@
-import * as path from 'node:path';
-
 import { activityLog } from '../activity-logger.js';
 import {
   getCommitContext,
@@ -9,6 +7,7 @@ import {
 } from '../commit-validator.js';
 import { debugLog } from '../debug-logger.js';
 import { isDenied, loadDenyPatterns } from '../deny-list.js';
+import { resolvePaths } from '../path-resolver.js';
 import { loadReminders } from '../reminder-loader.js';
 import { loadValidators } from '../validator-loader.js';
 
@@ -25,12 +24,12 @@ interface PreToolUseOptions {
   toolName?: string;
 }
 
-export function handlePreToolUse(
+export async function handlePreToolUse(
   claudeDir: string,
   sessionId: string,
   toolInput: ToolInput,
   options: PreToolUseOptions = {}
-): HookResult {
+): Promise<HookResult> {
   const command = toolInput.command as string | undefined;
 
   if (command && isCommitCommand(command)) {
@@ -49,7 +48,8 @@ export function handlePreToolUse(
     };
   }
 
-  const reminders = loadReminders(claudeDir, {
+  const paths = await resolvePaths(claudeDir);
+  const reminders = loadReminders(paths.remindersDir, {
     hook: 'PreToolUse',
     toolName: options.toolName,
   });
@@ -76,14 +76,14 @@ export function handlePreToolUse(
   return { decision: 'allow' };
 }
 
-function handleCommitValidation(
+async function handleCommitValidation(
   claudeDir: string,
   sessionId: string,
   command: string,
   options: PreToolUseOptions
-): HookResult {
-  const validatorsDir = path.join(claudeDir, 'validators');
-  const validators = loadValidators([validatorsDir]);
+): Promise<HookResult> {
+  const paths = await resolvePaths(claudeDir);
+  const validators = loadValidators([paths.validatorsDir]);
 
   if (validators.length === 0) {
     activityLog(claudeDir, sessionId, 'pre-tool-use', 'commit allowed (no validators)');

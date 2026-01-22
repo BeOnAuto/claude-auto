@@ -24,9 +24,7 @@ export interface ReminderContext {
   [key: string]: unknown;
 }
 
-export function scanReminders(dir: string): string[] {
-  const remindersDir = path.join(dir, 'reminders');
-
+export function scanReminders(remindersDir: string): string[] {
   if (!fs.existsSync(remindersDir)) {
     return [];
   }
@@ -60,9 +58,8 @@ export function sortByPriority(reminders: Reminder[]): Reminder[] {
   return [...reminders].sort((a, b) => b.priority - a.priority);
 }
 
-export function loadReminders(dir: string, context: ReminderContext): Reminder[] {
-  const remindersDir = path.join(dir, 'reminders');
-  const filenames = scanReminders(dir);
+export function loadReminders(remindersDir: string, context: ReminderContext): Reminder[] {
+  const filenames = scanReminders(remindersDir);
 
   const reminders = filenames.map((filename) => {
     const content = fs.readFileSync(path.join(remindersDir, filename), 'utf8');

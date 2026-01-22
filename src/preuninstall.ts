@@ -1,10 +1,12 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+import { loadConfig } from './config-loader.js';
 import { removeSymlink } from './linker.js';
 import { findProjectRoot } from './root-finder.js';
 
-const SYMLINK_DIRS = ['scripts', 'commands', 'validators', 'reminders'];
+const CLAUDE_SYMLINK_DIRS = ['scripts', 'commands'];
+const KETCHUP_SYMLINK_DIRS = ['validators', 'reminders'];
 
 function removeSymlinksInDir(dir: string): void {
   if (!fs.existsSync(dir)) {
@@ -19,12 +21,37 @@ function removeSymlinksInDir(dir: string): void {
   }
 }
 
-export function runPreuninstall(): void {
+export async function runPreuninstall(): Promise<void> {
   const projectRoot = findProjectRoot();
   const claudeDir = path.join(projectRoot, '.claude');
 
-  for (const subdir of SYMLINK_DIRS) {
+  const config = await loadConfig(projectRoot);
+  const ketchupDirName = config.ketchupDir ?? 'ketchup';
+  const ketchupDir = path.join(projectRoot, ketchupDirName);
+
+  for (const subdir of CLAUDE_SYMLINK_DIRS) {
     const targetDir = path.join(claudeDir, subdir);
+    removeSymlinksInDir(targetDir);
+  }
+
+  for (const subdir of KETCHUP_SYMLINK_DIRS) {
+    const targetDir = path.join(ketchupDir, subdir);
+    removeSymlinksInDir(targetDir);
+  }
+}
+
+export function runPreuninstallSync(): void {
+  const projectRoot = findProjectRoot();
+  const claudeDir = path.join(projectRoot, '.claude');
+  const ketchupDir = path.join(projectRoot, 'ketchup');
+
+  for (const subdir of CLAUDE_SYMLINK_DIRS) {
+    const targetDir = path.join(claudeDir, subdir);
+    removeSymlinksInDir(targetDir);
+  }
+
+  for (const subdir of KETCHUP_SYMLINK_DIRS) {
+    const targetDir = path.join(ketchupDir, subdir);
     removeSymlinksInDir(targetDir);
   }
 }

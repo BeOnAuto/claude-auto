@@ -2,4 +2,7 @@
 
 import { runPostinstall } from '../src/postinstall.js';
 
-runPostinstall();
+runPostinstall().catch((err) => {
+  console.error('Postinstall failed:', err);
+  process.exit(1);
+});

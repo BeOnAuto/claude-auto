@@ -8,10 +8,17 @@ import { handleUserPromptSubmit } from './user-prompt-submit.js';
 
 describe('user-prompt-submit hook', () => {
   let tempDir: string;
+  let claudeDir: string;
+  let ketchupDir: string;
   const originalEnv = process.env.DEBUG;
 
   beforeEach(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-prompt-'));
+    claudeDir = path.join(tempDir, '.claude');
+    ketchupDir = path.join(tempDir, 'ketchup');
+    fs.mkdirSync(claudeDir, { recursive: true });
+    fs.mkdirSync(ketchupDir, { recursive: true });
+    fs.writeFileSync(path.join(tempDir, 'package.json'), '{}');
   });
 
   afterEach(() => {
@@ -23,8 +30,8 @@ describe('user-prompt-submit hook', () => {
     }
   });
 
-  it('injects reminders into user prompt', () => {
-    const remindersDir = path.join(tempDir, 'reminders');
+  it('injects reminders into user prompt', async () => {
+    const remindersDir = path.join(ketchupDir, 'reminders');
     fs.mkdirSync(remindersDir, { recursive: true });
     fs.writeFileSync(
       path.join(remindersDir, 'coding-standards.md'),
@@ -37,21 +44,21 @@ priority: 10
 Remember to follow coding standards.`
     );
 
-    const result = handleUserPromptSubmit(tempDir, 'session-1', 'Help me fix this bug');
+    const result = await handleUserPromptSubmit(claudeDir, 'session-1', 'Help me fix this bug');
 
     expect(result).toEqual({
       result: 'Help me fix this bug\n\n<system-reminder>\nRemember to follow coding standards.\n</system-reminder>',
     });
   });
 
-  it('returns prompt unchanged when no reminders exist', () => {
-    const result = handleUserPromptSubmit(tempDir, 'session-2', 'Help me fix this bug');
+  it('returns prompt unchanged when no reminders exist', async () => {
+    const result = await handleUserPromptSubmit(claudeDir, 'session-2', 'Help me fix this bug');
 
     expect(result).toEqual({ result: 'Help me fix this bug' });
   });
 
-  it('logs to activity.log with session ID', () => {
-    const remindersDir = path.join(tempDir, 'reminders');
+  it('logs to activity.log with session ID', async () => {
+    const remindersDir = path.join(ketchupDir, 'reminders');
     fs.mkdirSync(remindersDir, { recursive: true });
     fs.writeFileSync(
       path.join(remindersDir, 'coding-standards.md'),
@@ -64,18 +71,18 @@ priority: 10
 Remember to follow coding standards.`
     );
 
-    handleUserPromptSubmit(tempDir, 'my-session-id', 'Help me fix this bug');
+    await handleUserPromptSubmit(claudeDir, 'my-session-id', 'Help me fix this bug');
 
-    const logPath = path.join(tempDir, 'logs', 'activity.log');
+    const logPath = path.join(claudeDir, 'logs', 'activity.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[ssion-id]');
     expect(content).toContain('user-prompt-submit:');
   });
 
-  it('logs reminders injected when DEBUG=ketchup', () => {
+  it('logs reminders injected when DEBUG=ketchup', async () => {
     process.env.DEBUG = 'ketchup';
-    const remindersDir = path.join(tempDir, 'reminders');
+    const remindersDir = path.join(ketchupDir, 'reminders');
     fs.mkdirSync(remindersDir, { recursive: true });
     fs.writeFileSync(
       path.join(remindersDir, 'coding-standards.md'),
@@ -88,9 +95,9 @@ priority: 10
 Remember to follow coding standards.`
     );
 
-    handleUserPromptSubmit(tempDir, 'debug-session', 'Help me fix this bug');
+    await handleUserPromptSubmit(claudeDir, 'debug-session', 'Help me fix this bug');
 
-    const logPath = path.join(tempDir, 'logs', 'ketchup', 'debug.log');
+    const logPath = path.join(claudeDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[user-prompt-submit]');
