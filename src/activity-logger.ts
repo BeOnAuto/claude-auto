@@ -3,14 +3,25 @@ import path from 'path';
 
 function matchesFilter(hookName: string, message: string): boolean {
   const filter = process.env.KETCHUP_LOG;
-  if (!filter || filter === '*') {
+  if (!filter) {
     return true;
   }
 
   const patterns = filter.split(',').map((p) => p.trim());
+  const includes = patterns.filter((p) => !p.startsWith('-'));
+  const excludes = patterns.filter((p) => p.startsWith('-')).map((p) => p.slice(1));
   const searchText = `${hookName}: ${message}`;
 
-  return patterns.some((pattern) => searchText.includes(pattern));
+  const excluded = excludes.some((pattern) => searchText.includes(pattern));
+  if (excluded) {
+    return false;
+  }
+
+  if (includes.length === 0 || includes.includes('*')) {
+    return true;
+  }
+
+  return includes.some((pattern) => searchText.includes(pattern));
 }
 
 export function activityLog(

@@ -106,4 +106,36 @@ describe('activity-logger', () => {
     expect(content).toContain('session-start');
     expect(content).toContain('pre-tool-use');
   });
+
+  it('excludes patterns prefixed with -', () => {
+    process.env.KETCHUP_LOG = '*,-allowed';
+    const claudeDir = path.join(tempDir, '.claude');
+    fs.mkdirSync(claudeDir, { recursive: true });
+
+    activityLog(claudeDir, 'session-1', 'session-start', 'started');
+    activityLog(claudeDir, 'session-1', 'pre-tool-use', 'blocked: secret.ts');
+    activityLog(claudeDir, 'session-1', 'pre-tool-use', 'allowed: file.ts');
+
+    const logPath = path.join(claudeDir, 'logs', 'activity.log');
+    const content = fs.readFileSync(logPath, 'utf8');
+    expect(content).toContain('session-start');
+    expect(content).toContain('blocked: secret.ts');
+    expect(content).not.toContain('allowed: file.ts');
+  });
+
+  it('combines includes and excludes', () => {
+    process.env.KETCHUP_LOG = 'pre-tool-use,-allowed';
+    const claudeDir = path.join(tempDir, '.claude');
+    fs.mkdirSync(claudeDir, { recursive: true });
+
+    activityLog(claudeDir, 'session-1', 'session-start', 'started');
+    activityLog(claudeDir, 'session-1', 'pre-tool-use', 'blocked: secret.ts');
+    activityLog(claudeDir, 'session-1', 'pre-tool-use', 'allowed: file.ts');
+
+    const logPath = path.join(claudeDir, 'logs', 'activity.log');
+    const content = fs.readFileSync(logPath, 'utf8');
+    expect(content).not.toContain('session-start');
+    expect(content).toContain('blocked: secret.ts');
+    expect(content).not.toContain('allowed: file.ts');
+  });
 });
