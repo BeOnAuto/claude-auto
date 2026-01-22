@@ -1,12 +1,28 @@
 import fs from 'fs';
 import path from 'path';
 
+function matchesFilter(hookName: string, message: string): boolean {
+  const filter = process.env.KETCHUP_LOG;
+  if (!filter || filter === '*') {
+    return true;
+  }
+
+  const patterns = filter.split(',').map((p) => p.trim());
+  const searchText = `${hookName}: ${message}`;
+
+  return patterns.some((pattern) => searchText.includes(pattern));
+}
+
 export function activityLog(
   claudeDir: string,
   sessionId: string,
   hookName: string,
   message: string
 ): void {
+  if (!matchesFilter(hookName, message)) {
+    return;
+  }
+
   const logsDir = path.join(claudeDir, 'logs');
   if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir, { recursive: true });

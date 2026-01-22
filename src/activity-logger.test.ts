@@ -6,13 +6,20 @@ import { activityLog } from './activity-logger.js';
 
 describe('activity-logger', () => {
   let tempDir: string;
+  const originalEnv = process.env.KETCHUP_LOG;
 
   beforeEach(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-activity-'));
+    delete process.env.KETCHUP_LOG;
   });
 
   afterEach(() => {
     fs.rmSync(tempDir, { recursive: true });
+    if (originalEnv === undefined) {
+      delete process.env.KETCHUP_LOG;
+    } else {
+      process.env.KETCHUP_LOG = originalEnv;
+    }
   });
 
   it('writes to .claude/logs/activity.log', () => {
@@ -55,5 +62,48 @@ describe('activity-logger', () => {
     expect(lines).toHaveLength(2);
     expect(lines[0]).toContain('message 1');
     expect(lines[1]).toContain('message 2');
+  });
+
+  it('filters by KETCHUP_LOG env when set to specific hook', () => {
+    process.env.KETCHUP_LOG = 'session-start';
+    const claudeDir = path.join(tempDir, '.claude');
+    fs.mkdirSync(claudeDir, { recursive: true });
+
+    activityLog(claudeDir, 'session-1', 'session-start', 'started');
+    activityLog(claudeDir, 'session-1', 'pre-tool-use', 'allowed: file.ts');
+
+    const logPath = path.join(claudeDir, 'logs', 'activity.log');
+    const content = fs.readFileSync(logPath, 'utf8');
+    expect(content).toContain('session-start');
+    expect(content).not.toContain('pre-tool-use');
+  });
+
+  it('allows multiple comma-separated patterns in KETCHUP_LOG', () => {
+    process.env.KETCHUP_LOG = 'session-start,block';
+    const claudeDir = path.join(tempDir, '.claude');
+    fs.mkdirSync(claudeDir, { recursive: true });
+
+    activityLog(claudeDir, 'session-1', 'session-start', 'started');
+    activityLog(claudeDir, 'session-1', 'pre-tool-use', 'block: denied');
+    activityLog(claudeDir, 'session-1', 'pre-tool-use', 'allowed: file.ts');
+
+    const logPath = path.join(claudeDir, 'logs', 'activity.log');
+    const content = fs.readFileSync(logPath, 'utf8');
+    expect(content).toContain('session-start');
+    expect(content).toContain('block: denied');
+    expect(content).not.toContain('allowed: file.ts');
+  });
+
+  it('logs everything when KETCHUP_LOG is * or unset', () => {
+    const claudeDir = path.join(tempDir, '.claude');
+    fs.mkdirSync(claudeDir, { recursive: true });
+
+    activityLog(claudeDir, 'session-1', 'session-start', 'started');
+    activityLog(claudeDir, 'session-1', 'pre-tool-use', 'allowed: file.ts');
+
+    const logPath = path.join(claudeDir, 'logs', 'activity.log');
+    const content = fs.readFileSync(logPath, 'utf8');
+    expect(content).toContain('session-start');
+    expect(content).toContain('pre-tool-use');
   });
 });
