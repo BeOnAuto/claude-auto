@@ -1,3 +1,4 @@
+import { activityLog } from '../activity-logger.js';
 import { debugLog } from '../debug-logger.js';
 import { loadReminders } from '../reminder-loader.js';
 
@@ -5,8 +6,18 @@ type HookResult = {
   result: string;
 };
 
-export function handleSessionStart(claudeDir: string): HookResult {
+export function handleSessionStart(
+  claudeDir: string,
+  sessionId: string = ''
+): HookResult {
   const reminders = loadReminders(claudeDir, { hook: 'SessionStart' });
+
+  activityLog(
+    claudeDir,
+    sessionId,
+    'session-start',
+    `loaded ${reminders.length} reminders`
+  );
 
   debugLog(
     claudeDir,

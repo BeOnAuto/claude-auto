@@ -39,11 +39,33 @@ priority: 10
 This is the reminder content.`
     );
 
-    const result = handleSessionStart(tempDir);
+    const result = handleSessionStart(tempDir, 'test-session-id');
 
     expect(result).toEqual({
       result: '# My Reminder\n\nThis is the reminder content.',
     });
+  });
+
+  it('logs to activity.log with session ID', () => {
+    const remindersDir = path.join(tempDir, 'reminders');
+    fs.mkdirSync(remindersDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(remindersDir, 'reminder.md'),
+      `---
+when:
+  hook: SessionStart
+---
+
+Content.`
+    );
+
+    handleSessionStart(tempDir, 'abc12345-session');
+
+    const logPath = path.join(tempDir, 'logs', 'activity.log');
+    expect(fs.existsSync(logPath)).toBe(true);
+    const content = fs.readFileSync(logPath, 'utf8');
+    expect(content).toContain('[-session]');
+    expect(content).toContain('session-start:');
   });
 
   it('logs reminders loaded when DEBUG=ketchup', () => {
@@ -70,7 +92,7 @@ when:
 Reminder B content.`
     );
 
-    handleSessionStart(tempDir);
+    handleSessionStart(tempDir, 'debug-session');
 
     const logPath = path.join(tempDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
