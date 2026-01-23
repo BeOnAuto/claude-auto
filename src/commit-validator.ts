@@ -1,4 +1,4 @@
-import { execSync, spawnSync, type SpawnSyncReturns } from 'node:child_process';
+import { execSync, type SpawnSyncReturns, spawnSync } from 'node:child_process';
 
 import type { Validator } from './validator-loader.js';
 
@@ -34,11 +34,7 @@ export function extractAppeal(message: string): string | null {
   return match ? match[1].trim() : null;
 }
 
-export type Executor = (
-  cmd: string,
-  args: string[],
-  options: { encoding: 'utf8' }
-) => SpawnSyncReturns<string>;
+export type Executor = (cmd: string, args: string[], options: { encoding: 'utf8' }) => SpawnSyncReturns<string>;
 
 export interface ValidatorResult {
   decision: 'ACK' | 'NACK';
@@ -48,7 +44,7 @@ export interface ValidatorResult {
 export function runValidator(
   validator: Validator,
   context: CommitContext,
-  executor: Executor = spawnSync
+  executor: Executor = spawnSync,
 ): ValidatorResult {
   const prompt = buildPrompt(validator, context);
   const result = executor('claude', ['-p', prompt, '--output-format', 'json'], {
@@ -78,11 +74,9 @@ function buildAppealPrompt(
   appealValidator: Validator,
   context: CommitContext,
   results: CommitValidationResult[],
-  appeal: string
+  appeal: string,
 ): string {
-  const resultsText = results
-    .map((r) => `${r.validator}: ${r.decision}${r.reason ? ` - ${r.reason}` : ''}`)
-    .join('\n');
+  const resultsText = results.map((r) => `${r.validator}: ${r.decision}${r.reason ? ` - ${r.reason}` : ''}`).join('\n');
 
   return `<diff>
 ${context.diff}
@@ -112,7 +106,7 @@ export function runAppealValidator(
   context: CommitContext,
   results: CommitValidationResult[],
   appeal: string,
-  executor: Executor = spawnSync
+  executor: Executor = spawnSync,
 ): ValidatorResult {
   const prompt = buildAppealPrompt(appealValidator, context, results, appeal);
   const result = executor('claude', ['-p', prompt, '--output-format', 'json'], {
@@ -134,7 +128,7 @@ export interface CommitValidationResult {
 export function validateCommit(
   validators: Validator[],
   context: CommitContext,
-  executor: Executor = spawnSync
+  executor: Executor = spawnSync,
 ): CommitValidationResult[] {
   return validators.map((validator) => {
     const result = runValidator(validator, context, executor);
@@ -158,7 +152,7 @@ export function handleCommitValidation(
   validators: Validator[],
   context: CommitContext,
   executor: Executor = spawnSync,
-  appealValidator?: Validator
+  appealValidator?: Validator,
 ): HandleCommitValidationResult {
   const results = validateCommit(validators, context, executor);
   const appeal = extractAppeal(context.message);
@@ -185,13 +179,7 @@ export function handleCommitValidation(
     };
   }
 
-  const appealResult = runAppealValidator(
-    appealValidator,
-    context,
-    results,
-    appeal,
-    executor
-  );
+  const appealResult = runAppealValidator(appealValidator, context, results, appeal, executor);
 
   if (appealResult.decision === 'ACK') {
     return { allowed: true, results, appeal };

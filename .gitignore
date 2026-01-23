@@ -7,5 +7,15 @@ coverage/
 # VitePress
 docs/.vitepress/dist
 docs/.vitepress/cache
+
+# Turbo
+.turbo/
+
+# IDE
 .playwright-mcp
 .claude.old
+.vscode/
+.idea/
+
+# Temp files
+.changeset-prompt-*.txt

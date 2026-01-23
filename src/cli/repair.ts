@@ -43,11 +43,7 @@ export function getExpectedSymlinks(packageDir: string): ExpectedSymlinks {
   return { claudeFiles, ketchupFiles };
 }
 
-export async function repair(
-  packageDir: string,
-  claudeDir: string,
-  files: ExpectedSymlinks
-): Promise<RepairResult> {
+export async function repair(packageDir: string, claudeDir: string, files: ExpectedSymlinks): Promise<RepairResult> {
   const projectRoot = path.dirname(claudeDir);
   const config = await loadConfig(projectRoot);
   const ketchupDirName = config.ketchupDir ?? DEFAULT_KETCHUP_DIR;

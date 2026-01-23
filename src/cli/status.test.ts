@@ -31,14 +31,8 @@ describe('cli status', () => {
   it('lists expected symlinks from scripts and commands directories', async () => {
     fs.mkdirSync(path.join(packageDir, 'scripts'), { recursive: true });
     fs.mkdirSync(path.join(packageDir, 'commands'), { recursive: true });
-    fs.writeFileSync(
-      path.join(packageDir, 'scripts', 'session-start.ts'),
-      'export default {}'
-    );
-    fs.writeFileSync(
-      path.join(packageDir, 'commands', 'cmd.md'),
-      '# Command'
-    );
+    fs.writeFileSync(path.join(packageDir, 'scripts', 'session-start.ts'), 'export default {}');
+    fs.writeFileSync(path.join(packageDir, 'commands', 'cmd.md'), '# Command');
 
     const result = await getStatus(packageDir, claudeDir);
 

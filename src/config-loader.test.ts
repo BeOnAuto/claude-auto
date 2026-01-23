@@ -25,10 +25,7 @@ describe('loadConfig', () => {
 
   it('reads config from .ketchuprc.json', async () => {
     const config = { validators: { enabled: true, mode: 'warn' } };
-    fs.writeFileSync(
-      path.join(tempDir, '.ketchuprc.json'),
-      JSON.stringify(config)
-    );
+    fs.writeFileSync(path.join(tempDir, '.ketchuprc.json'), JSON.stringify(config));
 
     const result = await loadConfig(tempDir);
 
@@ -40,10 +37,7 @@ describe('loadConfig', () => {
       name: 'test-project',
       ketchup: { validators: { dirs: ['custom-validators'] } },
     };
-    fs.writeFileSync(
-      path.join(tempDir, 'package.json'),
-      JSON.stringify(packageJson)
-    );
+    fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify(packageJson));
 
     const result = await loadConfig(tempDir);
 

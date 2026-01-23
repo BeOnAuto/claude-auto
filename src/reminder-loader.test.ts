@@ -3,9 +3,8 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-
-import { loadReminders, matchReminders, parseReminder, scanReminders, sortByPriority } from './reminder-loader.js';
 import type { Reminder, ReminderContext } from './reminder-loader.js';
+import { loadReminders, matchReminders, parseReminder, scanReminders, sortByPriority } from './reminder-loader.js';
 
 describe('scanReminders', () => {
   let tempDir: string;
@@ -128,14 +127,14 @@ describe('loadReminders', () => {
       `---
 priority: 10
 ---
-Always shown`
+Always shown`,
     );
     fs.writeFileSync(
       path.join(remindersDir, 'high-priority.md'),
       `---
 priority: 100
 ---
-High priority`
+High priority`,
     );
     fs.writeFileSync(
       path.join(remindersDir, 'session-only.md'),
@@ -144,7 +143,7 @@ when:
   hook: PreToolUse
 priority: 50
 ---
-Session only`
+Session only`,
     );
 
     const context: ReminderContext = { hook: 'SessionStart' };

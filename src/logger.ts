@@ -15,15 +15,7 @@ export const colors = {
   magenta: '\x1b[35m',
 } as const;
 
-export type LogLevel =
-  | 'ACK'
-  | 'NACK'
-  | 'ERROR'
-  | 'WARN'
-  | 'SKIP'
-  | 'INFO'
-  | 'DENIED'
-  | 'CONTINUE';
+export type LogLevel = 'ACK' | 'NACK' | 'ERROR' | 'WARN' | 'SKIP' | 'INFO' | 'DENIED' | 'CONTINUE';
 
 const levelColors: Record<LogLevel, string> = {
   ACK: `${colors.bold}${colors.green}`,
@@ -67,9 +59,7 @@ export function createLogger(logDir: string, sessionId?: string): Logger {
     const prefix = sessionId.slice(0, 8);
 
     const files = fs.readdirSync(hooksDir);
-    const existing = files.find(
-      (f) => f.startsWith(`${prefix}-`) && f.endsWith('.log')
-    );
+    const existing = files.find((f) => f.startsWith(`${prefix}-`) && f.endsWith('.log'));
     if (existing) {
       logFilePath = path.join(hooksDir, existing);
       return logFilePath;
@@ -97,8 +87,7 @@ export function createLogger(logDir: string, sessionId?: string): Logger {
   function logError(error: unknown, context?: string): void {
     ensureLogDir();
     const timestamp = new Date().toISOString();
-    const errorMsg =
-      error instanceof Error ? `${error.message}\n${error.stack}` : String(error);
+    const errorMsg = error instanceof Error ? `${error.message}\n${error.stack}` : String(error);
     const contextStr = context ? ` [${context}]` : '';
     const errLog = path.join(hooksDir, 'err.log');
     fs.appendFileSync(errLog, `[${timestamp}]${contextStr} ${errorMsg}\n\n`);

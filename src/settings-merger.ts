@@ -41,10 +41,7 @@ function dedupeHooks(hooks: HookEntry[]): HookEntry[] {
 
 function isHookOverride(value: unknown): value is HookOverride {
   return (
-    typeof value === 'object' &&
-    value !== null &&
-    !Array.isArray(value) &&
-    ('_disabled' in value || '_mode' in value)
+    typeof value === 'object' && value !== null && !Array.isArray(value) && ('_disabled' in value || '_mode' in value)
   );
 }
 
@@ -83,11 +80,7 @@ function deepMergeSettings(base: Settings, override: Settings): Settings {
 }
 
 export function mergeSettings(packageDir: string, targetDir: string): void {
-  const packageSettingsPath = path.join(
-    packageDir,
-    'templates',
-    'settings.json'
-  );
+  const packageSettingsPath = path.join(packageDir, 'templates', 'settings.json');
   const projectSettingsPath = path.join(targetDir, 'settings.project.json');
   const localSettingsPath = path.join(targetDir, 'settings.local.json');
   const targetSettingsPath = path.join(targetDir, 'settings.json');
@@ -121,16 +114,12 @@ export function mergeSettings(packageDir: string, targetDir: string): void {
   let settings: Settings = JSON.parse(packageContent);
 
   if (fs.existsSync(projectSettingsPath)) {
-    const projectSettings: Settings = JSON.parse(
-      fs.readFileSync(projectSettingsPath, 'utf-8')
-    );
+    const projectSettings: Settings = JSON.parse(fs.readFileSync(projectSettingsPath, 'utf-8'));
     settings = deepMergeSettings(settings, projectSettings);
   }
 
   if (fs.existsSync(localSettingsPath)) {
-    const localSettings: Settings = JSON.parse(
-      fs.readFileSync(localSettingsPath, 'utf-8')
-    );
+    const localSettings: Settings = JSON.parse(fs.readFileSync(localSettingsPath, 'utf-8'));
     settings = deepMergeSettings(settings, localSettings);
   }
 

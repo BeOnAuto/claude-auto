@@ -46,8 +46,7 @@ export function classifySubagent(taskDescription: string): SubagentType {
   return 'unknown';
 }
 
-const TASK_DESCRIPTION_PATTERN =
-  /<invoke name="Task">[\s\S]*?<parameter name="description">(.+?)<\/parameter>/;
+const TASK_DESCRIPTION_PATTERN = /<invoke name="Task">[\s\S]*?<parameter name="description">(.+?)<\/parameter>/;
 
 export function extractTaskDescription(transcript: string): string | undefined {
   if (!transcript) {

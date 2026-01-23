@@ -61,7 +61,7 @@ Each runs a Ketchup instance. All quality-validated.
 ### 1. Define
 
 ```bash
-pnpm add -D claude-ketchup
+pnpm add -D @xolvio/claude-ketchup
 ```
 
 Feed your requirements. Ketchup auto-generates the plan with Bottles, Bursts, and Dependencies.
@@ -90,11 +90,63 @@ From Babysitter to Bionic.
 
 ---
 
+## Installation (Xolvio Team)
+
+This package is published to GitHub Packages (private). Follow these steps to install.
+
+### 1. Authenticate with GitHub Packages
+
+Create a GitHub Personal Access Token (classic) with `read:packages` scope at:
+https://github.com/settings/tokens/new
+
+Then add it to your global `.npmrc`:
+
+```bash
+# Add authentication for GitHub Packages
+echo "//npm.pkg.github.com/:_authToken=YOUR_GITHUB_PAT" >> ~/.npmrc
+echo "@xolvio:registry=https://npm.pkg.github.com" >> ~/.npmrc
+```
+
+Or use npm login:
+```bash
+npm login --registry=https://npm.pkg.github.com --scope=@xolvio
+# Username: your-github-username
+# Password: your-github-pat
+# Email: your-email
+```
+
+### 2. Install the package
+
+```bash
+pnpm add -D @xolvio/claude-ketchup
+# or
+npm install --save-dev @xolvio/claude-ketchup
+```
+
+### For CI/CD pipelines
+
+Add to your GitHub Actions workflow:
+
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    registry-url: 'https://npm.pkg.github.com'
+    scope: '@xolvio'
+
+- run: pnpm install
+  env:
+    NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+For repos outside the xolvio org, use a PAT with `read:packages` scope stored as a secret.
+
+---
+
 ## Quick Start
 
 ```bash
 # Install
-pnpm add -D claude-ketchup
+pnpm add -D @xolvio/claude-ketchup
 
 # Verify
 claude-ketchup doctor
@@ -147,7 +199,7 @@ The on.auto team ships 5-10 features per week. Not 1-2.
 ## Development
 
 ```bash
-git clone https://github.com/BeOnAuto/claude-ketchup.git
+git clone https://github.com/xolvio/claude-ketchup.git
 cd claude-ketchup
 pnpm install
 pnpm test
@@ -158,7 +210,7 @@ pnpm build
 
 ## License
 
-MIT © 2025 BeOnAuto, Inc.
+MIT © 2025 Xolvio, Inc.
 
 See [LICENSE](LICENSE) for details.
 

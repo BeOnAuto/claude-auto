@@ -81,7 +81,7 @@ export function createHookState(projectDir: string): HookStateManager {
   function read(): HookState {
     if (!fs.existsSync(stateFile)) {
       const state = { ...DEFAULT_HOOK_STATE, updatedAt: new Date().toISOString(), updatedBy: 'init' };
-      fs.writeFileSync(stateFile, JSON.stringify(state, null, 2) + '\n');
+      fs.writeFileSync(stateFile, `${JSON.stringify(state, null, 2)}\n`);
       return state;
     }
 
@@ -101,7 +101,7 @@ export function createHookState(projectDir: string): HookStateManager {
 
   function write(state: HookState): void {
     state.updatedAt = new Date().toISOString();
-    fs.writeFileSync(stateFile, JSON.stringify(state, null, 2) + '\n');
+    fs.writeFileSync(stateFile, `${JSON.stringify(state, null, 2)}\n`);
   }
 
   function update(updates: Partial<HookState>, updatedBy?: string): HookState {

@@ -10,7 +10,7 @@ type HookResult = {
 export async function handleUserPromptSubmit(
   claudeDir: string,
   sessionId: string,
-  userPrompt: string
+  userPrompt: string,
 ): Promise<HookResult> {
   const paths = await resolvePaths(claudeDir);
   const reminders = loadReminders(paths.remindersDir, { hook: 'UserPromptSubmit' });
@@ -21,13 +21,13 @@ export async function handleUserPromptSubmit(
     claudeDir,
     sessionId,
     'user-prompt-submit',
-    `injected ${reminders.length} reminder${reminders.length === 1 ? '' : 's'}`
+    `injected ${reminders.length} reminder${reminders.length === 1 ? '' : 's'}`,
   );
 
   debugLog(
     claudeDir,
     'user-prompt-submit',
-    `injected ${reminders.length} reminder${reminders.length === 1 ? '' : 's'}`
+    `injected ${reminders.length} reminder${reminders.length === 1 ? '' : 's'}`,
   );
 
   if (reminderContent) {

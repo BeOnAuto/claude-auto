@@ -42,7 +42,7 @@ when:
 priority: 10
 ---
 
-Remember to follow coding standards.`
+Remember to follow coding standards.`,
     );
 
     const result = await handleUserPromptSubmit(claudeDir, 'session-1', 'Help me fix this bug');
@@ -69,7 +69,7 @@ when:
 priority: 10
 ---
 
-Remember to follow coding standards.`
+Remember to follow coding standards.`,
     );
 
     await handleUserPromptSubmit(claudeDir, 'my-session-id', 'Help me fix this bug');
@@ -93,7 +93,7 @@ when:
 priority: 10
 ---
 
-Remember to follow coding standards.`
+Remember to follow coding standards.`,
     );
 
     await handleUserPromptSubmit(claudeDir, 'debug-session', 'Help me fix this bug');

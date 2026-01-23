@@ -28,17 +28,11 @@ describe('e2e', () => {
       fs.mkdirSync(path.join(packageDir, 'reminders'), { recursive: true });
       fs.mkdirSync(path.join(packageDir, 'templates'), { recursive: true });
 
-      fs.writeFileSync(
-        path.join(packageDir, 'dist', 'scripts', 'session-start.js'),
-        'export default {}'
-      );
-      fs.writeFileSync(
-        path.join(packageDir, 'reminders', 'my-reminder.md'),
-        '---\npriority: 100\n---\n# Reminder'
-      );
+      fs.writeFileSync(path.join(packageDir, 'dist', 'scripts', 'session-start.js'), 'export default {}');
+      fs.writeFileSync(path.join(packageDir, 'reminders', 'my-reminder.md'), '---\npriority: 100\n---\n# Reminder');
       fs.writeFileSync(
         path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify({ hooks: { SessionStart: [] } })
+        JSON.stringify({ hooks: { SessionStart: [] } }),
       );
 
       process.env = { ...originalEnv, KETCHUP_ROOT: projectDir };
@@ -60,41 +54,19 @@ describe('e2e', () => {
 
       expect(fs.existsSync(path.join(projectDir, '.claude'))).toBe(true);
       expect(fs.existsSync(path.join(projectDir, DEFAULT_KETCHUP_DIR))).toBe(true);
+      expect(fs.lstatSync(path.join(projectDir, '.claude', 'scripts', 'session-start.js')).isSymbolicLink()).toBe(true);
       expect(
-        fs.lstatSync(
-          path.join(projectDir, '.claude', 'scripts', 'session-start.js')
-        ).isSymbolicLink()
+        fs.lstatSync(path.join(projectDir, DEFAULT_KETCHUP_DIR, 'reminders', 'my-reminder.md')).isSymbolicLink(),
       ).toBe(true);
-      expect(
-        fs.lstatSync(
-          path.join(projectDir, DEFAULT_KETCHUP_DIR, 'reminders', 'my-reminder.md')
-        ).isSymbolicLink()
-      ).toBe(true);
-      expect(
-        fs.existsSync(path.join(projectDir, '.claude', 'settings.json'))
-      ).toBe(true);
-      expect(
-        fs.existsSync(path.join(projectDir, '.claude', '.gitignore'))
-      ).toBe(true);
+      expect(fs.existsSync(path.join(projectDir, '.claude', 'settings.json'))).toBe(true);
+      expect(fs.existsSync(path.join(projectDir, '.claude', '.gitignore'))).toBe(true);
 
       runPreuninstallSync();
 
-      expect(
-        fs.existsSync(
-          path.join(projectDir, '.claude', 'scripts', 'session-start.js')
-        )
-      ).toBe(false);
-      expect(
-        fs.existsSync(
-          path.join(projectDir, DEFAULT_KETCHUP_DIR, 'reminders', 'my-reminder.md')
-        )
-      ).toBe(false);
-      expect(
-        fs.existsSync(path.join(projectDir, '.claude', 'settings.json'))
-      ).toBe(true);
-      expect(
-        fs.existsSync(path.join(projectDir, '.claude', '.gitignore'))
-      ).toBe(true);
+      expect(fs.existsSync(path.join(projectDir, '.claude', 'scripts', 'session-start.js'))).toBe(false);
+      expect(fs.existsSync(path.join(projectDir, DEFAULT_KETCHUP_DIR, 'reminders', 'my-reminder.md'))).toBe(false);
+      expect(fs.existsSync(path.join(projectDir, '.claude', 'settings.json'))).toBe(true);
+      expect(fs.existsSync(path.join(projectDir, '.claude', '.gitignore'))).toBe(true);
     });
   });
 });

@@ -34,14 +34,7 @@ describe('gitignore-manager', () => {
       generateGitignore(claudeDir, ['scripts/session-start.ts']);
 
       const content = fs.readFileSync(path.join(claudeDir, '.gitignore'), 'utf-8');
-      expect(content).toBe(
-        [
-          'scripts/session-start.ts',
-          '*.local.*',
-          'state.json',
-          'logs/',
-        ].join('\n')
-      );
+      expect(content).toBe(['scripts/session-start.ts', '*.local.*', 'state.json', 'logs/'].join('\n'));
     });
   });
 });

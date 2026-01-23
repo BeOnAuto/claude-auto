@@ -8,13 +8,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
+  packages: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
 jobs:
   test:
@@ -22,6 +27,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -35,11 +42,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --ignore-scripts
 
-      - name: Build
-        run: pnpm build
-
-      - name: Run tests
-        run: pnpm test
+      - name: Build, type-check, and test
+        run: pnpm turbo run build type-check test
 
   build-docs:
     runs-on: ubuntu-latest
@@ -85,3 +89,82 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  release:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@xolvio'
+
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      - name: Check for changesets
+        id: check
+        run: |
+          if ls .changeset/*.md 2>/dev/null | grep -qv README.md; then
+            echo "has_changesets=true" >> $GITHUB_OUTPUT
+            echo "📦 Changesets detected"
+          else
+            echo "has_changesets=false" >> $GITHUB_OUTPUT
+            echo "✨ No changesets to process"
+          fi
+
+      - name: Build
+        if: steps.check.outputs.has_changesets == 'true'
+        run: pnpm build
+
+      - name: Version packages
+        if: steps.check.outputs.has_changesets == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          pnpm changeset version
+          git add .
+          git commit -m "chore(release): version packages" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to GitHub Packages
+        if: steps.check.outputs.has_changesets == 'true'
+        id: publish
+        run: |
+          git pull --rebase
+          pnpm publish --no-git-checks
+          echo "published=true" >> $GITHUB_OUTPUT
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Git Tag
+        if: steps.publish.outputs.published == 'true'
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          git tag -a "v${VERSION}" -m "Release v${VERSION}"
+          git push origin "v${VERSION}"
+
+      - name: Create GitHub Release
+        if: steps.publish.outputs.published == 'true'
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          gh release create "v${VERSION}" \
+            --title "v${VERSION}" \
+            --generate-notes \
+            --latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

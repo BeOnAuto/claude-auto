@@ -4,13 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import {
-  createSymlink,
-  getPackageDir,
-  isLinkedMode,
-  removeSymlink,
-  verifySymlink,
-} from './linker.js';
+import { createSymlink, getPackageDir, isLinkedMode, removeSymlink, verifySymlink } from './linker.js';
 
 describe('linker', () => {
   describe('getPackageDir', () => {
@@ -89,9 +83,7 @@ describe('linker', () => {
 
       expect(fs.lstatSync(targetLink).isSymbolicLink()).toBe(true);
       expect(fs.readlinkSync(targetLink)).toBe(sourceFile);
-      expect(fs.readFileSync(`${targetLink}.backup`, 'utf-8')).toBe(
-        'existing content'
-      );
+      expect(fs.readFileSync(`${targetLink}.backup`, 'utf-8')).toBe('existing content');
     });
 
     it('replaces existing symlink without backup', () => {

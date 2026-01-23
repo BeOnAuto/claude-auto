@@ -50,10 +50,7 @@ export function findGitRoot(dir: string): string | undefined {
   return undefined;
 }
 
-export function shouldValidateCommit(
-  subagentType: SubagentType,
-  state: SubagentHooksState,
-): boolean {
+export function shouldValidateCommit(subagentType: SubagentType, state: SubagentHooksState): boolean {
   switch (subagentType) {
     case 'explore':
       return state.validateCommitOnExplore;

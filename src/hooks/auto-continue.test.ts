@@ -3,9 +3,8 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-
-import { getIncompleteBursts, buildPrompt, handleStop, type StopHookInput } from './auto-continue.js';
 import type { ClueCollectorResult } from '../clue-collector.js';
+import { buildPrompt, getIncompleteBursts, handleStop, type StopHookInput } from './auto-continue.js';
 
 describe('auto-continue hook', () => {
   let tempDir: string;
@@ -31,7 +30,9 @@ describe('auto-continue hook', () => {
 
     it('counts unchecked items in ketchup plan', () => {
       const planPath = path.join(tempDir, 'ketchup-plan.md');
-      fs.writeFileSync(planPath, `# Ketchup Plan
+      fs.writeFileSync(
+        planPath,
+        `# Ketchup Plan
 
 ## TODO
 
@@ -41,7 +42,8 @@ describe('auto-continue hook', () => {
 ## DONE
 
 - [x] Burst 0: Setup
-`);
+`,
+      );
 
       const result = getIncompleteBursts(planPath);
 
@@ -52,14 +54,17 @@ describe('auto-continue hook', () => {
 
     it('returns zero count when all items checked', () => {
       const planPath = path.join(tempDir, 'ketchup-plan.md');
-      fs.writeFileSync(planPath, `# Ketchup Plan
+      fs.writeFileSync(
+        planPath,
+        `# Ketchup Plan
 
 ## TODO
 
 ## DONE
 
 - [x] Burst 1: Complete
-`);
+`,
+      );
 
       const result = getIncompleteBursts(planPath);
 
@@ -69,14 +74,17 @@ describe('auto-continue hook', () => {
 
     it('handles triple-hash headers', () => {
       const planPath = path.join(tempDir, 'ketchup-plan.md');
-      fs.writeFileSync(planPath, `# Ketchup Plan
+      fs.writeFileSync(
+        planPath,
+        `# Ketchup Plan
 
 ### TODO
 
 - [ ] Burst 1: Task
 
 ### DONE
-`);
+`,
+      );
 
       const result = getIncompleteBursts(planPath);
 
@@ -89,11 +97,15 @@ describe('auto-continue hook', () => {
     it('builds prompt with clues and ketchup info', () => {
       const clues: ClueCollectorResult = {
         clues: [
-          { timestamp: '2026-01-01T00:00:00Z', type: 'pattern', source: 'assistant', text: 'Would you like to continue?', matchedPattern: 'Would you like' },
+          {
+            timestamp: '2026-01-01T00:00:00Z',
+            type: 'pattern',
+            source: 'assistant',
+            text: 'Would you like to continue?',
+            matchedPattern: 'Would you like',
+          },
         ],
-        lastChats: [
-          { timestamp: '2026-01-01T00:00:00Z', user: 'Fix the bug', assistant: 'I fixed it' },
-        ],
+        lastChats: [{ timestamp: '2026-01-01T00:00:00Z', user: 'Fix the bug', assistant: 'I fixed it' }],
         summary: '1 clue',
         sessionCwd: '/tmp',
         ketchupPlanPaths: [],
@@ -130,10 +142,7 @@ describe('auto-continue hook', () => {
     it('returns allow when mode is off', () => {
       const claudeDir = path.join(tempDir, '.claude');
       fs.mkdirSync(claudeDir, { recursive: true });
-      fs.writeFileSync(
-        path.join(tempDir, '.claude.hooks.json'),
-        JSON.stringify({ autoContinue: { mode: 'off' } })
-      );
+      fs.writeFileSync(path.join(tempDir, '.claude.hooks.json'), JSON.stringify({ autoContinue: { mode: 'off' } }));
 
       const input: StopHookInput = { session_id: 'test-session' };
       const result = handleStop(tempDir, input);
@@ -144,10 +153,7 @@ describe('auto-continue hook', () => {
     it('returns allow when stop_hook_active is true', () => {
       const claudeDir = path.join(tempDir, '.claude');
       fs.mkdirSync(claudeDir, { recursive: true });
-      fs.writeFileSync(
-        path.join(tempDir, '.claude.hooks.json'),
-        JSON.stringify({ autoContinue: { mode: 'smart' } })
-      );
+      fs.writeFileSync(path.join(tempDir, '.claude.hooks.json'), JSON.stringify({ autoContinue: { mode: 'smart' } }));
 
       const input: StopHookInput = { session_id: 'test-session', stop_hook_active: true };
       const result = handleStop(tempDir, input);
@@ -160,7 +166,7 @@ describe('auto-continue hook', () => {
       fs.mkdirSync(claudeDir, { recursive: true });
       fs.writeFileSync(
         path.join(tempDir, '.claude.hooks.json'),
-        JSON.stringify({ autoContinue: { mode: 'smart', skipModes: ['plan'] } })
+        JSON.stringify({ autoContinue: { mode: 'smart', skipModes: ['plan'] } }),
       );
 
       const input: StopHookInput = { session_id: 'test-session', permission_mode: 'plan' };

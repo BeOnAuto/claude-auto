@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  classifySubagent,
-  extractTaskDescription,
-  type SubagentType,
-} from './subagent-classifier.js';
+import { classifySubagent, extractTaskDescription, type SubagentType } from './subagent-classifier.js';
 
 describe('subagent-classifier', () => {
   describe('classifySubagent', () => {
@@ -42,11 +38,7 @@ describe('subagent-classifier', () => {
     });
 
     it('returns unknown for ambiguous descriptions', () => {
-      const ambiguousDescriptions = [
-        'Process the request',
-        'Handle the response',
-        'Do something with the data',
-      ];
+      const ambiguousDescriptions = ['Process the request', 'Handle the response', 'Do something with the data'];
 
       for (const desc of ambiguousDescriptions) {
         expect(classifySubagent(desc)).toBe('unknown' as SubagentType);

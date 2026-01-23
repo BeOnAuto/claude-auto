@@ -29,7 +29,7 @@ when:
 priority: 100
 ---
 
-Ask clarifying questions.`
+Ask clarifying questions.`,
     );
 
     const result = listReminders(remindersDir);

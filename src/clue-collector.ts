@@ -44,7 +44,7 @@ const MAX_TEXT_LENGTH = 200;
 
 function truncate(text: string, maxLen: number = MAX_TEXT_LENGTH): string {
   if (text.length <= maxLen) return text;
-  return text.slice(0, maxLen) + '...';
+  return `${text.slice(0, maxLen)}...`;
 }
 
 interface TranscriptEntry {
@@ -66,9 +66,7 @@ interface TranscriptEntry {
 
 function extractTextFromEntry(entry: TranscriptEntry): string {
   if (!entry.message?.content) return '';
-  const textBlocks = entry.message.content
-    .filter((b) => b.type === 'text')
-    .map((b) => b.text ?? '');
+  const textBlocks = entry.message.content.filter((b) => b.type === 'text').map((b) => b.text ?? '');
   return textBlocks.join('\n');
 }
 
@@ -210,16 +208,15 @@ export function collectClues(transcriptPath: string): ClueCollectorResult {
   const limitedKetchup = ketchupClues.slice(-MAX_CLUES_PER_TYPE);
   const limitedPlans = planClues.slice(-MAX_CLUES_PER_TYPE);
 
-  const allClues = [...limitedPatterns, ...limitedKetchup, ...limitedPlans]
-    .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+  const allClues = [...limitedPatterns, ...limitedKetchup, ...limitedPlans].sort((a, b) =>
+    a.timestamp.localeCompare(b.timestamp),
+  );
 
-  const lastChats: ChatExchange[] = chatBuffer
-    .slice(-MAX_CHATS)
-    .map(c => ({
-      timestamp: c.timestamp,
-      user: c.user as string,
-      assistant: c.assistant as string,
-    }));
+  const lastChats: ChatExchange[] = chatBuffer.slice(-MAX_CHATS).map((c) => ({
+    timestamp: c.timestamp,
+    user: c.user as string,
+    assistant: c.assistant as string,
+  }));
 
   const ketchupPlanPaths = Array.from(ketchupPlanPathsSet);
   const workingDirs = Array.from(workingDirsSet);

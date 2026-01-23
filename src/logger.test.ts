@@ -4,11 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import {
-  colors,
-  createLogger,
-  type LogLevel,
-} from './logger.js';
+import { colors, createLogger, type LogLevel } from './logger.js';
 
 describe('logger', () => {
   let tempDir: string;

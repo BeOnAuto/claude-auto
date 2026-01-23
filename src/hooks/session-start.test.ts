@@ -44,7 +44,7 @@ priority: 10
 
 # My Reminder
 
-This is the reminder content.`
+This is the reminder content.`,
     );
 
     const result = await handleSessionStart(claudeDir, 'test-session-id');
@@ -64,7 +64,7 @@ when:
   hook: SessionStart
 ---
 
-Content.`
+Content.`,
     );
 
     await handleSessionStart(claudeDir, 'abc12345-session');
@@ -88,7 +88,7 @@ when:
 priority: 10
 ---
 
-Reminder A content.`
+Reminder A content.`,
     );
     fs.writeFileSync(
       path.join(remindersDir, 'reminder-b.md'),
@@ -97,7 +97,7 @@ when:
   hook: PreToolUse
 ---
 
-Reminder B content.`
+Reminder B content.`,
     );
 
     await handleSessionStart(claudeDir, 'debug-session');

@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { collectClues, CONTINUE_PATTERNS } from './clue-collector.js';
+import { CONTINUE_PATTERNS, collectClues } from './clue-collector.js';
 
 describe('clue-collector', () => {
   let tempDir: string;
@@ -29,9 +29,13 @@ describe('clue-collector', () => {
     it('extracts pattern clues from assistant messages', () => {
       const transcript = path.join(tempDir, 'session.jsonl');
       const entries = [
-        { type: 'assistant', timestamp: '2026-01-01T00:00:00Z', message: { content: [{ type: 'text', text: 'Would you like me to continue with the next step?' }] } },
+        {
+          type: 'assistant',
+          timestamp: '2026-01-01T00:00:00Z',
+          message: { content: [{ type: 'text', text: 'Would you like me to continue with the next step?' }] },
+        },
       ];
-      fs.writeFileSync(transcript, entries.map(e => JSON.stringify(e)).join('\n'));
+      fs.writeFileSync(transcript, entries.map((e) => JSON.stringify(e)).join('\n'));
 
       const result = collectClues(transcript);
 
@@ -43,33 +47,45 @@ describe('clue-collector', () => {
     it('extracts ketchup mentions from assistant messages', () => {
       const transcript = path.join(tempDir, 'session.jsonl');
       const entries = [
-        { type: 'assistant', timestamp: '2026-01-01T00:00:00Z', message: { content: [{ type: 'text', text: 'Following the Ketchup technique...' }] } },
+        {
+          type: 'assistant',
+          timestamp: '2026-01-01T00:00:00Z',
+          message: { content: [{ type: 'text', text: 'Following the Ketchup technique...' }] },
+        },
       ];
-      fs.writeFileSync(transcript, entries.map(e => JSON.stringify(e)).join('\n'));
+      fs.writeFileSync(transcript, entries.map((e) => JSON.stringify(e)).join('\n'));
 
       const result = collectClues(transcript);
 
-      expect(result.clues.some(c => c.type === 'ketchup')).toBe(true);
+      expect(result.clues.some((c) => c.type === 'ketchup')).toBe(true);
     });
 
     it('extracts plan mentions from assistant messages', () => {
       const transcript = path.join(tempDir, 'session.jsonl');
       const entries = [
-        { type: 'assistant', timestamp: '2026-01-01T00:00:00Z', message: { content: [{ type: 'text', text: 'The plan is to implement feature X' }] } },
+        {
+          type: 'assistant',
+          timestamp: '2026-01-01T00:00:00Z',
+          message: { content: [{ type: 'text', text: 'The plan is to implement feature X' }] },
+        },
       ];
-      fs.writeFileSync(transcript, entries.map(e => JSON.stringify(e)).join('\n'));
+      fs.writeFileSync(transcript, entries.map((e) => JSON.stringify(e)).join('\n'));
 
       const result = collectClues(transcript);
 
-      expect(result.clues.some(c => c.type === 'plan')).toBe(true);
+      expect(result.clues.some((c) => c.type === 'plan')).toBe(true);
     });
 
     it('tracks ketchup-plan.md paths from tool calls', () => {
       const transcript = path.join(tempDir, 'session.jsonl');
       const entries = [
-        { type: 'assistant', timestamp: '2026-01-01T00:00:00Z', message: { content: [{ type: 'tool_use', name: 'Read', input: { file_path: '/project/ketchup-plan.md' } }] } },
+        {
+          type: 'assistant',
+          timestamp: '2026-01-01T00:00:00Z',
+          message: { content: [{ type: 'tool_use', name: 'Read', input: { file_path: '/project/ketchup-plan.md' } }] },
+        },
       ];
-      fs.writeFileSync(transcript, entries.map(e => JSON.stringify(e)).join('\n'));
+      fs.writeFileSync(transcript, entries.map((e) => JSON.stringify(e)).join('\n'));
 
       const result = collectClues(transcript);
 
@@ -79,9 +95,13 @@ describe('clue-collector', () => {
     it('tracks ketchup-plan.md paths from text content', () => {
       const transcript = path.join(tempDir, 'session.jsonl');
       const entries = [
-        { type: 'assistant', timestamp: '2026-01-01T00:00:00Z', message: { content: [{ type: 'text', text: 'I will update /project/ketchup-plan.md with the changes' }] } },
+        {
+          type: 'assistant',
+          timestamp: '2026-01-01T00:00:00Z',
+          message: { content: [{ type: 'text', text: 'I will update /project/ketchup-plan.md with the changes' }] },
+        },
       ];
-      fs.writeFileSync(transcript, entries.map(e => JSON.stringify(e)).join('\n'));
+      fs.writeFileSync(transcript, entries.map((e) => JSON.stringify(e)).join('\n'));
 
       const result = collectClues(transcript);
 
@@ -91,9 +111,13 @@ describe('clue-collector', () => {
     it('tracks working directories from file paths', () => {
       const transcript = path.join(tempDir, 'session.jsonl');
       const entries = [
-        { type: 'assistant', timestamp: '2026-01-01T00:00:00Z', message: { content: [{ type: 'tool_use', name: 'Edit', input: { file_path: '/project/src/file.ts' } }] } },
+        {
+          type: 'assistant',
+          timestamp: '2026-01-01T00:00:00Z',
+          message: { content: [{ type: 'tool_use', name: 'Edit', input: { file_path: '/project/src/file.ts' } }] },
+        },
       ];
-      fs.writeFileSync(transcript, entries.map(e => JSON.stringify(e)).join('\n'));
+      fs.writeFileSync(transcript, entries.map((e) => JSON.stringify(e)).join('\n'));
 
       const result = collectClues(transcript);
 
@@ -104,9 +128,13 @@ describe('clue-collector', () => {
       const transcript = path.join(tempDir, 'session.jsonl');
       const entries = [
         { type: 'system', cwd: '/custom/working/dir' },
-        { type: 'assistant', timestamp: '2026-01-01T00:00:00Z', message: { content: [{ type: 'text', text: 'Hello' }] } },
+        {
+          type: 'assistant',
+          timestamp: '2026-01-01T00:00:00Z',
+          message: { content: [{ type: 'text', text: 'Hello' }] },
+        },
       ];
-      fs.writeFileSync(transcript, entries.map(e => JSON.stringify(e)).join('\n'));
+      fs.writeFileSync(transcript, entries.map((e) => JSON.stringify(e)).join('\n'));
 
       const result = collectClues(transcript);
 
@@ -116,10 +144,18 @@ describe('clue-collector', () => {
     it('collects chat exchanges between user and assistant', () => {
       const transcript = path.join(tempDir, 'session.jsonl');
       const entries = [
-        { type: 'user', timestamp: '2026-01-01T00:00:00Z', message: { content: [{ type: 'text', text: 'Help me fix this bug' }] } },
-        { type: 'assistant', timestamp: '2026-01-01T00:00:01Z', message: { content: [{ type: 'text', text: 'I can help with that' }] } },
+        {
+          type: 'user',
+          timestamp: '2026-01-01T00:00:00Z',
+          message: { content: [{ type: 'text', text: 'Help me fix this bug' }] },
+        },
+        {
+          type: 'assistant',
+          timestamp: '2026-01-01T00:00:01Z',
+          message: { content: [{ type: 'text', text: 'I can help with that' }] },
+        },
       ];
-      fs.writeFileSync(transcript, entries.map(e => JSON.stringify(e)).join('\n'));
+      fs.writeFileSync(transcript, entries.map((e) => JSON.stringify(e)).join('\n'));
 
       const result = collectClues(transcript);
 
@@ -132,10 +168,18 @@ describe('clue-collector', () => {
       const transcript = path.join(tempDir, 'session.jsonl');
       const entries: unknown[] = [];
       for (let i = 0; i < 20; i++) {
-        entries.push({ type: 'user', timestamp: `2026-01-01T00:00:${i.toString().padStart(2, '0')}Z`, message: { content: [{ type: 'text', text: `Question ${i}` }] } });
-        entries.push({ type: 'assistant', timestamp: `2026-01-01T00:00:${i.toString().padStart(2, '0')}Z`, message: { content: [{ type: 'text', text: `Would you like me to continue? Reply ${i}` }] } });
+        entries.push({
+          type: 'user',
+          timestamp: `2026-01-01T00:00:${i.toString().padStart(2, '0')}Z`,
+          message: { content: [{ type: 'text', text: `Question ${i}` }] },
+        });
+        entries.push({
+          type: 'assistant',
+          timestamp: `2026-01-01T00:00:${i.toString().padStart(2, '0')}Z`,
+          message: { content: [{ type: 'text', text: `Would you like me to continue? Reply ${i}` }] },
+        });
       }
-      fs.writeFileSync(transcript, entries.map(e => JSON.stringify(e)).join('\n'));
+      fs.writeFileSync(transcript, entries.map((e) => JSON.stringify(e)).join('\n'));
 
       const result = collectClues(transcript);
 
@@ -147,9 +191,13 @@ describe('clue-collector', () => {
       const transcript = path.join(tempDir, 'session.jsonl');
       const longText = 'ketchup '.repeat(100);
       const entries = [
-        { type: 'assistant', timestamp: '2026-01-01T00:00:00Z', message: { content: [{ type: 'text', text: longText }] } },
+        {
+          type: 'assistant',
+          timestamp: '2026-01-01T00:00:00Z',
+          message: { content: [{ type: 'text', text: longText }] },
+        },
       ];
-      fs.writeFileSync(transcript, entries.map(e => JSON.stringify(e)).join('\n'));
+      fs.writeFileSync(transcript, entries.map((e) => JSON.stringify(e)).join('\n'));
 
       const result = collectClues(transcript);
 
@@ -159,32 +207,46 @@ describe('clue-collector', () => {
 
     it('skips invalid JSON lines', () => {
       const transcript = path.join(tempDir, 'session.jsonl');
-      const content = 'invalid json\n' + JSON.stringify({ type: 'assistant', timestamp: '2026-01-01T00:00:00Z', message: { content: [{ type: 'text', text: 'Valid entry with ketchup' }] } });
+      const content =
+        'invalid json\n' +
+        JSON.stringify({
+          type: 'assistant',
+          timestamp: '2026-01-01T00:00:00Z',
+          message: { content: [{ type: 'text', text: 'Valid entry with ketchup' }] },
+        });
       fs.writeFileSync(transcript, content);
 
       const result = collectClues(transcript);
 
-      expect(result.clues.some(c => c.type === 'ketchup')).toBe(true);
+      expect(result.clues.some((c) => c.type === 'ketchup')).toBe(true);
     });
 
     it('handles text blocks without text property', () => {
       const transcript = path.join(tempDir, 'session.jsonl');
       const entries = [
-        { type: 'assistant', timestamp: '2026-01-01T00:00:00Z', message: { content: [{ type: 'text' }, { type: 'text', text: 'ketchup' }] } },
+        {
+          type: 'assistant',
+          timestamp: '2026-01-01T00:00:00Z',
+          message: { content: [{ type: 'text' }, { type: 'text', text: 'ketchup' }] },
+        },
       ];
-      fs.writeFileSync(transcript, entries.map(e => JSON.stringify(e)).join('\n'));
+      fs.writeFileSync(transcript, entries.map((e) => JSON.stringify(e)).join('\n'));
 
       const result = collectClues(transcript);
 
-      expect(result.clues.some(c => c.type === 'ketchup')).toBe(true);
+      expect(result.clues.some((c) => c.type === 'ketchup')).toBe(true);
     });
 
     it('extracts cd commands from Bash tool calls', () => {
       const transcript = path.join(tempDir, 'session.jsonl');
       const entries = [
-        { type: 'assistant', timestamp: '2026-01-01T00:00:00Z', message: { content: [{ type: 'tool_use', name: 'Bash', input: { command: 'cd /some/directory && ls' } }] } },
+        {
+          type: 'assistant',
+          timestamp: '2026-01-01T00:00:00Z',
+          message: { content: [{ type: 'tool_use', name: 'Bash', input: { command: 'cd /some/directory && ls' } }] },
+        },
       ];
-      fs.writeFileSync(transcript, entries.map(e => JSON.stringify(e)).join('\n'));
+      fs.writeFileSync(transcript, entries.map((e) => JSON.stringify(e)).join('\n'));
 
       const result = collectClues(transcript);
 
@@ -194,9 +256,13 @@ describe('clue-collector', () => {
     it('builds summary with counts', () => {
       const transcript = path.join(tempDir, 'session.jsonl');
       const entries = [
-        { type: 'assistant', timestamp: '2026-01-01T00:00:00Z', message: { content: [{ type: 'text', text: 'Following ketchup plan' }] } },
+        {
+          type: 'assistant',
+          timestamp: '2026-01-01T00:00:00Z',
+          message: { content: [{ type: 'text', text: 'Following ketchup plan' }] },
+        },
       ];
-      fs.writeFileSync(transcript, entries.map(e => JSON.stringify(e)).join('\n'));
+      fs.writeFileSync(transcript, entries.map((e) => JSON.stringify(e)).join('\n'));
 
       const result = collectClues(transcript);
 
@@ -221,7 +287,7 @@ describe('clue-collector', () => {
       ];
 
       for (const phrase of testPhrases) {
-        const matched = CONTINUE_PATTERNS.some(p => p.test(phrase));
+        const matched = CONTINUE_PATTERNS.some((p) => p.test(phrase));
         expect(matched).toBe(true);
       }
     });

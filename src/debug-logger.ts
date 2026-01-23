@@ -1,11 +1,7 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
-export function debugLog(
-  claudeDir: string,
-  hookName: string,
-  message: string
-): void {
+export function debugLog(claudeDir: string, hookName: string, message: string): void {
   const debug = process.env.DEBUG;
   if (!debug || !debug.includes('ketchup')) {
     return;

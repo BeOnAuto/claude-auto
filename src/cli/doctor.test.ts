@@ -60,6 +60,6 @@ describe('cli doctor', () => {
     const result = await doctor(packageDir, claudeDir);
 
     expect(result.healthy).toBe(false);
-    expect(result.issues.some(i => i.includes('ketchup'))).toBe(true);
+    expect(result.issues.some((i) => i.includes('ketchup'))).toBe(true);
   });
 });

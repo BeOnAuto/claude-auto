@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { parseHookInput } from './hook-input.js';
 
 describe('hook-input', () => {

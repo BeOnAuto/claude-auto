@@ -1,10 +1,5 @@
 import { activityLog } from '../activity-logger.js';
-import {
-  getCommitContext,
-  isCommitCommand,
-  validateCommit,
-  type Executor,
-} from '../commit-validator.js';
+import { type Executor, getCommitContext, isCommitCommand, validateCommit } from '../commit-validator.js';
 import { debugLog } from '../debug-logger.js';
 import { isDenied, loadDenyPatterns } from '../deny-list.js';
 import { resolvePaths } from '../path-resolver.js';
@@ -28,7 +23,7 @@ export async function handlePreToolUse(
   claudeDir: string,
   sessionId: string,
   toolInput: ToolInput,
-  options: PreToolUseOptions = {}
+  options: PreToolUseOptions = {},
 ): Promise<HookResult> {
   const command = toolInput.command as string | undefined;
 
@@ -56,18 +51,9 @@ export async function handlePreToolUse(
 
   const reminderContent = reminders.map((r) => r.content).join('\n\n');
 
-  activityLog(
-    claudeDir,
-    sessionId,
-    'pre-tool-use',
-    `allowed: ${filePath ?? command}, ${reminders.length} reminder(s)`
-  );
+  activityLog(claudeDir, sessionId, 'pre-tool-use', `allowed: ${filePath ?? command}, ${reminders.length} reminder(s)`);
 
-  debugLog(
-    claudeDir,
-    'pre-tool-use',
-    `${filePath ?? command} allowed, ${reminders.length} reminder(s)`
-  );
+  debugLog(claudeDir, 'pre-tool-use', `${filePath ?? command} allowed, ${reminders.length} reminder(s)`);
 
   if (reminderContent) {
     return { decision: 'allow', result: reminderContent };
@@ -80,7 +66,7 @@ async function handleCommitValidation(
   claudeDir: string,
   sessionId: string,
   command: string,
-  options: PreToolUseOptions
+  options: PreToolUseOptions,
 ): Promise<HookResult> {
   const paths = await resolvePaths(claudeDir);
   const validators = loadValidators([paths.validatorsDir]);
@@ -96,9 +82,7 @@ async function handleCommitValidation(
   const nacks = results.filter((r) => r.decision === 'NACK');
 
   if (nacks.length > 0) {
-    const reasons = nacks
-      .map((n) => `${n.validator}: ${n.reason}`)
-      .join('\n');
+    const reasons = nacks.map((n) => `${n.validator}: ${n.reason}`).join('\n');
     activityLog(claudeDir, sessionId, 'pre-tool-use', `commit blocked: ${reasons}`);
     debugLog(claudeDir, 'pre-tool-use', `commit blocked: ${reasons}`);
     return {

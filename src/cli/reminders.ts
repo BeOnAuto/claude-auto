@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 
-import { parseReminder, scanReminders, type ReminderWhen } from '../reminder-loader.js';
+import { parseReminder, type ReminderWhen, scanReminders } from '../reminder-loader.js';
 
 type ReminderInfo = {
   name: string;

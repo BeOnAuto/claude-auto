@@ -24,16 +24,11 @@ describe('settings-merger', () => {
       fs.mkdirSync(path.join(packageDir, 'templates'), { recursive: true });
       fs.mkdirSync(targetDir, { recursive: true });
       const packageSettings = { hooks: { SessionStart: [] } };
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify(packageSettings)
-      );
+      fs.writeFileSync(path.join(packageDir, 'templates', 'settings.json'), JSON.stringify(packageSettings));
 
       mergeSettings(packageDir, targetDir);
 
-      const result = JSON.parse(
-        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
-      );
+      const result = JSON.parse(fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8'));
       expect(result).toEqual(packageSettings);
     });
 
@@ -61,26 +56,16 @@ describe('settings-merger', () => {
       };
       const projectSettings = {
         hooks: {
-          SessionStart: [
-            { hooks: [{ type: 'command', command: 'project-cmd' }] },
-          ],
+          SessionStart: [{ hooks: [{ type: 'command', command: 'project-cmd' }] }],
         },
       };
 
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify(packageSettings)
-      );
-      fs.writeFileSync(
-        path.join(targetDir, 'settings.project.json'),
-        JSON.stringify(projectSettings)
-      );
+      fs.writeFileSync(path.join(packageDir, 'templates', 'settings.json'), JSON.stringify(packageSettings));
+      fs.writeFileSync(path.join(targetDir, 'settings.project.json'), JSON.stringify(projectSettings));
 
       mergeSettings(packageDir, targetDir);
 
-      const result = JSON.parse(
-        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
-      );
+      const result = JSON.parse(fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8'));
       expect(result).toEqual({
         hooks: {
           SessionStart: [
@@ -114,20 +99,12 @@ describe('settings-merger', () => {
         },
       };
 
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify(packageSettings)
-      );
-      fs.writeFileSync(
-        path.join(targetDir, 'settings.project.json'),
-        JSON.stringify(projectSettings)
-      );
+      fs.writeFileSync(path.join(packageDir, 'templates', 'settings.json'), JSON.stringify(packageSettings));
+      fs.writeFileSync(path.join(targetDir, 'settings.project.json'), JSON.stringify(projectSettings));
 
       mergeSettings(packageDir, targetDir);
 
-      const result = JSON.parse(
-        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
-      );
+      const result = JSON.parse(fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8'));
       expect(result).toEqual({
         hooks: {
           SessionStart: [
@@ -161,20 +138,12 @@ describe('settings-merger', () => {
         },
       };
 
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify(packageSettings)
-      );
-      fs.writeFileSync(
-        path.join(targetDir, 'settings.project.json'),
-        JSON.stringify(projectSettings)
-      );
+      fs.writeFileSync(path.join(packageDir, 'templates', 'settings.json'), JSON.stringify(packageSettings));
+      fs.writeFileSync(path.join(targetDir, 'settings.project.json'), JSON.stringify(projectSettings));
 
       mergeSettings(packageDir, targetDir);
 
-      const result = JSON.parse(
-        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
-      );
+      const result = JSON.parse(fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8'));
       expect(result).toEqual({
         hooks: {
           SessionStart: [
@@ -209,25 +178,15 @@ describe('settings-merger', () => {
         },
       };
 
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify(packageSettings)
-      );
-      fs.writeFileSync(
-        path.join(targetDir, 'settings.project.json'),
-        JSON.stringify(projectSettings)
-      );
+      fs.writeFileSync(path.join(packageDir, 'templates', 'settings.json'), JSON.stringify(packageSettings));
+      fs.writeFileSync(path.join(targetDir, 'settings.project.json'), JSON.stringify(projectSettings));
 
       mergeSettings(packageDir, targetDir);
 
-      const result = JSON.parse(
-        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
-      );
+      const result = JSON.parse(fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8'));
       expect(result).toEqual({
         hooks: {
-          SessionStart: [
-            { hooks: [{ type: 'command', command: 'project-only' }] },
-          ],
+          SessionStart: [{ hooks: [{ type: 'command', command: 'project-only' }] }],
         },
       });
     });
@@ -245,37 +204,22 @@ describe('settings-merger', () => {
       };
       const projectSettings = {
         hooks: {
-          SessionStart: [
-            { hooks: [{ type: 'command', command: 'project-cmd' }] },
-          ],
+          SessionStart: [{ hooks: [{ type: 'command', command: 'project-cmd' }] }],
         },
       };
       const localSettings = {
         hooks: {
-          SessionStart: [
-            { hooks: [{ type: 'command', command: 'local-cmd' }] },
-          ],
+          SessionStart: [{ hooks: [{ type: 'command', command: 'local-cmd' }] }],
         },
       };
 
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify(packageSettings)
-      );
-      fs.writeFileSync(
-        path.join(targetDir, 'settings.project.json'),
-        JSON.stringify(projectSettings)
-      );
-      fs.writeFileSync(
-        path.join(targetDir, 'settings.local.json'),
-        JSON.stringify(localSettings)
-      );
+      fs.writeFileSync(path.join(packageDir, 'templates', 'settings.json'), JSON.stringify(packageSettings));
+      fs.writeFileSync(path.join(targetDir, 'settings.project.json'), JSON.stringify(projectSettings));
+      fs.writeFileSync(path.join(targetDir, 'settings.local.json'), JSON.stringify(localSettings));
 
       mergeSettings(packageDir, targetDir);
 
-      const result = JSON.parse(
-        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
-      );
+      const result = JSON.parse(fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8'));
       expect(result).toEqual({
         hooks: {
           SessionStart: [
@@ -294,29 +238,18 @@ describe('settings-merger', () => {
       fs.mkdirSync(targetDir, { recursive: true });
 
       const packageSettings = { hooks: { SessionStart: [] } };
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify(packageSettings)
-      );
+      fs.writeFileSync(path.join(packageDir, 'templates', 'settings.json'), JSON.stringify(packageSettings));
 
       mergeSettings(packageDir, targetDir);
 
-      const lockExists = fs.existsSync(
-        path.join(targetDir, 'settings.lock.json')
-      );
+      const lockExists = fs.existsSync(path.join(targetDir, 'settings.lock.json'));
       expect(lockExists).toBe(true);
 
-      fs.writeFileSync(
-        path.join(targetDir, 'settings.json'),
-        JSON.stringify({ modified: true })
-      );
+      fs.writeFileSync(path.join(targetDir, 'settings.json'), JSON.stringify({ modified: true }));
 
       mergeSettings(packageDir, targetDir);
 
-      const secondResult = fs.readFileSync(
-        path.join(targetDir, 'settings.json'),
-        'utf-8'
-      );
+      const secondResult = fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8');
       expect(secondResult).toBe(JSON.stringify({ modified: true }));
     });
 
@@ -327,29 +260,18 @@ describe('settings-merger', () => {
       fs.mkdirSync(targetDir, { recursive: true });
 
       const packageSettings = { hooks: { SessionStart: [] } };
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify(packageSettings)
-      );
+      fs.writeFileSync(path.join(packageDir, 'templates', 'settings.json'), JSON.stringify(packageSettings));
 
       mergeSettings(packageDir, targetDir);
 
-      fs.writeFileSync(
-        path.join(targetDir, 'settings.json'),
-        JSON.stringify({ modified: true })
-      );
+      fs.writeFileSync(path.join(targetDir, 'settings.json'), JSON.stringify({ modified: true }));
 
       const newPackageSettings = { hooks: { SessionStart: [], PreToolUse: [] } };
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify(newPackageSettings)
-      );
+      fs.writeFileSync(path.join(packageDir, 'templates', 'settings.json'), JSON.stringify(newPackageSettings));
 
       mergeSettings(packageDir, targetDir);
 
-      const result = JSON.parse(
-        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
-      );
+      const result = JSON.parse(fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8'));
       expect(result).toEqual(newPackageSettings);
     });
 
@@ -368,20 +290,12 @@ describe('settings-merger', () => {
         customKey: 'custom-value',
       };
 
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify(packageSettings)
-      );
-      fs.writeFileSync(
-        path.join(targetDir, 'settings.project.json'),
-        JSON.stringify(projectSettings)
-      );
+      fs.writeFileSync(path.join(packageDir, 'templates', 'settings.json'), JSON.stringify(packageSettings));
+      fs.writeFileSync(path.join(targetDir, 'settings.project.json'), JSON.stringify(projectSettings));
 
       mergeSettings(packageDir, targetDir);
 
-      const result = JSON.parse(
-        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
-      );
+      const result = JSON.parse(fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8'));
       expect(result).toEqual({
         hooks: { SessionStart: [] },
         permissions: { allow: ['Edit', 'Write'] },
@@ -406,20 +320,12 @@ describe('settings-merger', () => {
         },
       };
 
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify(packageSettings)
-      );
-      fs.writeFileSync(
-        path.join(targetDir, 'settings.project.json'),
-        JSON.stringify(projectSettings)
-      );
+      fs.writeFileSync(path.join(packageDir, 'templates', 'settings.json'), JSON.stringify(packageSettings));
+      fs.writeFileSync(path.join(targetDir, 'settings.project.json'), JSON.stringify(projectSettings));
 
       mergeSettings(packageDir, targetDir);
 
-      const result = JSON.parse(
-        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
-      );
+      const result = JSON.parse(fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8'));
       expect(result).toEqual({
         hooks: { SessionStart: [] },
       });
@@ -440,20 +346,12 @@ describe('settings-merger', () => {
         },
       };
 
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify(packageSettings)
-      );
-      fs.writeFileSync(
-        path.join(targetDir, 'settings.project.json'),
-        JSON.stringify(projectSettings)
-      );
+      fs.writeFileSync(path.join(packageDir, 'templates', 'settings.json'), JSON.stringify(packageSettings));
+      fs.writeFileSync(path.join(targetDir, 'settings.project.json'), JSON.stringify(projectSettings));
 
       mergeSettings(packageDir, targetDir);
 
-      const result = JSON.parse(
-        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
-      );
+      const result = JSON.parse(fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8'));
       expect(result).toEqual({
         hooks: { SessionStart: [] },
       });
@@ -476,20 +374,12 @@ describe('settings-merger', () => {
         },
       };
 
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify(packageSettings)
-      );
-      fs.writeFileSync(
-        path.join(targetDir, 'settings.project.json'),
-        JSON.stringify(projectSettings)
-      );
+      fs.writeFileSync(path.join(packageDir, 'templates', 'settings.json'), JSON.stringify(packageSettings));
+      fs.writeFileSync(path.join(targetDir, 'settings.project.json'), JSON.stringify(projectSettings));
 
       mergeSettings(packageDir, targetDir);
 
-      const result = JSON.parse(
-        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
-      );
+      const result = JSON.parse(fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8'));
       expect(result).toEqual({
         hooks: {
           SessionStart: [{ hooks: [{ type: 'command', command: 'pkg-cmd' }] }],
@@ -512,20 +402,12 @@ describe('settings-merger', () => {
         },
       };
 
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify(packageSettings)
-      );
-      fs.writeFileSync(
-        path.join(targetDir, 'settings.project.json'),
-        JSON.stringify(projectSettings)
-      );
+      fs.writeFileSync(path.join(packageDir, 'templates', 'settings.json'), JSON.stringify(packageSettings));
+      fs.writeFileSync(path.join(targetDir, 'settings.project.json'), JSON.stringify(projectSettings));
 
       mergeSettings(packageDir, targetDir);
 
-      const result = JSON.parse(
-        fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8')
-      );
+      const result = JSON.parse(fs.readFileSync(path.join(targetDir, 'settings.json'), 'utf-8'));
       expect(result).toEqual({
         hooks: {
           SessionStart: [{ hooks: [{ type: 'command', command: 'new-cmd' }] }],

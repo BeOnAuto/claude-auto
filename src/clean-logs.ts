@@ -8,10 +8,7 @@ export interface CleanLogsResult {
   kept: number;
 }
 
-export function cleanLogs(
-  logsDir: string,
-  maxAgeMinutes: number = DEFAULT_MINUTES
-): CleanLogsResult {
+export function cleanLogs(logsDir: string, maxAgeMinutes: number = DEFAULT_MINUTES): CleanLogsResult {
   const now = Date.now();
   const maxAgeMs = maxAgeMinutes * 60 * 1000;
   const deleted: string[] = [];

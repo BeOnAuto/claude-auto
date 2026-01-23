@@ -46,7 +46,8 @@ Respond with JSON: {"decision":"ACK"} or {"decision":"NACK","reason":"..."}`;
         name: 'test-validator',
         description: 'A test validator',
         enabled: true,
-        content: 'Check that tests pass.\n\nRespond with JSON: {"decision":"ACK"} or {"decision":"NACK","reason":"..."}',
+        content:
+          'Check that tests pass.\n\nRespond with JSON: {"decision":"ACK"} or {"decision":"NACK","reason":"..."}',
         path: path.join(validatorsDir, 'test.md'),
       },
     ]);
@@ -62,7 +63,7 @@ name: enabled-validator
 description: Enabled
 enabled: true
 ---
-Content`
+Content`,
     );
     fs.writeFileSync(
       path.join(validatorsDir, 'disabled.md'),
@@ -71,7 +72,7 @@ name: disabled-validator
 description: Disabled
 enabled: false
 ---
-Content`
+Content`,
     );
 
     const result = loadValidators([validatorsDir]);
@@ -99,7 +100,7 @@ name: first
 description: First validator
 enabled: true
 ---
-First content`
+First content`,
     );
     fs.writeFileSync(
       path.join(dir2, 'second.md'),
@@ -108,7 +109,7 @@ name: second
 description: Second validator
 enabled: true
 ---
-Second content`
+Second content`,
     );
 
     const result = loadValidators([dir1, dir2]);

@@ -7,25 +7,13 @@ type HookResult = {
   result: string;
 };
 
-export async function handleSessionStart(
-  claudeDir: string,
-  sessionId: string = ''
-): Promise<HookResult> {
+export async function handleSessionStart(claudeDir: string, sessionId: string = ''): Promise<HookResult> {
   const paths = await resolvePaths(claudeDir);
   const reminders = loadReminders(paths.remindersDir, { hook: 'SessionStart' });
 
-  activityLog(
-    claudeDir,
-    sessionId,
-    'session-start',
-    `loaded ${reminders.length} reminders`
-  );
+  activityLog(claudeDir, sessionId, 'session-start', `loaded ${reminders.length} reminders`);
 
-  debugLog(
-    claudeDir,
-    'session-start',
-    `loaded ${reminders.length} reminders for SessionStart`
-  );
+  debugLog(claudeDir, 'session-start', `loaded ${reminders.length} reminders for SessionStart`);
 
   const content = reminders.map((r) => r.content).join('\n\n');
 

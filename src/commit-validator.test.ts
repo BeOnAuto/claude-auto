@@ -44,9 +44,7 @@ describe('isCommitCommand', () => {
   });
 
   it('detects git commit with heredoc', () => {
-    expect(
-      isCommitCommand('git commit -m "$(cat <<\'EOF\'\nmessage\nEOF\n)"')
-    ).toBe(true);
+    expect(isCommitCommand('git commit -m "$(cat <<\'EOF\'\nmessage\nEOF\n)"')).toBe(true);
   });
 
   it('returns false for git status', () => {
@@ -133,7 +131,7 @@ describe('runValidator', () => {
     expect(executor).toHaveBeenCalledWith(
       'claude',
       ['-p', expect.stringContaining('<diff>'), '--output-format', 'json'],
-      expect.objectContaining({ encoding: 'utf8' })
+      expect.objectContaining({ encoding: 'utf8' }),
     );
   });
 
@@ -257,9 +255,7 @@ describe('runAppealValidator', () => {
       path: '/appeal.md',
     };
     const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
-    const results = [
-      { validator: 'v1', decision: 'NACK' as const, reason: 'reason', appealable: true },
-    ];
+    const results = [{ validator: 'v1', decision: 'NACK' as const, reason: 'reason', appealable: true }];
 
     const result = runAppealValidator(appealValidator, context, results, 'coherence', executor);
 
@@ -280,9 +276,7 @@ describe('runAppealValidator', () => {
       path: '/appeal.md',
     };
     const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
-    const results = [
-      { validator: 'v1', decision: 'NACK' as const, reason: 'reason', appealable: true },
-    ];
+    const results = [{ validator: 'v1', decision: 'NACK' as const, reason: 'reason', appealable: true }];
 
     const result = runAppealValidator(appealValidator, context, results, 'please let me in', executor);
 
@@ -363,9 +357,7 @@ describe('validateCommit', () => {
 describe('handleCommitValidation', () => {
   it('allows commit when all validators ACK', () => {
     const executor = vi.fn().mockReturnValue({ status: 0, stdout: '{"decision":"ACK"}' });
-    const validators: Validator[] = [
-      { name: 'v1', description: 'd', enabled: true, content: 'c', path: '/v.md' },
-    ];
+    const validators: Validator[] = [{ name: 'v1', description: 'd', enabled: true, content: 'c', path: '/v.md' }];
     const context = { diff: '+a', files: ['a.txt'], message: 'feat: add feature' };
 
     const result = handleCommitValidation(validators, context, executor);

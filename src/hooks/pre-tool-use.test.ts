@@ -32,10 +32,7 @@ describe('pre-tool-use hook', () => {
   });
 
   it('blocks tool use when path matches deny pattern', async () => {
-    fs.writeFileSync(
-      path.join(claudeDir, 'deny-list.project.txt'),
-      '*.secret\n'
-    );
+    fs.writeFileSync(path.join(claudeDir, 'deny-list.project.txt'), '*.secret\n');
     const toolInput = { file_path: '/project/config.secret' };
 
     const result = await handlePreToolUse(claudeDir, 'session-1', toolInput);
@@ -47,10 +44,7 @@ describe('pre-tool-use hook', () => {
   });
 
   it('allows tool use when path does not match deny pattern', async () => {
-    fs.writeFileSync(
-      path.join(claudeDir, 'deny-list.project.txt'),
-      '*.secret\n'
-    );
+    fs.writeFileSync(path.join(claudeDir, 'deny-list.project.txt'), '*.secret\n');
     const toolInput = { file_path: '/project/config.json' };
 
     const result = await handlePreToolUse(claudeDir, 'session-2', toolInput);
@@ -59,10 +53,7 @@ describe('pre-tool-use hook', () => {
   });
 
   it('logs to activity.log with session ID', async () => {
-    fs.writeFileSync(
-      path.join(claudeDir, 'deny-list.project.txt'),
-      '*.secret\n'
-    );
+    fs.writeFileSync(path.join(claudeDir, 'deny-list.project.txt'), '*.secret\n');
     const toolInput = { file_path: '/project/config.secret' };
 
     await handlePreToolUse(claudeDir, 'my-session-id', toolInput);
@@ -76,10 +67,7 @@ describe('pre-tool-use hook', () => {
 
   it('logs deny-list check when DEBUG=ketchup', async () => {
     process.env.DEBUG = 'ketchup';
-    fs.writeFileSync(
-      path.join(claudeDir, 'deny-list.project.txt'),
-      '*.secret\n'
-    );
+    fs.writeFileSync(path.join(claudeDir, 'deny-list.project.txt'), '*.secret\n');
     const toolInput = { file_path: '/project/config.secret' };
 
     await handlePreToolUse(claudeDir, 'debug-session', toolInput);
@@ -102,7 +90,7 @@ name: test-validator
 description: Test
 enabled: true
 ---
-Validate this commit`
+Validate this commit`,
     );
 
     const executor = vi.fn().mockReturnValue({
@@ -132,7 +120,7 @@ name: test-validator
 description: Test
 enabled: true
 ---
-Validate this commit`
+Validate this commit`,
     );
 
     const executor = vi.fn().mockReturnValue({
@@ -161,7 +149,7 @@ when:
 priority: 10
 ---
 
-Remember: test && commit || revert`
+Remember: test && commit || revert`,
     );
     fs.writeFileSync(
       path.join(remindersDir, 'edit-reminder.md'),
@@ -171,7 +159,7 @@ when:
   toolName: Edit
 ---
 
-Check for typos.`
+Check for typos.`,
     );
 
     const toolInput = { command: 'echo hello' };

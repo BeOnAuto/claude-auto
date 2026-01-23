@@ -33,12 +33,8 @@ export function getIncompleteBursts(planPath: string): IncompleteBurstsResult {
       return { count: 0, path: planPath, todoSection: '' };
     }
 
-    const todoMatch = content.match(
-      /#{2,3}\s*TODO[\s\S]*?(?=#{2,3}\s*DONE|#{2,3}\s*[A-Z]|$)/i,
-    );
-    const todoSection = todoMatch
-      ? todoMatch[0].slice(0, 500)
-      : `${count} unchecked items found`;
+    const todoMatch = content.match(/#{2,3}\s*TODO[\s\S]*?(?=#{2,3}\s*DONE|#{2,3}\s*[A-Z]|$)/i);
+    const todoSection = todoMatch ? todoMatch[0].slice(0, 500) : `${count} unchecked items found`;
 
     return { count, path: planPath, todoSection };
   } catch {
@@ -47,9 +43,7 @@ export function getIncompleteBursts(planPath: string): IncompleteBurstsResult {
 }
 
 export function buildPrompt(clues: ClueCollectorResult, ketchupInfo: string): string {
-  const cluesList = clues.clues
-    .map((c) => `[${c.timestamp}] [${c.type}] ${c.text}`)
-    .join('\n\n');
+  const cluesList = clues.clues.map((c) => `[${c.timestamp}] [${c.type}] ${c.text}`).join('\n\n');
 
   const chatsList = clues.lastChats
     .map((c) => `[${c.timestamp}]\nUser: ${c.user}\nAssistant: ${c.assistant}`)

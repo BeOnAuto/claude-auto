@@ -19,10 +19,7 @@ describe('deny-list', () => {
     });
 
     it('loads patterns from deny-list.project.txt', () => {
-      fs.writeFileSync(
-        path.join(tempDir, 'deny-list.project.txt'),
-        '*.secret\n/private/**\n'
-      );
+      fs.writeFileSync(path.join(tempDir, 'deny-list.project.txt'), '*.secret\n/private/**\n');
 
       const result = loadDenyPatterns(tempDir);
 
@@ -36,10 +33,7 @@ describe('deny-list', () => {
     });
 
     it('ignores empty lines and comments', () => {
-      fs.writeFileSync(
-        path.join(tempDir, 'deny-list.project.txt'),
-        '*.secret\n\n# This is a comment\n/private/**\n'
-      );
+      fs.writeFileSync(path.join(tempDir, 'deny-list.project.txt'), '*.secret\n\n# This is a comment\n/private/**\n');
 
       const result = loadDenyPatterns(tempDir);
 
@@ -47,14 +41,8 @@ describe('deny-list', () => {
     });
 
     it('loads and merges patterns from deny-list.local.txt', () => {
-      fs.writeFileSync(
-        path.join(tempDir, 'deny-list.project.txt'),
-        '*.secret\n'
-      );
-      fs.writeFileSync(
-        path.join(tempDir, 'deny-list.local.txt'),
-        '/my-local/**\n'
-      );
+      fs.writeFileSync(path.join(tempDir, 'deny-list.project.txt'), '*.secret\n');
+      fs.writeFileSync(path.join(tempDir, 'deny-list.local.txt'), '/my-local/**\n');
 
       const result = loadDenyPatterns(tempDir);
 
@@ -62,10 +50,7 @@ describe('deny-list', () => {
     });
 
     it('loads only local patterns when project file does not exist', () => {
-      fs.writeFileSync(
-        path.join(tempDir, 'deny-list.local.txt'),
-        '/my-local/**\n'
-      );
+      fs.writeFileSync(path.join(tempDir, 'deny-list.local.txt'), '/my-local/**\n');
 
       const result = loadDenyPatterns(tempDir);
 

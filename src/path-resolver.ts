@@ -1,6 +1,6 @@
 import * as path from 'node:path';
 
-import { DEFAULT_KETCHUP_DIR, loadConfig, type KetchupConfig } from './config-loader.js';
+import { DEFAULT_KETCHUP_DIR, type KetchupConfig, loadConfig } from './config-loader.js';
 
 export interface ResolvedPaths {
   projectRoot: string;

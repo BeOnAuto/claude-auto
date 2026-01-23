@@ -4,11 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import {
-  createHookState,
-  DEFAULT_HOOK_STATE,
-  type HookState,
-} from './hook-state.js';
+import { createHookState, DEFAULT_HOOK_STATE, type HookState } from './hook-state.js';
 
 describe('hook-state', () => {
   let tempDir: string;
@@ -42,10 +38,7 @@ describe('hook-state', () => {
         updatedAt: '2026-01-01T00:00:00Z',
         updatedBy: 'test',
       };
-      fs.writeFileSync(
-        path.join(tempDir, '.claude.hooks.json'),
-        JSON.stringify(existingState)
-      );
+      fs.writeFileSync(path.join(tempDir, '.claude.hooks.json'), JSON.stringify(existingState));
 
       const hookState = createHookState(tempDir);
       const state = hookState.read();
@@ -57,10 +50,7 @@ describe('hook-state', () => {
 
     it('merges partial state with defaults', () => {
       const partialState = { autoContinue: { mode: 'off' } };
-      fs.writeFileSync(
-        path.join(tempDir, '.claude.hooks.json'),
-        JSON.stringify(partialState)
-      );
+      fs.writeFileSync(path.join(tempDir, '.claude.hooks.json'), JSON.stringify(partialState));
 
       const hookState = createHookState(tempDir);
       const state = hookState.read();
@@ -81,9 +71,7 @@ describe('hook-state', () => {
 
       hookState.write(newState);
 
-      const content = JSON.parse(
-        fs.readFileSync(path.join(tempDir, '.claude.hooks.json'), 'utf-8')
-      );
+      const content = JSON.parse(fs.readFileSync(path.join(tempDir, '.claude.hooks.json'), 'utf-8'));
       expect(content.autoContinue.mode).toBe('non-stop');
     });
 
@@ -93,9 +81,7 @@ describe('hook-state', () => {
 
       hookState.write(state);
 
-      const content = JSON.parse(
-        fs.readFileSync(path.join(tempDir, '.claude.hooks.json'), 'utf-8')
-      );
+      const content = JSON.parse(fs.readFileSync(path.join(tempDir, '.claude.hooks.json'), 'utf-8'));
       expect(content.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
     });
   });
@@ -136,17 +122,13 @@ describe('hook-state', () => {
       const existingState = {
         autoContinue: { mode: 'non-stop', iteration: 5 },
       };
-      fs.writeFileSync(
-        path.join(tempDir, '.claude.hooks.json'),
-        JSON.stringify(existingState)
-      );
+      fs.writeFileSync(path.join(tempDir, '.claude.hooks.json'), JSON.stringify(existingState));
 
       const hookState = createHookState(tempDir);
       const count = hookState.incrementIteration();
 
       expect(count).toBe(6);
     });
-
   });
 
   describe('resetIteration', () => {
@@ -154,10 +136,7 @@ describe('hook-state', () => {
       const existingState = {
         autoContinue: { mode: 'non-stop', iteration: 10 },
       };
-      fs.writeFileSync(
-        path.join(tempDir, '.claude.hooks.json'),
-        JSON.stringify(existingState)
-      );
+      fs.writeFileSync(path.join(tempDir, '.claude.hooks.json'), JSON.stringify(existingState));
 
       const hookState = createHookState(tempDir);
       hookState.resetIteration();
@@ -193,10 +172,7 @@ describe('hook-state', () => {
           validateCommitOnUnknown: false,
         },
       };
-      fs.writeFileSync(
-        path.join(tempDir, '.claude.hooks.json'),
-        JSON.stringify(existingState)
-      );
+      fs.writeFileSync(path.join(tempDir, '.claude.hooks.json'), JSON.stringify(existingState));
 
       const hookState = createHookState(tempDir);
       const state = hookState.read();
@@ -209,9 +185,12 @@ describe('hook-state', () => {
     it('updates subagentHooks with update method', () => {
       const hookState = createHookState(tempDir);
 
-      hookState.update({
-        subagentHooks: { validateCommitOnExplore: true, validateCommitOnWork: true, validateCommitOnUnknown: true },
-      }, 'test');
+      hookState.update(
+        {
+          subagentHooks: { validateCommitOnExplore: true, validateCommitOnWork: true, validateCommitOnUnknown: true },
+        },
+        'test',
+      );
 
       const state = hookState.read();
       expect(state.subagentHooks.validateCommitOnExplore).toBe(true);

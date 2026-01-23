@@ -68,13 +68,7 @@ describe('cli repair', () => {
 
     const result = getExpectedSymlinks(packageDir);
 
-    expect(result.claudeFiles).toEqual([
-      'scripts/hook.ts',
-      'commands/cmd.md',
-    ]);
-    expect(result.ketchupFiles).toEqual([
-      'validators/rule.md',
-      'reminders/reminder.md',
-    ]);
+    expect(result.claudeFiles).toEqual(['scripts/hook.ts', 'commands/cmd.md']);
+    expect(result.ketchupFiles).toEqual(['validators/rule.md', 'reminders/reminder.md']);
   });
 });
