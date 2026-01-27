@@ -4,8 +4,11 @@ import { resolvePaths } from '../path-resolver.js';
 import { loadReminders } from '../reminder-loader.js';
 
 type HookResult = {
-  result: string;
-};
+  hookSpecificOutput: {
+    hookEventName: string;
+    additionalContext: string;
+  }
+}
 
 export async function handleSessionStart(claudeDir: string, sessionId: string = ''): Promise<HookResult> {
   const paths = await resolvePaths(claudeDir);
@@ -17,5 +20,10 @@ export async function handleSessionStart(claudeDir: string, sessionId: string = 
 
   const content = reminders.map((r) => r.content).join('\n\n');
 
-  return { result: content };
+  return {
+    "hookSpecificOutput": {
+      "hookEventName": "SessionStart",
+      "additionalContext": content
+    }
+  }
 }
