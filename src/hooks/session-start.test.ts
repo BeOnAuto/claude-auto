@@ -50,7 +50,10 @@ This is the reminder content.`,
     const result = await handleSessionStart(claudeDir, 'test-session-id');
 
     expect(result).toEqual({
-      result: '# My Reminder\n\nThis is the reminder content.',
+      hookSpecificOutput: {
+        hookEventName: 'SessionStart',
+        additionalContext: '# My Reminder\n\nThis is the reminder content.',
+      },
     });
   });
 
