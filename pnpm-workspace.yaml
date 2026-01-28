@@ -1,5 +1,2 @@
 packages:
   - '.'
-
-overrides:
-  global: link:../../../Library/pnpm/global/5/node_modules/global
