@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  global: link:../../../Library/pnpm/global/5/node_modules/global
-
 importers:
 
   .:
