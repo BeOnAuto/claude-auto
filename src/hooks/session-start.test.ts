@@ -49,12 +49,12 @@ This is the reminder content.`,
 
     const result = await handleSessionStart(claudeDir, 'test-session-id');
 
-    expect(result).toEqual({
-      hookSpecificOutput: {
-        hookEventName: 'SessionStart',
-        additionalContext: '# My Reminder\n\nThis is the reminder content.',
-      },
+    expect(result.hookSpecificOutput).toEqual({
+      hookEventName: 'SessionStart',
+      additionalContext: '# My Reminder\n\nThis is the reminder content.',
     });
+    expect(result.diagnostics.reminderFiles).toEqual(['my-reminder.md']);
+    expect(result.diagnostics.matchedReminders).toEqual([{ name: 'my-reminder', priority: 10 }]);
   });
 
   it('logs to activity.log with session ID', async () => {

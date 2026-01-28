@@ -47,15 +47,17 @@ Remember to follow coding standards.`,
 
     const result = await handleUserPromptSubmit(claudeDir, 'session-1', 'Help me fix this bug');
 
-    expect(result).toEqual({
-      result: 'Help me fix this bug\n\n<system-reminder>\nRemember to follow coding standards.\n</system-reminder>',
-    });
+    expect(result.result).toBe(
+      'Help me fix this bug\n\n<system-reminder>\nRemember to follow coding standards.\n</system-reminder>',
+    );
+    expect(result.diagnostics.matchedReminders).toEqual([{ name: 'coding-standards', priority: 10 }]);
   });
 
   it('returns prompt unchanged when no reminders exist', async () => {
     const result = await handleUserPromptSubmit(claudeDir, 'session-2', 'Help me fix this bug');
 
-    expect(result).toEqual({ result: 'Help me fix this bug' });
+    expect(result.result).toBe('Help me fix this bug');
+    expect(result.diagnostics.matchedReminders).toEqual([]);
   });
 
   it('logs to activity.log with session ID', async () => {
