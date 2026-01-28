@@ -14,7 +14,7 @@ describe('createCli', () => {
     }).toEqual({
       name: 'claude-ketchup',
       description: 'Husky-style hooks and skills management for Claude Code',
-      commands: ['status', 'doctor', 'repair', 'reminders'],
+      commands: ['install', 'status', 'doctor', 'repair', 'reminders'],
     });
   });
 });
