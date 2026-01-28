@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "xolvio/claude-ketchup" }],
+  "changelog": ["@changesets/cli/changelog", null],
   "commit": false,
   "fixed": [],
   "linked": [],
