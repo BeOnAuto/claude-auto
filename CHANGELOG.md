@@ -1,5 +1,27 @@
 # @xolvio/claude-ketchup
 
+## 0.5.0
+
+### Minor Changes
+
+- 58d1c58: Looking at these commits, I can see they represent a substantial development arc for the claude-ketchup project. Let me generate a concise changelog focusing on the most significant user-facing changes:
+
+  - Implemented AI-powered commit validation with an appeal system that allows developers to override certain validation failures with justification
+  - Added comprehensive activity logging with filtering capabilities to track hook executions and debug issues
+  - Introduced a reminders system that replaces the previous skills system, allowing contextual information to be injected at different hook points
+  - Set up automated changeset generation, turbo caching, and GitHub Packages publishing for streamlined releases
+  - Added auto-continue functionality to control when Claude Code sessions should stop or continue automatically
+
+- 9a20bd6: - Added `install` CLI command so users can set up hooks by running `claude-ketchup install`
+  - Added structured execution logging for all hooks, capturing input, output, diagnostics, and errors to `.claude/logs/hooks/`
+  - Exposed diagnostics from session-start and user-prompt-submit hooks, including resolved paths and matched reminders
+  - Expanded documentation with the full Ketchup technique guide covering the core loop, bursts, workflow, coverage rules, and testing principles
+
+### Patch Changes
+
+- b4e0a4e: - Fixed GitHub Actions permissions error in the changelog generation process
+  - Resolved CI build failures caused by invalid local path references in workspace configuration
+
 ## 0.4.0
 
 ### Minor Changes
