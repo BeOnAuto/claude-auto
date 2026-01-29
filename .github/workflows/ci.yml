@@ -9,8 +9,8 @@ on:
 
 permissions:
   contents: write
-  # pages: write      # Uncomment for GitHub Pages (requires Enterprise for private)
-  # id-token: write   # Uncomment for GitHub Pages
+  pages: write
+  id-token: write
   packages: write
 
 concurrency:
@@ -45,51 +45,50 @@ jobs:
       - name: Build, type-check, and test
         run: pnpm turbo run build type-check test
 
-  # Uncomment build-docs and deploy-docs for GitHub Pages (requires Enterprise for private pages)
-  # build-docs:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
-  #
-  #     - name: Install pnpm
-  #       uses: pnpm/action-setup@v4
-  #
-  #     - name: Setup Node
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 20
-  #         cache: 'pnpm'
-  #
-  #     - name: Install dependencies
-  #       run: pnpm install --ignore-scripts
-  #
-  #     - name: Build docs
-  #       run: |
-  #         pnpm docs:build
-  #         touch docs/.vitepress/dist/.nojekyll
-  #
-  #     - name: Setup Pages
-  #       uses: actions/configure-pages@v4
-  #
-  #     - name: Upload artifact
-  #       uses: actions/upload-pages-artifact@v3
-  #       with:
-  #         path: docs/.vitepress/dist
-  #
-  # deploy-docs:
-  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-  #   environment:
-  #     name: github-pages
-  #     url: ${{ steps.deployment.outputs.page_url }}
-  #   needs: [test, build-docs]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Deploy to GitHub Pages
-  #       id: deployment
-  #       uses: actions/deploy-pages@v4
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      - name: Build docs
+        run: |
+          pnpm docs:build
+          touch docs/.vitepress/dist/.nojekyll
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/.vitepress/dist
+
+  deploy-docs:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: [test, build-docs]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
   release:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
