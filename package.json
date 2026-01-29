@@ -12,7 +12,8 @@
     "url": "https://github.com/xolvio/claude-ketchup.git"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   },
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
