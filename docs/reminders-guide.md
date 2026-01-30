@@ -552,5 +552,5 @@ If reminders conflict:
 
 - [Create your first reminder](#creating-your-first-reminder)
 - [View built-in reminders](.ketchup/reminders/)
-- [Configure validators](./validators-guide.md)
+- [Configure validators](/validators-guide)
 - [Manage hook state](./configuration.md#hook-state)

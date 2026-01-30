@@ -10,7 +10,7 @@ Understanding how the Quality Stack works under the hood.
 ┌─────────────────────────────────────────────────────────────┐
 │                    SYSTEM ARCHITECT                          │
 │                       (That's you)                           │
-│   Defines: ketchup-plan.md, skills, deny-list, rules        │
+│   Defines: ketchup-plan.md, reminders, deny-list, rules     │
 └──────────────────────────┬──────────────────────────────────┘
                            │
                            ▼
@@ -118,7 +118,7 @@ postinstall.ts
     │
     ├─► Create .claude/ directory
     │
-    ├─► For each directory (scripts, skills, commands):
+    ├─► For each directory (scripts, reminders, commands):
     │   └─► createSymlink(source, target)
     │       ├─► If symlink exists → verify or replace
     │       ├─► If file exists → backup and replace
@@ -144,7 +144,7 @@ preuninstall.ts
     │
     ├─► findProjectRoot()
     │
-    └─► For each directory (scripts, skills, commands):
+    └─► For each directory (scripts, reminders, commands):
         └─► removeSymlink() for each symlink
             └─► Only removes if target is symlink (preserves real files)
 ```
@@ -537,7 +537,7 @@ claude-ketchup/
 │   │   ├── status.ts       Status command
 │   │   ├── repair.ts       Repair command
 │   │   ├── doctor.ts       Doctor command
-│   │   └── skills.ts       Skills list command
+│   │   └── reminders.ts    Reminders list command
 │   │
 │   └── hooks/
 │       ├── session-start.ts     SessionStart handler

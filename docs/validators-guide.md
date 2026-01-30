@@ -55,6 +55,54 @@ proceeds      explain why
 
 ---
 
+## What Validators See
+
+When evaluating a commit, validators receive comprehensive information about the change:
+
+### Available Information
+
+1. **Full Git Diff** - The complete diff output showing all changes
+   - Added lines (with `+` prefix)
+   - Removed lines (with `-` prefix)
+   - Context lines around changes
+   - File modification hunks
+
+2. **Commit Message** - The full commit message text
+   - Subject line
+   - Body text
+   - Any special markers (e.g., `plea:` reasons)
+
+3. **Modified Files List** - All files affected by the commit
+   - File paths relative to project root
+   - Allows file-specific validation rules
+   - Can detect patterns like `*.test.*` or `migrations/**`
+
+### How Validators Use This Information
+
+Validators can make intelligent decisions based on:
+
+- **Code patterns**: Detect specific code constructs in the diff (e.g., `console.log`, `any` types, `.skip()`)
+- **File types**: Apply rules only to specific file patterns (e.g., only validate `.ts` files, skip test files)
+- **Change scope**: Evaluate architectural impact by seeing which files are modified together
+- **Commit metadata**: Check commit message format, conventions, and plea justifications
+
+### Example Analysis
+
+```typescript
+// Validator can see in the diff:
++ console.log('debug info');  // ← NACK: console.log in production code
+
+// And in the file list:
+src/user-service.ts  // ← Non-test file, apply strict rules
+
+// And in commit message:
+"fix: update user validation"  // ← Check conventional commit format
+```
+
+This comprehensive view allows validators to enforce context-aware quality standards.
+
+---
+
 ## Built-in Validators
 
 Claude Ketchup includes 17 pre-configured validators:
@@ -660,5 +708,5 @@ If team pushes back on validators:
 
 - [View built-in validators](.ketchup/validators/)
 - [Create your first validator](#creating-custom-validators)
-- [Configure validation modes](./configuration.md#validatecommit)
-- [Learn about reminders](./reminders-guide.md)
+- [Configure validation modes](/configuration#validatecommit)
+- [Learn about reminders](/reminders-guide)

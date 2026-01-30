@@ -136,6 +136,8 @@ Ketchup merges settings from three sources in priority order:
 
 The merged result is written to `.claude/settings.json`.
 
+See [Architecture Guide](/architecture#settings-merge-strategy) for detailed merge implementation.
+
 ### Override Syntax
 
 #### Disable specific hooks
@@ -231,54 +233,14 @@ The package provides these default hooks:
 
 Protect files from AI modification using glob patterns.
 
-### `.claude/deny-list.project.txt`
+See the [Hooks Guide](/hooks-guide#protect-files-with-deny-list) for detailed deny-list setup and pattern syntax.
 
-Project-wide patterns (committed to repo).
+### Quick Reference
 
-```txt
-# Comments start with #
+- **`.claude/deny-list.project.txt`** - Project-wide patterns (committed to repo)
+- **`.claude/deny-list.local.txt`** - Personal patterns (gitignored)
 
-# Secrets
-.env
-.env.*
-*.secret
-credentials.json
-
-# Generated files
-dist/**
-coverage/**
-node_modules/**
-
-# Lock files
-package-lock.json
-pnpm-lock.yaml
-```
-
-### `.claude/deny-list.local.txt`
-
-Personal patterns (gitignored).
-
-```txt
-# Personal notes
-TODO.md
-notes/**
-
-# Local experiments
-scratch/**
-```
-
-### Pattern Syntax
-
-Uses [micromatch](https://github.com/micromatch/micromatch) glob patterns:
-
-| Pattern | Matches |
-|---------|---------|
-| `*.secret` | Any file ending in `.secret` |
-| `dist/**` | Everything in `dist/` recursively |
-| `.env*` | `.env`, `.env.local`, `.env.production` |
-| `**/test/**` | Any `test/` directory at any depth |
-| `src/*.ts` | TypeScript files directly in `src/` |
-| `**/*.generated.*` | Any file with `.generated.` in name |
+Patterns use [micromatch](https://github.com/micromatch/micromatch) glob syntax.
 
 ---
 

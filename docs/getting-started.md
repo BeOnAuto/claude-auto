@@ -82,22 +82,7 @@ Now every Claude session starts with YOUR rules.
 
 ## Step 5: Protect Your Files
 
-Define what the AI cannot touch:
-
-```bash
-cat > .claude/deny-list.project.txt << 'EOF'
-# Secrets
-.env
-*.secret
-credentials.json
-
-# Generated
-dist/**
-coverage/**
-EOF
-```
-
-The supervisor will block any attempt to modify these files.
+See the [Hooks Guide](/hooks-guide#protect-files-with-deny-list) for file protection setup.
 
 ---
 
@@ -109,8 +94,6 @@ Start a Claude Code session. The supervisor will:
 2. **Validate** every commit against your rules
 3. **ACK** clean commits, **NACK** rule violations
 4. **Auto-continue** until the plan is complete
-
-You define. You release. You don't babysit.
 
 ---
 
@@ -168,12 +151,6 @@ See the [transformation story](/origin-story#the-transformation) for the complet
 
 ---
 
-## Customize Settings (Optional)
-
-See the [Configuration Guide](/configuration) for all customization options.
-
----
-
 ## Next Steps
 
 - [Configuration Reference](/configuration) - All configuration options
@@ -185,28 +162,8 @@ See the [Configuration Guide](/configuration) for all customization options.
 
 ## Troubleshooting
 
-### "Cannot find module" errors
-
-Ensure you're using Node.js 18+:
+Having issues? See the [Configuration Guide](/configuration#troubleshooting) for common problems and solutions, or run:
 
 ```bash
-node --version
+npx claude-ketchup doctor
 ```
-
-### Symlinks not created
-
-Run repair:
-
-```bash
-npx claude-ketchup repair
-```
-
-### Hooks not firing
-
-Check settings:
-
-```bash
-cat .claude/settings.json
-```
-
-Verify the hooks section contains the expected commands.
