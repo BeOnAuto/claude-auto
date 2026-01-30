@@ -106,7 +106,7 @@ claude-ketchup follows several key principles:
 
 ### Postinstall
 
-When you run `npm install claude-ketchup`, the postinstall script:
+When you run `npx claude-ketchup install`, the installation script:
 
 ```
 postinstall.ts
@@ -250,6 +250,79 @@ User Submits Prompt
 │   reminder content          │
 │   </system-reminder>"       │
 └─────────────────────────────┘
+```
+
+### Stop Hook
+
+```
+Claude Execution Pauses
+         │
+         ▼
+┌─────────────────────────────┐
+│  settings.json hooks config │
+│  Stop: [...]                │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│  scripts/auto-continue.ts   │
+│  Input: transcript & plan   │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│  handleStop()               │
+│  ├─► readKetchupPlan()      │
+│  ├─► countTodos()           │
+│  ├─► analyzeTranscript()    │
+│  └─► checkContinuation()    │
+└──────────────┬──────────────┘
+               │
+        ┌──────┴──────┐
+        │             │
+        ▼             ▼
+   { CONTINUE }   { STOP }
+   Resume work    End session
+```
+
+### Validator Execution (PreToolUse for git commit)
+
+```
+Claude Attempts git commit
+         │
+         ▼
+┌─────────────────────────────┐
+│  PreToolUse Hook fires      │
+│  Tool: Bash (git commit)    │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│  scripts/validate-commit.ts │
+│  Input: commit message      │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│  handleValidateCommit()     │
+│  ├─► loadValidators()       │
+│  │   └─► .ketchup/validators│
+│  ├─► parseValidator() each  │
+│  ├─► filterEnabled()        │
+│  └─► sendToSupervisor()     │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│  Supervisor AI evaluates    │
+│  each validator rule        │
+└──────────────┬──────────────┘
+               │
+        ┌──────┴──────┐
+        │             │
+        ▼             ▼
+     { ACK }      { NACK }
+   Commit OK    Block + explain
 ```
 
 ---

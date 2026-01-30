@@ -300,13 +300,24 @@ For advanced configuration, Ketchup supports cosmiconfig.
 interface KetchupConfig {
   /** Directory for ketchup data (reminders, validators). Default: '.ketchup' */
   ketchupDir?: string;
+
+  /** Validator configuration */
   validators?: {
     dirs?: string[];       // Additional validator directories
     enabled?: boolean;     // Enable/disable validators globally
-    mode?: 'on' | 'off' | 'warn';
+    mode?: 'strict' | 'warn' | 'off';  // Validation strictness
   };
+
+  /** Reminder configuration */
   reminders?: {
     dirs?: string[];       // Additional reminder directories
+    enabled?: boolean;     // Enable/disable reminders globally
+  };
+
+  /** Hook configuration overrides */
+  hooks?: {
+    skipInstall?: boolean; // Skip postinstall setup
+    logLevel?: 'debug' | 'info' | 'warn' | 'error';
   };
 }
 ```
@@ -317,8 +328,15 @@ interface KetchupConfig {
 {
   "ketchupDir": ".ketchup",
   "validators": {
-    "dirs": ["./custom-validators"],
+    "dirs": ["./custom-validators", "./team-validators"],
     "mode": "strict"
+  },
+  "reminders": {
+    "dirs": ["./project-reminders"],
+    "enabled": true
+  },
+  "hooks": {
+    "logLevel": "info"
   }
 }
 ```
@@ -330,11 +348,45 @@ interface KetchupConfig {
   "name": "my-project",
   "ketchup": {
     "validators": {
-      "enabled": true
+      "enabled": true,
+      "mode": "warn"
+    },
+    "reminders": {
+      "dirs": ["./docs/reminders"]
     }
   }
 }
 ```
+
+### Example `.ketchuprc.js`
+
+```javascript
+module.exports = {
+  ketchupDir: process.env.CI ? '.ketchup-ci' : '.ketchup',
+  validators: {
+    enabled: process.env.NODE_ENV !== 'development',
+    mode: process.env.STRICT_MODE ? 'strict' : 'warn'
+  },
+  reminders: {
+    dirs: [
+      './reminders',
+      process.env.TEAM_REMINDERS_PATH
+    ].filter(Boolean)
+  }
+};
+```
+
+### Load Priority
+
+Cosmiconfig searches for configuration in this order:
+
+1. `ketchup` property in `package.json`
+2. `.ketchuprc.json`
+3. `.ketchuprc.yaml` / `.ketchuprc.yml`
+4. `.ketchuprc.js`
+5. `ketchup.config.js`
+
+The first configuration found is used (no merging between different config files).
 
 ---
 
@@ -346,7 +398,11 @@ interface KetchupConfig {
 | `INIT_CWD` | Starting directory for root search | `process.cwd()` |
 | `DEBUG` | Enable debug logging | - |
 | `KETCHUP_LOG` | Filter activity logging | Log everything |
-| `KETCHUP_SKIP_POSTINSTALL` | Skip postinstall in CI | - |
+| `KETCHUP_SKIP_POSTINSTALL` | Skip postinstall in CI | `false` |
+| `CI` | Detect CI environment | - |
+| `NODE_ENV` | Node environment | `development` |
+| `KETCHUP_VALIDATOR_MODE` | Override validator mode | From config |
+| `KETCHUP_AUTO_CONTINUE` | Override auto-continue mode | From config |
 
 ### `KETCHUP_ROOT`
 
@@ -390,6 +446,40 @@ Skip postinstall script (useful for CI):
 ```bash
 KETCHUP_SKIP_POSTINSTALL=true npm install
 ```
+
+### `KETCHUP_VALIDATOR_MODE`
+
+Override the commit validation mode at runtime:
+
+```bash
+# Temporarily disable validation
+KETCHUP_VALIDATOR_MODE=off claude
+
+# Force strict validation
+KETCHUP_VALIDATOR_MODE=strict claude
+
+# Use warning mode
+KETCHUP_VALIDATOR_MODE=warn claude
+```
+
+Overrides the `validateCommit.mode` setting in `.claude.hooks.json`.
+
+### `KETCHUP_AUTO_CONTINUE`
+
+Override the auto-continue mode at runtime:
+
+```bash
+# Enable non-stop mode
+KETCHUP_AUTO_CONTINUE=non-stop claude
+
+# Use smart mode
+KETCHUP_AUTO_CONTINUE=smart claude
+
+# Disable auto-continue
+KETCHUP_AUTO_CONTINUE=off claude
+```
+
+Overrides the `autoContinue.mode` setting in `.claude.hooks.json`.
 
 ---
 

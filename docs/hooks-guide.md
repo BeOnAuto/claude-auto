@@ -39,12 +39,37 @@ EOF
 
 ### Step 2: Configure frontmatter
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `when.hook` | string | When to trigger: `SessionStart`, `UserPromptSubmit` |
-| `priority` | number | Execution order (higher first, default: 0) |
-| `when.mode` | string | Filter by mode: `plan` or `code` |
-| `when.projectType` | string | Conditional activation based on state |
+#### Complete Reminder Frontmatter Schema
+
+```yaml
+---
+when:
+  hook: SessionStart        # Required: When to trigger
+  mode: plan               # Optional: Filter by mode
+  projectType: typescript  # Optional: State condition
+  framework: express       # Optional: Additional conditions
+priority: 100              # Optional: Execution order
+---
+```
+
+#### Field Reference
+
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
+| `when.hook` | `'SessionStart' \| 'UserPromptSubmit'` | Yes | - | When to trigger the reminder |
+| `when.mode` | `'plan' \| 'code'` | No | - | Filter by Claude mode |
+| `when.[key]` | `string` | No | - | State conditions from `.claude/state.json` |
+| `priority` | `number` | No | `0` | Execution order (higher = earlier) |
+
+#### Priority Guidelines
+
+| Priority | Use Case |
+|----------|----------|
+| 100+ | Critical rules that must be injected first |
+| 50-99 | Project-specific guidelines |
+| 10-49 | Team conventions |
+| 0-9 | Nice-to-have suggestions |
+| <0 | Low priority, processed last |
 
 ### Step 3: Add conditional activation (optional)
 
@@ -59,6 +84,75 @@ priority: 50
 ```
 
 This reminder only loads when `state.json` contains `projectType: 'typescript'`.
+
+---
+
+## Create Validators
+
+Validators enforce commit quality by checking commits against project rules.
+
+### Step 1: Create a validator file
+
+```bash
+cat > .ketchup/validators/my-validator.md << 'EOF'
+---
+name: no-console-logs
+description: Prevents console.log in production code
+enabled: true
+---
+
+# No Console Logs
+
+Check that commits don't add console.log statements.
+
+## Rules:
+- No new console.log() in JavaScript/TypeScript files
+- Exception: Test files (*.test.*, *.spec.*)
+
+NACK if console.log found in non-test files.
+EOF
+```
+
+### Step 2: Configure validator frontmatter
+
+#### Complete Validator Frontmatter Schema
+
+```yaml
+---
+name: unique-identifier    # Required: Unique validator name
+description: Brief summary  # Required: What this validates
+enabled: true              # Optional: Active state
+---
+```
+
+#### Field Reference
+
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
+| `name` | `string` | Yes | - | Unique identifier for the validator |
+| `description` | `string` | Yes | - | Brief explanation of validation rules |
+| `enabled` | `boolean` | No | `true` | Whether the validator is active |
+
+### Step 3: Control validation modes
+
+Configure in `.claude.hooks.json`:
+
+```json
+{
+  "validateCommit": {
+    "mode": "strict",
+    "disabled": ["validator-name-to-skip"]
+  }
+}
+```
+
+#### Validation Modes
+
+| Mode | Behavior | Use When |
+|------|----------|----------|
+| `strict` | Blocks commits that violate rules (NACK) | Production projects |
+| `warn` | Warns but allows commits | Learning/migration phase |
+| `off` | No validation | Quick experiments |
 
 ---
 
@@ -493,8 +587,8 @@ jobs:
   build:
     steps:
       - uses: actions/checkout@v4
-      - run: pnpm install
-      - run: pnpm exec claude-ketchup doctor
+      - run: npm install
+      - run: npx claude-ketchup doctor
 ```
 
 ### Skip hooks in CI

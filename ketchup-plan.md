@@ -2,29 +2,7 @@
 
 ## TODO
 
-### Bottle: Configuration System Updates
-- [ ] Burst 20: Add cosmiconfig (.ketchuprc.json) documentation to configuration.md [depends: none]
-- [ ] Burst 21: Update settings merge strategy documentation [depends: none]
-- [ ] Burst 22: Document new environment variables in configuration.md [depends: none]
-
-### Bottle: Hook System Updates
-
-- [ ] Burst 24: Document reminder frontmatter schema in hooks-guide.md [depends: 15]
-- [ ] Burst 25: Document validator frontmatter schema in hooks-guide.md [depends: none]
-- [ ] Burst 26: Update hook execution flow in architecture.md [depends: 23]
-
-### Bottle: Package.json and Build Updates
-
-- [ ] Burst 31: Update package.json examples to remove @xolvio scope [depends: none]
-- [ ] Burst 32: Update all pnpm/yarn/npm command examples to use npx where appropriate [depends: none]
-- [ ] Burst 33: Remove package manager specific flags documentation [depends: 32]
-
-### Bottle: Cleanup and Verification
-
-- [ ] Burst 34: Remove obsolete GitHub Actions CI/CD authentication examples [depends: 2]
-- [ ] Burst 35: Update troubleshooting section with new installation issues [depends: 27]
-- [ ] Burst 36: Verify all code examples work with new installation method [depends: 1, 3, 27]
-- [ ] Burst 37: Check for any remaining @xolvio references across all docs [depends: 4, 5, 31]
+All bursts completed! 🎉
 
 ## DONE
 
@@ -53,3 +31,16 @@
 - [x] Burst 28: Create reminders-guide.md with complete reminders documentation (bed5ce4)
 - [x] Burst 29: Create validators-guide.md with validator system documentation (bed5ce4)
 - [x] Burst 30: Add links to new guides in README.md documentation section (0740d3b)
+- [x] Burst 20: Add cosmiconfig (.ketchuprc.json) documentation to configuration.md (current)
+- [x] Burst 21: Update settings merge strategy documentation (current)
+- [x] Burst 22: Document new environment variables in configuration.md (current)
+- [x] Burst 24: Document reminder frontmatter schema in hooks-guide.md (current)
+- [x] Burst 25: Document validator frontmatter schema in hooks-guide.md (current)
+- [x] Burst 26: Update hook execution flow in architecture.md (current)
+- [x] Burst 31: Update package.json examples to remove @xolvio scope (current)
+- [x] Burst 32: Update all pnpm/yarn/npm command examples to use npx where appropriate (current)
+- [x] Burst 33: Remove package manager specific flags documentation (current)
+- [x] Burst 34: Remove obsolete GitHub Actions CI/CD authentication examples (current)
+- [x] Burst 35: Update troubleshooting section with new installation issues (current)
+- [x] Burst 37: Check for any remaining @xolvio references across all docs (current)
+- [x] Burst 36: Verify all code examples work with new installation method (current)

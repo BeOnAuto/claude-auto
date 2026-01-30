@@ -1,0 +1,1 @@
+/Users/dominiklasek/Documents/xolvio/claude-ketchup/validators/testing-no-state-peeking.md
