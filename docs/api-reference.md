@@ -136,84 +136,85 @@ writeState('/project/.claude', { projectType: 'typescript' });
 
 ---
 
-## Skills
+## Reminders
 
-### `scanSkills(dir: string): string[]`
+### `scanReminders(dir: string): string[]`
 
-Scans the `skills/` subdirectory for `.md` files.
+Scans the `reminders/` subdirectory for `.md` files.
 
 ```typescript
-import { scanSkills } from 'claude-ketchup';
+import { scanReminders } from 'claude-ketchup';
 
-const skillPaths = scanSkills('/project/.claude');
-// → ['/project/.claude/skills/coding.md', ...]
+const reminderPaths = scanReminders('/project/.ketchup');
+// → ['/project/.ketchup/reminders/coding.md', ...]
 ```
 
 ---
 
-### `parseSkill(raw: string): ParsedSkill`
+### `parseReminder(raw: string): ParsedReminder`
 
-Parses a skill file, extracting YAML frontmatter.
+Parses a reminder file, extracting YAML frontmatter.
 
 ```typescript
-import { parseSkill } from 'claude-ketchup';
+import { parseReminder } from 'claude-ketchup';
 
-const skill = parseSkill(`---
-hook: SessionStart
+const reminder = parseReminder(`---
+when:
+  hook: SessionStart
 priority: 100
 ---
 
-# Skill Content`);
+# Reminder Content`);
 
-// → { frontmatter: { hook: 'SessionStart', priority: 100 }, content: '# Skill Content' }
+// → { frontmatter: { when: { hook: 'SessionStart' }, priority: 100 }, content: '# Reminder Content' }
 ```
 
 ---
 
-### `filterByHook(skills: ParsedSkill[], hookType: string): ParsedSkill[]`
+### `filterByHook(reminders: ParsedReminder[], hookType: string): ParsedReminder[]`
 
-Filters skills by hook type.
+Filters reminders by hook type.
 
 ```typescript
 import { filterByHook } from 'claude-ketchup';
 
-const sessionStartSkills = filterByHook(skills, 'SessionStart');
+const sessionStartReminders = filterByHook(reminders, 'SessionStart');
 ```
 
 ---
 
-### `filterByMode(skills: ParsedSkill[], mode: string): ParsedSkill[]`
+### `filterByMode(reminders: ParsedReminder[], mode: string): ParsedReminder[]`
 
-Filters skills by mode (plan/code). Skills without `mode` always pass.
+Filters reminders by mode (plan/code). Reminders without `mode` always pass.
 
 ```typescript
 import { filterByMode } from 'claude-ketchup';
 
-const codeSkills = filterByMode(skills, 'code');
+const codeReminders = filterByMode(reminders, 'code');
 ```
 
 ---
 
-### `filterByState(skills: ParsedSkill[], state: State): ParsedSkill[]`
+### `filterByState(reminders: ParsedReminder[], state: State): ParsedReminder[]`
 
-Filters skills by `when` conditions. Skills without `when` always pass.
+Filters reminders by `when` conditions. Reminders without `when` always pass.
 
 ```typescript
 import { filterByState } from 'claude-ketchup';
 
-const activeSkills = filterByState(skills, { projectType: 'typescript' });
+const activeReminders = filterByState(reminders, { projectType: 'typescript' });
 ```
 
 ---
 
-### `sortByPriority(skills: ParsedSkill[]): ParsedSkill[]`
+### `sortByPriority(reminders: ParsedReminder[]): ParsedReminder[]`
 
-Sorts skills by priority (higher first). Default priority is 0.
+Sorts reminders by priority (higher first). Default priority is 0.
 
 ```typescript
 import { sortByPriority } from 'claude-ketchup';
 
-const sorted = sortByPriority(skills);
+const sorted = sortByPriority(reminders);
 ```
 
 ---
@@ -304,15 +305,15 @@ const result = doctor('/node_modules/claude-ketchup', '/project/.claude');
 
 ---
 
-### `listSkills(claudeDir: string): SkillsResult`
+### `listReminders(ketchupDir: string): RemindersResult`
 
-Lists all skills with metadata.
+Lists all reminders with metadata.
 
 ```typescript
-import { listSkills } from 'claude-ketchup';
+import { listReminders } from 'claude-ketchup';
 
-const result = listSkills('/project/.claude');
-// → { skills: [{ name: 'coding.md', hook: 'SessionStart', priority: 100 }, ...] }
+const result = listReminders('/project/.ketchup');
+// → { reminders: [{ name: 'coding.md', hook: 'SessionStart', priority: 100 }, ...] }
 ```
 
 ---
