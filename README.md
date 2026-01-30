@@ -58,10 +58,10 @@ Each runs a Ketchup instance. All quality-validated.
 
 ## Three Steps
 
-### 1. Define
+### 1. Install
 
 ```bash
-pnpm add -D @xolvio/claude-ketchup
+npx claude-ketchup install
 ```
 
 Feed your requirements. Ketchup auto-generates the plan with Bottles, Bursts, and Dependencies.
@@ -90,66 +90,14 @@ From Babysitter to Bionic.
 
 ---
 
-## Installation (Xolvio Team)
-
-This package is published to GitHub Packages (private). Follow these steps to install.
-
-### 1. Authenticate with GitHub Packages
-
-Create a GitHub Personal Access Token (classic) with `read:packages` scope at:
-https://github.com/settings/tokens/new
-
-Then add it to your global `.npmrc`:
+## Installation
 
 ```bash
-# Add authentication for GitHub Packages
-echo "//npm.pkg.github.com/:_authToken=YOUR_GITHUB_PAT" >> ~/.npmrc
-echo "@xolvio:registry=https://npm.pkg.github.com" >> ~/.npmrc
-```
+# Install Claude Ketchup
+npx claude-ketchup install
 
-Or use npm login:
-```bash
-npm login --registry=https://npm.pkg.github.com --scope=@xolvio
-# Username: your-github-username
-# Password: your-github-pat
-# Email: your-email
-```
-
-### 2. Install the package
-
-```bash
-pnpm add -D @xolvio/claude-ketchup
-# or
-npm install --save-dev @xolvio/claude-ketchup
-```
-
-### For CI/CD pipelines
-
-Add to your GitHub Actions workflow:
-
-```yaml
-- uses: actions/setup-node@v4
-  with:
-    registry-url: 'https://npm.pkg.github.com'
-    scope: '@xolvio'
-
-- run: pnpm install
-  env:
-    NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-```
-
-For repos outside the xolvio org, use a PAT with `read:packages` scope stored as a secret.
-
----
-
-## Quick Start
-
-```bash
-# Install
-pnpm add -D @xolvio/claude-ketchup
-
-# Verify
-claude-ketchup doctor
+# Verify installation
+npx claude-ketchup doctor
 
 # You're ready to become Bionic
 ```
@@ -157,7 +105,7 @@ claude-ketchup doctor
 After installation, claude-ketchup automatically:
 
 - Injects hooks that validate every commit
-- Creates skills that inject your guidelines
+- Creates reminders that inject your guidelines
 - Sets up file protection via deny-lists
 - Merges settings with smart project/local overrides
 
@@ -175,12 +123,14 @@ The on.auto team ships 5-10 features per week. Not 1-2.
 
 ## CLI Reference
 
-| Command                 | Description                                     |
-| ----------------------- | ----------------------------------------------- |
-| `claude-ketchup status` | Show symlink status for hook scripts and skills |
-| `claude-ketchup doctor` | Diagnose symlink health                         |
-| `claude-ketchup repair` | Recreate broken or missing symlinks             |
-| `claude-ketchup skills` | List all skills with metadata                   |
+| Command                    | Description                                         |
+| ------------------------- | --------------------------------------------------- |
+| `claude-ketchup install`  | Install and configure claude-ketchup in your project |
+| `claude-ketchup init`     | Initialize ketchup configuration                    |
+| `claude-ketchup status`   | Show symlink status for hook scripts and reminders  |
+| `claude-ketchup doctor`   | Diagnose installation health                        |
+| `claude-ketchup repair`   | Recreate broken or missing symlinks                 |
+| `claude-ketchup reminders`| List active reminders with metadata                 |
 
 ---
 
