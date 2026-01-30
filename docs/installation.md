@@ -16,60 +16,16 @@ That's it! This single command sets up everything you need.
 
 ## What Gets Installed
 
-When you run `npx claude-ketchup install`, the following happens:
+When you run `npx claude-ketchup install`:
 
-### 1. Directory Creation
+1. Creates `.claude/` and `.ketchup/` directories
+2. Symlinks hook scripts for session management and validation
+3. Generates configuration files (settings.json, .gitignore)
+4. Sets up built-in reminders and validators
 
-Creates these directories in your project:
+See the [Architecture Guide](/architecture#directory-structure) for complete directory structure details.
 
-```
-.claude/
-├── scripts/       # Hook scripts (symlinked from package)
-├── commands/      # Custom Claude commands (symlinked)
-└── logs/          # Session and debug logs
-
-.ketchup/
-├── reminders/     # Context injection reminders (symlinked)
-└── validators/    # Commit validation rules (symlinked)
-```
-
-### 2. Symlink Creation
-
-Creates symlinks to package-provided scripts:
-
-- `.claude/scripts/session-start.ts` → Hook for session initialization
-- `.claude/scripts/user-prompt-submit.ts` → Hook for prompt modification
-- `.claude/scripts/pre-tool-use.ts` → Hook for tool validation
-- `.claude/scripts/auto-continue.ts` → Hook for automatic continuation
-
-### 3. Configuration Files
-
-Generates these configuration files:
-
-- `.claude/settings.json` - Merged hook configuration
-- `.claude/.gitignore` - Auto-generated gitignore for Claude directory
-- `.claude.hooks.json` - Runtime hook state (if not exists)
-
-### 4. Reminders and Validators
-
-Symlinks built-in reminders and validators:
-
-**Reminders:**
-- Documentation reminder
-- Emergent design principles
-- Extreme ownership rules
-- IDE diagnostics checks
-- Ketchup core methodology
-- Parallelization guidelines
-- Sub-agent rules
-- Test specifications
-
-**Validators:**
-- No dangerous git operations
-- TCR workflow compliance
-- Test coverage requirements
-- Commit message standards
-- And more...
+See the [Reminders Guide](/reminders-guide) and [Validators Guide](/validators-guide) for the complete list of built-in reminders and validators.
 
 ---
 
@@ -278,10 +234,10 @@ RUN npx claude-ketchup install
 
 After installation:
 
-1. [Configure your hooks](./hooks-guide.md) - Customize supervision rules
-2. [Add reminders](./configuration.md#reminder-frontmatter) - Inject your guidelines
-3. [Set up file protection](./hooks-guide.md#protect-files-with-deny-list) - Protect sensitive files
-4. [Enable auto-continue](./configuration.md#autocontinue) - Keep AI working
+1. [Configure your hooks](/hooks-guide) - Customize supervision rules
+2. [Add reminders](/configuration#reminder-frontmatter) - Inject your guidelines
+3. [Set up file protection](/hooks-guide#protect-files-with-deny-list) - Protect sensitive files
+4. [Enable auto-continue](/configuration#autocontinue) - Keep AI working
 
 ---
 

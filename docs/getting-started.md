@@ -52,19 +52,7 @@ All green? The Quality Stack is active. You can now walk away.
 ls -la .claude/ .ketchup/
 ```
 
-You should see:
-
-```
-.claude/
-├── scripts/           # Hook scripts (symlinked)
-├── commands/          # Command definitions (symlinked)
-├── settings.json      # Merged Claude configuration
-└── .gitignore         # Ignores symlinks and runtime files
-
-.ketchup/
-├── reminders/         # Context reminders (symlinked)
-└── validators/        # Commit validators (symlinked)
-```
+See the [Architecture Guide](/architecture#directory-structure) for complete directory structure details.
 
 ---
 
@@ -176,48 +164,13 @@ You installed the Quality Stack:
 
 ## The Transformation
 
-| Before (Babysitter)              | After (Bionic)                   |
-| -------------------------------- | -------------------------------- |
-| Watching one AI session          | Directing multiple workstreams   |
-| Nudging, correcting in real-time | Defining, approving, releasing   |
-| Serial productivity              | Parallel productivity            |
-| Marginal gains (1.5x)            | Multiplicative gains (5-10x)     |
-| Brain captured by supervision    | Brain freed for the next thing   |
-
-From Babysitter to Bionic.
+See the [transformation story](/origin-story#the-transformation) for the complete journey.
 
 ---
 
 ## Customize Settings (Optional)
 
-Override default hook behavior with project settings:
-
-```bash
-cat > .claude/settings.project.json << 'EOF'
-{
-  "hooks": {
-    "PreToolUse": {
-      "_disabled": ["npx tsx .claude/scripts/validate-commit.ts"]
-    }
-  }
-}
-EOF
-```
-
-Or completely replace a hook:
-
-```bash
-cat > .claude/settings.project.json << 'EOF'
-{
-  "hooks": {
-    "SessionStart": {
-      "_mode": "replace",
-      "_value": []
-    }
-  }
-}
-EOF
-```
+See the [Configuration Guide](/configuration) for all customization options.
 
 ---
 

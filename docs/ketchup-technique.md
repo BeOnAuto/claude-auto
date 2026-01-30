@@ -342,12 +342,6 @@ pnpm test --run && git add -A && git commit -m "<MSG>" || git checkout -- .
 
 ## The Transformation
 
-| Before (Babysitter)              | After (Bionic)                   |
-| -------------------------------- | -------------------------------- |
-| Watching one AI session          | Directing multiple workstreams   |
-| Nudging, correcting in real-time | Defining, approving, releasing   |
-| Serial productivity              | Parallel productivity            |
-| Marginal gains (1.5x)            | Multiplicative gains (5-10x)     |
-| Brain captured by supervision    | Brain freed for the next thing   |
+See the [transformation story](/origin-story#the-transformation) for the complete journey.
 
 **[Get Started →](/getting-started)**
