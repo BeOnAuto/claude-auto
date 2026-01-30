@@ -1,10 +1,20 @@
-# Ketchup Plan: Fix Content Organization in Guides
+# Ketchup Plan: Final Documentation Review and Corrections
 
 ## TODO
 
-All bursts completed! 🎉
+All documentation fixes completed! 🎉
 
 ## DONE
+
+### Critical Fixes
+- [x] Burst 1: Fix broken relative links in reminders-guide.md and validators-guide.md (8e1d76a)
+- [x] Burst 2: Remove "skills" terminology from architecture.md - replace with "reminders" (8e1d76a)
+- [x] Burst 3: Consolidate deny-list documentation (keep in hooks-guide, reference elsewhere) (8e1d76a)
+- [x] Burst 4: Fix getting-started.md narrative break at line 113 (8e1d76a)
+
+### High Priority Fixes
+- [x] Burst 5: Document what validators have access to (diff, commit message, etc.) (8e1d76a)
+- [x] Burst 6: Remove duplicate settings merge strategy from configuration.md (8e1d76a)
 
 - [x] Burst 1: Remove "Hook Types" section from reminders-guide.md (lines 104-159)
 - [x] Burst 2: Ensure hooks-guide.md already covers SessionStart and UserPromptSubmit (verified)
