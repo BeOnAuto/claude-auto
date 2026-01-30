@@ -101,60 +101,13 @@ priority: 100              # Optional: execution order (higher = earlier)
 
 ---
 
-## Hook Types
+## Which Hook to Use
 
-### SessionStart
+Reminders can be triggered by different hooks. See the [Hooks Guide](/hooks-guide#understanding-each-hook) for detailed information about when each hook fires.
 
-Injected when a Claude session begins. Perfect for:
-- Project guidelines and standards
-- Architecture decisions
-- Team conventions
-- Quality requirements
-
-Example:
-
-```markdown
----
-when:
-  hook: SessionStart
-priority: 100
----
-
-# Project Architecture
-
-We follow clean architecture with these layers:
-- Domain: Pure business logic
-- Application: Use cases and orchestration
-- Infrastructure: External dependencies
-- Presentation: UI/API layer
-
-Never let infrastructure leak into domain.
-```
-
-### UserPromptSubmit
-
-Injected when the user submits a prompt. Useful for:
-- Task-specific reminders
-- Dynamic context based on current work
-- Temporary guidelines
-
-Example:
-
-```markdown
----
-when:
-  hook: UserPromptSubmit
-  mode: code
-priority: 50
----
-
-# Current Sprint Focus
-
-This sprint we're focusing on:
-- Performance optimizations
-- Reducing bundle size
-- Improving test coverage
-```
+**Quick reference:**
+- **SessionStart**: Use for project guidelines, architecture decisions, and team conventions that should be loaded once at session start
+- **UserPromptSubmit**: Use for dynamic reminders that should be injected with each user prompt
 
 ---
 

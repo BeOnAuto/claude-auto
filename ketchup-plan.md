@@ -1,10 +1,15 @@
-# Ketchup Plan: Complete Documentation Cleanup and Organization
+# Ketchup Plan: Fix Content Organization in Guides
 
 ## TODO
 
 All bursts completed! 🎉
 
 ## DONE
+
+- [x] Burst 1: Remove "Hook Types" section from reminders-guide.md (lines 104-159)
+- [x] Burst 2: Ensure hooks-guide.md already covers SessionStart and UserPromptSubmit (verified)
+- [x] Burst 3: Update reminders-guide.md to reference hooks-guide for hook information
+- [x] Burst 4: Check validators-guide.md for similar issues (no issues found)
 
 ### High Priority - Remove Duplications
 - [x] Burst 1: Remove duplicate transformation tables (keep only in origin-story.md, reference from others) (9dced4a)
