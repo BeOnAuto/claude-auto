@@ -17,20 +17,21 @@ For a complete reference of all configuration files and options, see the [Config
 
 ---
 
-## Create a Custom Skill
+## Create a Custom Reminder
 
-Skills inject context into Claude sessions based on hook triggers.
+Reminders inject context into Claude sessions based on hook triggers.
 
-### Step 1: Create the skill file
+### Step 1: Create the reminder file
 
 ```bash
-cat > .claude/skills/my-skill.md << 'EOF'
+cat > .ketchup/reminders/my-reminder.md << 'EOF'
 ---
-hook: SessionStart
+when:
+  hook: SessionStart
 priority: 50
 ---
 
-# My Custom Skill
+# My Custom Reminder
 
 Instructions for Claude...
 EOF
@@ -40,24 +41,24 @@ EOF
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `hook` | string | When to trigger: `SessionStart`, `UserPromptSubmit` |
+| `when.hook` | string | When to trigger: `SessionStart`, `UserPromptSubmit` |
 | `priority` | number | Execution order (higher first, default: 0) |
-| `mode` | string | Filter by mode: `plan` or `code` |
-| `when` | object | Conditional activation based on state |
+| `when.mode` | string | Filter by mode: `plan` or `code` |
+| `when.projectType` | string | Conditional activation based on state |
 
 ### Step 3: Add conditional activation (optional)
 
 ```yaml
 ---
-hook: SessionStart
-priority: 50
-mode: code
 when:
+  hook: SessionStart
+  mode: code
   projectType: typescript
+priority: 50
 ---
 ```
 
-This skill only loads when `state.json` contains `projectType: 'typescript'`.
+This reminder only loads when `state.json` contains `projectType: 'typescript'`.
 
 ---
 
@@ -168,7 +169,7 @@ Create `.claude/settings.local.json`:
 {
   "hooks": {
     "PreToolUse": {
-      "_disabled": ["npx tsx node_modules/claude-ketchup/dist/scripts/pre-tool-use.js"]
+      "_disabled": ["npx tsx .claude/scripts/pre-tool-use.ts"]
     }
   }
 }
@@ -307,13 +308,13 @@ npx tsx .claude/scripts/user-prompt-submit.ts "Write a function"
 ### Quick fix
 
 ```bash
-claude-ketchup repair
+npx claude-ketchup repair
 ```
 
 ### Diagnose issues
 
 ```bash
-claude-ketchup doctor
+npx claude-ketchup doctor
 ```
 
 ### Manual repair
@@ -399,7 +400,7 @@ Add to `.claude/settings.project.json`:
 
 ---
 
-## Use Skills with State Conditions
+## Use Reminders with State Conditions
 
 ### Define state in state.json
 
@@ -413,16 +414,16 @@ cat > .claude/state.json << 'EOF'
 EOF
 ```
 
-### Create conditional skills
+### Create conditional reminders
 
-**TypeScript-only skill:**
+**TypeScript-only reminder:**
 
 ```markdown
 ---
-hook: SessionStart
-priority: 50
 when:
+  hook: SessionStart
   projectType: typescript
+priority: 50
 ---
 
 # TypeScript Guidelines
@@ -430,14 +431,14 @@ when:
 Use strict mode...
 ```
 
-**Express-specific skill:**
+**Express-specific reminder:**
 
 ```markdown
 ---
-hook: SessionStart
-priority: 40
 when:
+  hook: SessionStart
   framework: express
+priority: 40
 ---
 
 # Express Guidelines
@@ -451,6 +452,7 @@ All conditions must match (AND logic):
 
 ```yaml
 when:
+  hook: SessionStart
   projectType: typescript
   testFramework: vitest
 ```
