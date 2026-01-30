@@ -41,7 +41,7 @@ For a complete reference of all configuration files and options, see the [Config
 - Define architectural patterns to follow
 - Establish testing requirements
 
-**Script location:** `.claude/scripts/session-start.js`
+**Script location:** `.claude/scripts/session-start.js` (symlink to package script)
 
 ### PreToolUse Hook
 
@@ -66,7 +66,7 @@ For a complete reference of all configuration files and options, see the [Config
 - Validate commit messages and content
 - Enforce test-driven development
 
-**Script location:** `.claude/scripts/pre-tool-use.js`
+**Script location:** `.claude/scripts/pre-tool-use.js` (symlink to package script)
 
 ### UserPromptSubmit Hook
 
@@ -90,7 +90,7 @@ For a complete reference of all configuration files and options, see the [Config
 - Add warnings about common pitfalls
 - Include relevant documentation snippets
 
-**Script location:** `.claude/scripts/user-prompt-submit.js`
+**Script location:** `.claude/scripts/user-prompt-submit.js` (symlink to package script)
 
 ### Stop Hook
 
@@ -115,77 +115,7 @@ For a complete reference of all configuration files and options, see the [Config
 - Stop when hitting error limits
 - Pause for user review at milestones
 
-**Script location:** `.claude/scripts/stop.js`
-
----
-
-## Create a Custom Reminder
-
-Reminders inject context into Claude sessions based on hook triggers.
-
-### Step 1: Create the reminder file
-
-```bash
-cat > .ketchup/reminders/my-reminder.md << 'EOF'
----
-when:
-  hook: SessionStart
-priority: 50
----
-
-# My Custom Reminder
-
-Instructions for Claude...
-EOF
-```
-
-### Step 2: Configure frontmatter
-
-#### Complete Reminder Frontmatter Schema
-
-```yaml
----
-when:
-  hook: SessionStart        # Required: When to trigger
-  mode: plan               # Optional: Filter by mode
-  projectType: typescript  # Optional: State condition
-  framework: express       # Optional: Additional conditions
-priority: 100              # Optional: Execution order
----
-```
-
-#### Field Reference
-
-| Field | Type | Required | Default | Description |
-|-------|------|----------|---------|-------------|
-| `when.hook` | `'SessionStart' \| 'UserPromptSubmit'` | Yes | - | When to trigger the reminder |
-| `when.mode` | `'plan' \| 'code'` | No | - | Filter by Claude mode |
-| `when.[key]` | `string` | No | - | State conditions from `.claude/state.json` |
-| `priority` | `number` | No | `0` | Execution order (higher = earlier) |
-
-#### Priority Guidelines
-
-| Priority | Use Case |
-|----------|----------|
-| 100+ | Critical rules that must be injected first |
-| 50-99 | Project-specific guidelines |
-| 10-49 | Team conventions |
-| 0-9 | Nice-to-have suggestions |
-| <0 | Low priority, processed last |
-
-### Step 3: Add conditional activation (optional)
-
-```yaml
----
-when:
-  hook: SessionStart
-  mode: code
-  projectType: typescript
-priority: 50
----
-```
-
-This reminder only loads when `state.json` contains `projectType: 'typescript'`.
+**Script location:** `.claude/scripts/stop.js` (symlink to package script)
 
 ---
 
@@ -296,7 +226,7 @@ Create `.claude/settings.local.json`:
 {
   "hooks": {
     "PreToolUse": {
-      "_disabled": ["npx tsx .claude/scripts/pre-tool-use.ts"]
+      "_disabled": ["node .claude/scripts/pre-tool-use.js"]
     }
   }
 }
@@ -418,41 +348,17 @@ tail -f .claude/logs/hooks/*.log
 Each hook outputs JSON. Test manually from your project root:
 
 ```bash
-# Test session-start (uses local script)
-npx tsx .claude/scripts/session-start.ts
+# Test session-start
+node .claude/scripts/session-start.js
 
-# Test pre-tool-use (uses package script via symlink)
-npx tsx .claude/scripts/pre-tool-use.ts '{"file_path":"/some/file.ts"}'
+# Test pre-tool-use with sample input
+node .claude/scripts/pre-tool-use.js '{"file_path":"/some/file.ts"}'
 
-# Test user-prompt-submit (uses package script via symlink)
-npx tsx .claude/scripts/user-prompt-submit.ts "Write a function"
-```
+# Test user-prompt-submit with sample input
+node .claude/scripts/user-prompt-submit.js "Write a function"
 
----
-
-## Repair Broken Installation
-
-### Quick fix
-
-```bash
-npx claude-ketchup repair
-```
-
-### Diagnose issues
-
-```bash
-npx claude-ketchup doctor
-```
-
-### Manual repair
-
-```bash
-# Remove and reinstall
-rm -rf .claude/scripts .claude/skills .claude/commands
-npm install
-
-# Or force specific project root
-KETCHUP_ROOT=/path/to/project npx tsx node_modules/claude-ketchup/bin/postinstall.ts
+# Test stop hook
+node .claude/scripts/stop.js
 ```
 
 ---
@@ -462,8 +368,8 @@ KETCHUP_ROOT=/path/to/project npx tsx node_modules/claude-ketchup/bin/postinstal
 ### Create the script
 
 ```bash
-cat > .claude/scripts/my-hook.ts << 'EOF'
-#!/usr/bin/env npx tsx
+cat > .claude/scripts/my-custom-hook.js << 'EOF'
+#!/usr/bin/env node
 
 const input = JSON.parse(process.argv[2] || '{}');
 
@@ -475,6 +381,8 @@ const result = {
 
 console.log(JSON.stringify(result));
 EOF
+
+chmod +x .claude/scripts/my-custom-hook.js
 ```
 
 ### Register in settings
@@ -490,7 +398,7 @@ Add to `.claude/settings.project.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "npx tsx .claude/scripts/my-hook.ts"
+            "command": "node .claude/scripts/my-custom-hook.js"
           }
         ]
       }
@@ -525,125 +433,4 @@ Add to `.claude/settings.project.json`:
 { "decision": "STOP", "reason": "All tasks complete" }
 ```
 
----
 
-## Use Reminders with State Conditions
-
-### Define state in state.json
-
-```bash
-cat > .claude/state.json << 'EOF'
-{
-  "projectType": "typescript",
-  "framework": "express",
-  "testFramework": "vitest"
-}
-EOF
-```
-
-### Create conditional reminders
-
-**TypeScript-only reminder:**
-
-```markdown
----
-when:
-  hook: SessionStart
-  projectType: typescript
-priority: 50
----
-
-# TypeScript Guidelines
-
-Use strict mode...
-```
-
-**Express-specific reminder:**
-
-```markdown
----
-when:
-  hook: SessionStart
-  framework: express
-priority: 40
----
-
-# Express Guidelines
-
-Use middleware...
-```
-
-### Multiple conditions
-
-All conditions must match (AND logic):
-
-```yaml
-when:
-  hook: SessionStart
-  projectType: typescript
-  testFramework: vitest
-```
-
----
-
-## Clean Up Old Logs
-
-### Using the CLI command
-
-```bash
-# Keep only the 100 most recent logs
-npx claude-ketchup clean-logs --older-than=100
-
-# Keep only the 50 most recent logs
-npx claude-ketchup clean-logs --older-than=50
-
-# Clean all logs (keep none)
-npx claude-ketchup clean-logs --older-than=0
-```
-
-### Programmatic cleanup
-
-```typescript
-import { cleanLogs } from 'claude-ketchup/clean-logs';
-
-// Remove logs older than 120 minutes
-const result = cleanLogs('/project/.claude/logs/hooks', 120);
-console.log(`Deleted ${result.deleted.length} old logs`);
-```
-
----
-
-## Integrate with CI/CD
-
-### Verify installation in CI
-
-```yaml
-# .github/workflows/ci.yml
-jobs:
-  build:
-    steps:
-      - uses: actions/checkout@v4
-      - run: npm install
-      - run: npx claude-ketchup doctor
-```
-
-### Skip hooks in CI
-
-Set environment variable:
-
-```yaml
-env:
-  KETCHUP_SKIP_POSTINSTALL: true
-```
-
-Or create empty `.claude/settings.local.json`:
-
-```json
-{
-  "hooks": {
-    "SessionStart": { "_mode": "replace", "_value": [] },
-    "PreToolUse": { "_mode": "replace", "_value": [] },
-    "UserPromptSubmit": { "_mode": "replace", "_value": [] }
-  }
-}
-```
