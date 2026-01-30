@@ -17,7 +17,7 @@ hero:
       link: /ketchup-technique
     - theme: alt
       text: View on GitHub
-      link: https://github.com/BeOnAuto/claude-ketchup
+      link: https://github.com/xolvio/claude-ketchup
 
 features:
   - icon:
@@ -87,35 +87,23 @@ The bottleneck becomes defining requirements, not executing them.
 
 ## Three Steps
 
-### 1. Define
+### 1. Install
 
-::: code-group
-
-```bash [npm]
-npm install -D claude-ketchup
+```bash
+npx claude-ketchup install
 ```
 
-```bash [yarn]
-yarn add -D claude-ketchup
-```
+That's it! This single command sets up everything you need.
 
-```bash [pnpm]
-pnpm add -D claude-ketchup --allow-build=claude-ketchup
-```
-
-```bash [bun]
-bun add -D claude-ketchup --trust claude-ketchup
-```
-
-:::
+### 2. Define
 
 Feed your PRD, Architecture.md, or requirements. Ketchup auto-generates the plan with Bottles, Bursts, and Dependencies. Review and approve.
 
-### 2. Release
+### 3. Release
 
 Start execution and walk away. The Supervisor validates every commit. Auto-continue keeps it going until done.
 
-### 3. Multiply
+### 4. Multiply
 
 Open another git worktree. Start another Ketchup instance. Three features. Five features. All in parallel.
 
