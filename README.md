@@ -136,13 +136,17 @@ The on.auto team ships 5-10 features per week. Not 1-2.
 
 ## Documentation
 
-| Guide                                            | Description                |
-| ------------------------------------------------ | -------------------------- |
-| [Become Bionic](./docs/getting-started.md)       | 5-minute transformation    |
-| [The Quality Stack](./docs/ketchup-technique.md) | Why you can walk away      |
-| [Hooks Guide](./docs/hooks-guide.md)             | Configure your supervision |
-| [API Reference](./docs/api-reference.md)         | Programmatic access        |
-| [Architecture](./docs/architecture.md)           | System design internals    |
+| Guide                                            | Description                     |
+| ------------------------------------------------ | ------------------------------- |
+| [Getting Started](./docs/getting-started.md)     | 5-minute transformation         |
+| [Installation](./docs/installation.md)           | Detailed installation guide     |
+| [The Quality Stack](./docs/ketchup-technique.md) | Why you can walk away           |
+| [Configuration](./docs/configuration.md)         | All configuration options       |
+| [Hooks Guide](./docs/hooks-guide.md)             | Configure your supervision      |
+| [Reminders Guide](./docs/reminders-guide.md)     | Context injection system        |
+| [Validators Guide](./docs/validators-guide.md)   | Commit validation rules         |
+| [API Reference](./docs/api-reference.md)         | Programmatic access             |
+| [Architecture](./docs/architecture.md)           | System design internals         |
 
 ---
 
