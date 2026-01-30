@@ -21,36 +21,16 @@ Install the Quality Stack in 5 minutes.
 
 ## Step 1: Install the Quality Stack
 
-::: code-group
-
-```bash [npm]
-npm install -D claude-ketchup
+```bash
+npx claude-ketchup install
 ```
 
-```bash [yarn]
-yarn add -D claude-ketchup
-```
-
-```bash [pnpm]
-# --allow-build permits the postinstall script to set up .claude/
-pnpm add -D claude-ketchup --allow-build=claude-ketchup
-```
-
-```bash [bun]
-# --trust permits the postinstall script to set up .claude/
-bun add -D claude-ketchup --trust claude-ketchup
-```
-
-:::
-
-::: tip pnpm & Bun Security
-Both pnpm v10+ and Bun block lifecycle scripts by default for security. The flags above (`--allow-build` for pnpm, `--trust` for bun) allow claude-ketchup's postinstall script to run, which sets up the `.claude` directory with hooks and skills.
-:::
+This single command sets up everything you need - no package installation or configuration required.
 
 Behind the scenes, claude-ketchup:
 
 - Injects hooks that validate every commit
-- Creates skills that inject your guidelines
+- Creates reminders that inject your guidelines
 - Sets up the supervisor that ACKs or NACKs changes
 - Merges settings with smart overrides
 
@@ -59,7 +39,7 @@ Behind the scenes, claude-ketchup:
 ## Step 2: Verify Your Transformation
 
 ```bash
-claude-ketchup doctor
+npx claude-ketchup doctor
 ```
 
 All green? The Quality Stack is active. You can now walk away.
@@ -77,13 +57,12 @@ You should see:
 ```
 .claude/
 ├── scripts/           # Hook scripts (symlinked)
-├── skills/            # Skill files (symlinked)
 ├── commands/          # Command definitions (symlinked)
 ├── settings.json      # Merged Claude configuration
 └── .gitignore         # Ignores symlinks and runtime files
 
 .ketchup/
-├── reminders/         # Prompt reminders (symlinked)
+├── reminders/         # Context reminders (symlinked)
 └── validators/        # Commit validators (symlinked)
 ```
 
@@ -91,12 +70,13 @@ You should see:
 
 ## Step 4: Feed the System
 
-Create your first skill to inject YOUR rules into every session:
+Create your first reminder to inject YOUR rules into every session:
 
 ```bash
-cat > .claude/skills/my-project.md << 'EOF'
+cat > .ketchup/reminders/my-project.md << 'EOF'
 ---
-hook: SessionStart
+when:
+  hook: SessionStart
 priority: 50
 ---
 
@@ -188,7 +168,7 @@ You installed the Quality Stack:
 | ----------------- | ----------------------------- | ----------------------- |
 | Auto-Planner      | AI plans before coding        | ketchup-plan.md support |
 | Supervisor AI     | ACK/NACK every commit         | PreToolUse hooks        |
-| Context Injection | Your rules, every session     | SessionStart skills     |
+| Context Injection | Your rules, every session     | SessionStart reminders  |
 | File Protection   | Deny-list for sensitive files | PreToolUse deny-list    |
 | Auto-Continue     | AI works until plan complete  | Stop hooks              |
 
@@ -265,7 +245,7 @@ node --version
 Run repair:
 
 ```bash
-claude-ketchup repair
+npx claude-ketchup repair
 ```
 
 ### Hooks not firing
