@@ -10,7 +10,7 @@ Ketchup uses a layered configuration system with multiple files:
 
 | File | Purpose | Committed? | Auto-Created? |
 |------|---------|------------|---------------|
-| `.claude.hooks.json` | Runtime hook state | No | Yes |
+| `.claude.hooks.json` | Primary runtime hook state | No | Yes |
 | `.claude/settings.json` | Merged hook configuration | No | Yes |
 | `.claude/settings.project.json` | Project-level overrides | Yes | No |
 | `.claude/settings.local.json` | Local/personal overrides | No | No |
@@ -19,6 +19,8 @@ Ketchup uses a layered configuration system with multiple files:
 | `.claude/deny-list.local.txt` | Local file protection | No | No |
 | `.claude/state.json` | Project state for conditionals | No | No |
 | `.ketchuprc.json` (or variants) | Cosmiconfig options | Yes | No |
+| `.ketchup/reminders/*.md` | Context injection reminders | Yes/No | Yes (symlinked) |
+| `.ketchup/validators/*.md` | Commit validation rules | Yes/No | Yes (symlinked) |
 
 ---
 
@@ -405,17 +407,17 @@ Optional file for conditional skill/reminder loading.
 }
 ```
 
-### Usage in Skills
+### Usage in Reminders
 
-Skills can conditionally load based on state:
+Reminders can conditionally load based on state:
 
 ```yaml
 ---
-hook: SessionStart
-priority: 50
 when:
+  hook: SessionStart
   projectType: typescript
   framework: express
+priority: 50
 ---
 
 # Express TypeScript Guidelines
@@ -427,39 +429,9 @@ All conditions must match (AND logic).
 
 ---
 
-## Skill Frontmatter
-
-Skills are Markdown files with YAML frontmatter.
-
-### Location
-
-- Package skills: `node_modules/claude-ketchup/skills/` (symlinked)
-- Custom skills: `.claude/skills/`
-
-### Frontmatter Schema
-
-```yaml
----
-hook: SessionStart          # Required: When to trigger
-priority: 50                # Optional: Order (higher = earlier, default: 0)
-mode: code                  # Optional: 'plan' or 'code'
-when:                       # Optional: Conditional activation
-  projectType: typescript
----
-```
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `hook` | `string` | Required | `SessionStart` or `UserPromptSubmit` |
-| `priority` | `number` | `0` | Execution order (higher first) |
-| `mode` | `string` | - | Filter by mode: `plan` or `code` |
-| `when` | `object` | - | State conditions (all must match) |
-
----
-
 ## Reminder Frontmatter
 
-Reminders are Markdown files with YAML frontmatter.
+Reminders are Markdown files with YAML frontmatter that inject context into Claude sessions.
 
 ### Location
 
@@ -476,6 +448,12 @@ when:
 priority: 100              # Optional: Order (higher = earlier)
 ---
 ```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `when.hook` | `string` | Required | `SessionStart` or `UserPromptSubmit` |
+| `when.mode` | `string` | - | Filter by mode: `plan` or `code` |
+| `priority` | `number` | `0` | Execution order (higher first) |
 
 ---
 
