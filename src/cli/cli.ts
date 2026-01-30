@@ -13,6 +13,9 @@ export function createCli(): Command {
     .action(async () => {
       const result = await install();
       console.log(`Installed claude-ketchup into ${result.projectRoot}`);
+      if (result.addedDependency) {
+        console.log('Added claude-ketchup to devDependencies');
+      }
       console.log(`Symlinked ${result.symlinkedFiles.length} files:`);
       for (const file of result.symlinkedFiles) {
         console.log(`  ${file}`);

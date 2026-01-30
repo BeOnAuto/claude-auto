@@ -25,7 +25,12 @@ describe('cli install', () => {
     fs.writeFileSync(path.join(packageDir, 'validators', 'no-comments.md'), '# no comments');
     fs.writeFileSync(path.join(packageDir, 'reminders', 'reminder-test.md'), '# reminder');
 
-    fs.writeFileSync(path.join(tempDir, 'package.json'), '{}');
+    // Pre-add claude-ketchup to devDependencies so install() skips npm install
+    // and uses our mock packageDir instead
+    fs.writeFileSync(
+      path.join(tempDir, 'package.json'),
+      JSON.stringify({ devDependencies: { 'claude-ketchup': '^0.7.0' } }),
+    );
 
     process.env = { ...originalEnv, KETCHUP_ROOT: tempDir };
   });

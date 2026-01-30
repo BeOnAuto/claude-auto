@@ -42,23 +42,32 @@ jobs:
           echo "Installing claude-ketchup@${{ steps.version.outputs.version }}..."
           npx claude-ketchup@${{ steps.version.outputs.version }} install
 
-      - name: Run status command
+      - name: Verify package in devDependencies
+        working-directory: test-project
+        run: |
+          echo "=== package.json ==="
+          cat package.json
+          echo ""
+          echo "Checking devDependencies..."
+          node -e "const pkg = require('./package.json'); if (!pkg.devDependencies?.['claude-ketchup']) { console.error('claude-ketchup not in devDependencies'); process.exit(1); } console.log('Found claude-ketchup@' + pkg.devDependencies['claude-ketchup']);"
+
+      - name: Run status command (using local install)
         working-directory: test-project
         run: |
           echo "Running status command..."
-          npx claude-ketchup@${{ steps.version.outputs.version }} status
+          npx claude-ketchup status
 
-      - name: Run doctor command
+      - name: Run doctor command (using local install)
         working-directory: test-project
         run: |
           echo "Running doctor command..."
-          npx claude-ketchup@${{ steps.version.outputs.version }} doctor
+          npx claude-ketchup doctor
 
-      - name: Run reminders command
+      - name: Run reminders command (using local install)
         working-directory: test-project
         run: |
           echo "Running reminders command..."
-          npx claude-ketchup@${{ steps.version.outputs.version }} reminders
+          npx claude-ketchup reminders
 
       - name: Verify installation structure
         working-directory: test-project
@@ -75,14 +84,14 @@ jobs:
           echo "=== Symlink verification ==="
           find . -type l -exec ls -la {} \; 2>/dev/null || echo "No symlinks found"
 
-      - name: Test repair command
+      - name: Test repair command (using local install)
         working-directory: test-project
         run: |
           echo "Running repair command..."
-          npx claude-ketchup@${{ steps.version.outputs.version }} repair
+          npx claude-ketchup repair
 
-      - name: Final doctor check
+      - name: Final doctor check (using local install)
         working-directory: test-project
         run: |
           echo "Final doctor check after repair..."
-          npx claude-ketchup@${{ steps.version.outputs.version }} doctor
+          npx claude-ketchup doctor
