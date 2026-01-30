@@ -1,5 +1,15 @@
 # @xolvio/claude-ketchup
 
+## 0.6.0
+
+### Minor Changes
+
+- 18bd66d: - Completed comprehensive documentation overhaul with new installation guide, reminders guide, validators guide, and improved organization
+  - Updated all documentation to use `npx claude-ketchup install` as primary installation method
+  - Removed duplicate content across documentation files and established single source of truth for each topic
+  - Fixed broken links, inconsistent terminology, and improved narrative flow throughout all guides
+  - Added VitePress documentation site with automated deployment to GitHub Pages
+
 ## 0.5.0
 
 ### Minor Changes
