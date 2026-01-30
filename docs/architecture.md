@@ -67,8 +67,7 @@ claude-ketchup follows several key principles:
 ├─────────────────────────────────────────────────────────────┤
 │  .claude/                                                    │
 │  ├── scripts/ ──────────────┐                               │
-│  ├── skills/ ───────────────┼──► Symlinks to package        │
-│  ├── commands/ ─────────────┘                               │
+│  ├── commands/ ─────────────┴──► Symlinks to package        │
 │  ├── settings.json ────────────► Merged configuration       │
 │  ├── settings.project.json ────► Project overrides          │
 │  ├── settings.local.json ──────► Local overrides            │
@@ -79,6 +78,10 @@ claude-ketchup follows several key principles:
 │      ├── ketchup/debug.log ────► Debug output               │
 │      └── hooks/*.log ──────────► Session logs               │
 │                                                              │
+│  .ketchup/                                                   │
+│  ├── reminders/ ───────────────► Context injection files    │
+│  └── validators/ ──────────────► Commit validation rules    │
+│                                                              │
 │  .claude.hooks.json ───────────► Hook behavior state        │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
@@ -88,7 +91,8 @@ claude-ketchup follows several key principles:
 │           node_modules/claude-ketchup/                       │
 ├─────────────────────────────────────────────────────────────┤
 │  scripts/                   Source hook scripts              │
-│  skills/                    Default skills                   │
+│  reminders/                 Default reminders                │
+│  validators/                Default validators               │
 │  commands/                  Command definitions              │
 │  templates/settings.json    Default settings                 │
 │  src/                       Core library code                │
@@ -168,8 +172,8 @@ Claude Code Session Starts
                ▼
 ┌─────────────────────────────┐
 │  handleSessionStart()       │
-│  ├─► scanSkills()           │
-│  ├─► parseSkill() each      │
+│  ├─► scanReminders()        │
+│  ├─► parseReminder() each   │
 │  ├─► filterByHook()         │
 │  ├─► sortByPriority()       │
 │  └─► Concatenate content    │
@@ -177,7 +181,7 @@ Claude Code Session Starts
                │
                ▼
 ┌─────────────────────────────┐
-│  { result: "skill content"} │
+│  { result: "reminder content"} │
 │  Injected into session      │
 └─────────────────────────────┘
 ```
@@ -236,14 +240,14 @@ User Submits Prompt
 ┌─────────────────────────────┐
 │  handleUserPromptSubmit()   │
 │  ├─► Load UserPromptSubmit  │
-│  │   skills                 │
+│  │   reminders              │
 │  └─► Append <system-reminder>│
 └──────────────┬──────────────┘
                │
                ▼
 ┌─────────────────────────────┐
 │  "prompt + <system-reminder>│
-│   skill content             │
+│   reminder content          │
 │   </system-reminder>"       │
 └─────────────────────────────┘
 ```
@@ -443,7 +447,8 @@ claude-ketchup/
 │   ├── settings-merger.ts  Settings merge logic
 │   ├── state-manager.ts    Simple state read/write
 │   ├── hook-state.ts       Hook state management (internal)
-│   ├── skills-loader.ts    Skill parsing and filtering
+│   ├── reminder-loader.ts  Reminder parsing and filtering
+│   ├── validator-loader.ts Validator parsing and loading
 │   ├── deny-list.ts        Deny pattern loading/matching
 │   ├── logger.ts           Session logging (internal)
 │   ├── debug-logger.ts     Debug output (internal)
@@ -473,8 +478,11 @@ claude-ketchup/
 │   ├── user-prompt-submit.ts
 │   └── test-hooks.sh
 │
-├── skills/                  Symlink targets (copied to .claude/skills/)
-│   └── ketchup.enforced.md
+├── reminders/               Symlink targets (copied to .ketchup/reminders/)
+│   └── *.md                 Context injection reminders
+│
+├── validators/              Symlink targets (copied to .ketchup/validators/)
+│   └── *.md                 Commit validation rules
 │
 ├── commands/                Symlink targets (copied to .claude/commands/)
 │   └── ketchup.md
@@ -486,31 +494,33 @@ claude-ketchup/
 ### Project .claude/ Structure (After Install)
 
 ```
-your-project/.claude/
-├── scripts/
-│   ├── pre-tool-use.ts       → symlink to package
-│   ├── user-prompt-submit.ts → symlink to package
-│   ├── session-start.ts      Local (customizable)
-│   ├── auto-continue.ts      Local (customizable)
-│   ├── validate-commit.ts    Local (customizable)
-│   ├── deny-list.ts          Local (customizable)
-│   ├── prompt-reminder.ts    Local (customizable)
-│   └── clean-logs.ts         Local (customizable)
-├── skills/
-│   ├── ketchup.enforced.md   → symlink to package
-│   └── *.md                  Your custom skills
-├── commands/
-│   ├── ketchup.md            → symlink to package
-│   └── *.md                  Your custom commands
-├── logs/
-│   ├── hooks/                Session logs
-│   └── ketchup/              Debug logs
-├── settings.json             Merged (generated)
-├── settings.project.json     Project overrides (optional)
-├── settings.local.json       Local overrides (optional)
-├── deny-list.project.txt     Project deny patterns
-├── deny-list.local.txt       Local deny patterns
-└── .gitignore                Generated
+your-project/
+├── .claude/
+│   ├── scripts/
+│   │   ├── pre-tool-use.ts       → symlink to package
+│   │   ├── user-prompt-submit.ts → symlink to package
+│   │   ├── session-start.ts      → symlink to package
+│   │   └── auto-continue.ts      → symlink to package
+│   ├── commands/
+│   │   ├── ketchup.md            → symlink to package
+│   │   └── *.md                  Your custom commands
+│   ├── logs/
+│   │   ├── hooks/                Session logs
+│   │   └── ketchup/              Debug logs
+│   ├── settings.json             Merged (generated)
+│   ├── settings.project.json     Project overrides (optional)
+│   ├── settings.local.json       Local overrides (optional)
+│   ├── deny-list.project.txt     Project deny patterns
+│   ├── deny-list.local.txt       Local deny patterns
+│   └── .gitignore                Generated
+│
+├── .ketchup/
+│   ├── reminders/
+│   │   └── *.md                  → symlinks to package + custom
+│   └── validators/
+│       └── *.md                  → symlinks to package + custom
+│
+└── .claude.hooks.json            Hook behavior state
 ```
 
 ---
@@ -581,7 +591,8 @@ Hooks that fail return safe defaults:
 ```
 Unit Tests (vitest)
 ├── Core utilities (linker, root-finder, etc.)
-├── Skills loader (parse, filter, sort)
+├── Reminder loader (parse, filter, sort)
+├── Validator loader (parse, validate)
 ├── Deny-list (load patterns, match files)
 ├── Settings merger (merge, override modes)
 ├── Hook state (read, write, update)
@@ -593,7 +604,8 @@ E2E Tests (scripts/test-hooks.sh)
 ├── Symlink creation/verification
 ├── Settings merge with all override modes
 ├── Deny-list blocking
-├── Skill injection
+├── Reminder injection
+├── Validator execution
 ├── Subagent classification pipeline
 └── Hook state persistence
 ```
@@ -620,7 +632,8 @@ if (lockData.hash === currentHash) {
 
 ### Minimal File I/O
 
-- Skills are scanned once per hook execution
+- Reminders are scanned once per hook execution
+- Validators are loaded once per validation
 - Deny patterns are loaded once per check
 - State is read/written only when needed
 
