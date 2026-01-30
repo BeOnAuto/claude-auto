@@ -285,10 +285,71 @@ After installation:
 
 ---
 
+## Diagnostic Commands
+
+### Doctor Command
+
+The `doctor` command runs a comprehensive health check on your installation:
+
+```bash
+npx claude-ketchup doctor
+```
+
+**What it checks:**
+- `.claude/` directory structure exists
+- All required symlinks are valid
+- Hook scripts are accessible and executable
+- Configuration files are properly formatted
+- Reminders and validators are correctly linked
+- No conflicting installations
+
+**Output example:**
+```
+✅ .claude directory exists
+✅ Hook scripts are properly linked
+✅ Reminders directory is configured
+✅ Validators are accessible
+✅ Configuration is valid
+✅ Installation is healthy
+```
+
+### Repair Command
+
+The `repair` command fixes common installation issues:
+
+```bash
+npx claude-ketchup repair
+```
+
+**What it fixes:**
+- Recreates missing directories
+- Rebuilds broken symlinks
+- Restores default hook scripts
+- Fixes file permissions on Unix systems
+- Regenerates configuration if corrupted
+
+**When to use:**
+- After moving your project to a different location
+- When symlinks are broken (common on Windows)
+- After accidentally deleting `.claude/` files
+- When hooks stop working unexpectedly
+
+**Options:**
+```bash
+# Force repair (overwrites existing files)
+npx claude-ketchup repair --force
+
+# Repair with verbose output
+npx claude-ketchup repair --verbose
+```
+
+---
+
 ## Support
 
-If you encounter issues:
+If diagnostic commands don't resolve your issue:
 
-1. Run `npx claude-ketchup doctor` for diagnostics
-2. Check `.claude/logs/` for error messages
-3. Report issues at [GitHub Issues](https://github.com/xolvio/claude-ketchup/issues)
+1. Run `npx claude-ketchup doctor` first for diagnostics
+2. Try `npx claude-ketchup repair` to fix common issues
+3. Check `.claude/logs/` for detailed error messages
+4. Report persistent issues at [GitHub Issues](https://github.com/xolvio/claude-ketchup/issues)

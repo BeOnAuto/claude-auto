@@ -131,6 +131,7 @@ The on.auto team ships 5-10 features per week. Not 1-2.
 | `claude-ketchup doctor`   | Diagnose installation health                        |
 | `claude-ketchup repair`   | Recreate broken or missing symlinks                 |
 | `claude-ketchup reminders`| List active reminders with metadata                 |
+| `claude-ketchup clean-logs`| Remove old log files (use `--older-than=N` to keep N recent logs) |
 
 ---
 

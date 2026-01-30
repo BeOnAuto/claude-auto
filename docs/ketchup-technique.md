@@ -171,7 +171,7 @@ Uncovered code = code nobody asked for = deleted by next revert.
 
 Sub-agents follow identical rules to the parent. When spawning a Task agent:
 
-1. **Include CLAUDE.md context** - Sub-agents must receive and follow these rules
+1. **Include ketchup context** - Sub-agents receive the same reminders and rules automatically
 2. **Include ketchup-plan.md** - Sub-agents work from the same plan
 3. **No orphan work** - Sub-agent output must be committed by parent or sub-agent
 

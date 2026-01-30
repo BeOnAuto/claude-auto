@@ -16,8 +16,11 @@ export default defineConfig({
         text: 'Documentation',
         items: [
           { text: 'Getting Started', link: '/getting-started' },
+          { text: 'Installation', link: '/installation' },
           { text: 'Configuration', link: '/configuration' },
           { text: 'Hooks Guide', link: '/hooks-guide' },
+          { text: 'Reminders Guide', link: '/reminders-guide' },
+          { text: 'Validators Guide', link: '/validators-guide' },
           { text: 'API Reference', link: '/api-reference' },
           { text: 'Architecture', link: '/architecture' },
         ],
@@ -36,6 +39,7 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/' },
           { text: 'Getting Started', link: '/getting-started' },
+          { text: 'Installation', link: '/installation' },
         ],
       },
       {
@@ -47,7 +51,11 @@ export default defineConfig({
       },
       {
         text: 'Guides',
-        items: [{ text: 'Hooks Guide', link: '/hooks-guide' }],
+        items: [
+          { text: 'Hooks', link: '/hooks-guide' },
+          { text: 'Reminders', link: '/reminders-guide' },
+          { text: 'Validators', link: '/validators-guide' },
+        ],
       },
       {
         text: 'Reference',

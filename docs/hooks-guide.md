@@ -17,6 +17,108 @@ For a complete reference of all configuration files and options, see the [Config
 
 ---
 
+## Understanding Each Hook
+
+### SessionStart Hook
+
+**Purpose:** Inject initial context when Claude begins a new session.
+
+**When it fires:** Once at the beginning of each Claude session.
+
+**What it does:**
+- Loads all reminders configured for SessionStart
+- Injects project-specific guidelines and rules
+- Sets up the working context for the entire session
+
+**Default behavior:**
+- Loads reminders from `.ketchup/reminders/` with `when.hook: SessionStart`
+- Prioritizes reminders based on their priority value (higher = earlier)
+- Filters reminders based on state conditions if specified
+
+**Example use cases:**
+- Inject TDD/TCR methodology rules
+- Set project-specific coding standards
+- Define architectural patterns to follow
+- Establish testing requirements
+
+**Script location:** `.claude/scripts/session-start.js`
+
+### PreToolUse Hook
+
+**Purpose:** Control what tools Claude can use and how.
+
+**When it fires:** Before Claude executes any tool (Edit, Write, Bash, etc.).
+
+**What it does:**
+- Validates tool usage against project rules
+- Can block dangerous operations
+- Enforces file protection via deny-lists
+- Runs validators on commit attempts
+
+**Default behavior:**
+- Checks deny-list patterns for Edit/Write operations
+- Runs commit validators when Claude attempts `git commit`
+- Returns ACK (allow) or NACK (block) decisions
+
+**Example use cases:**
+- Prevent modifications to sensitive files (.env, credentials)
+- Block destructive git operations (force push, hard reset)
+- Validate commit messages and content
+- Enforce test-driven development
+
+**Script location:** `.claude/scripts/pre-tool-use.js`
+
+### UserPromptSubmit Hook
+
+**Purpose:** Modify or enhance user prompts before Claude processes them.
+
+**When it fires:** Every time the user sends a prompt to Claude.
+
+**What it does:**
+- Injects context-aware reminders
+- Adds project-specific instructions
+- Can modify the prompt based on current state
+
+**Default behavior:**
+- Loads reminders with `when.hook: UserPromptSubmit`
+- Filters based on current mode (plan/code)
+- Appends reminders to user prompt
+
+**Example use cases:**
+- Remind Claude of ongoing work patterns
+- Inject task-specific guidelines
+- Add warnings about common pitfalls
+- Include relevant documentation snippets
+
+**Script location:** `.claude/scripts/user-prompt-submit.js`
+
+### Stop Hook
+
+**Purpose:** Decide whether Claude should continue or stop after pausing.
+
+**When it fires:** When Claude's execution pauses (typically after completing a response).
+
+**What it does:**
+- Analyzes the current transcript
+- Determines if more work is needed
+- Can trigger auto-continue behavior
+
+**Default behavior:**
+- Checks auto-continue configuration in `.claude.hooks.json`
+- In "smart" mode: analyzes transcript for continuation signals
+- In "non-stop" mode: always continues until max iterations
+- In "off" mode: never auto-continues
+
+**Example use cases:**
+- Keep Claude working until all tests pass
+- Continue until a feature is complete
+- Stop when hitting error limits
+- Pause for user review at milestones
+
+**Script location:** `.claude/scripts/stop.js`
+
+---
+
 ## Create a Custom Reminder
 
 Reminders inject context into Claude sessions based on hook triggers.
@@ -84,75 +186,6 @@ priority: 50
 ```
 
 This reminder only loads when `state.json` contains `projectType: 'typescript'`.
-
----
-
-## Create Validators
-
-Validators enforce commit quality by checking commits against project rules.
-
-### Step 1: Create a validator file
-
-```bash
-cat > .ketchup/validators/my-validator.md << 'EOF'
----
-name: no-console-logs
-description: Prevents console.log in production code
-enabled: true
----
-
-# No Console Logs
-
-Check that commits don't add console.log statements.
-
-## Rules:
-- No new console.log() in JavaScript/TypeScript files
-- Exception: Test files (*.test.*, *.spec.*)
-
-NACK if console.log found in non-test files.
-EOF
-```
-
-### Step 2: Configure validator frontmatter
-
-#### Complete Validator Frontmatter Schema
-
-```yaml
----
-name: unique-identifier    # Required: Unique validator name
-description: Brief summary  # Required: What this validates
-enabled: true              # Optional: Active state
----
-```
-
-#### Field Reference
-
-| Field | Type | Required | Default | Description |
-|-------|------|----------|---------|-------------|
-| `name` | `string` | Yes | - | Unique identifier for the validator |
-| `description` | `string` | Yes | - | Brief explanation of validation rules |
-| `enabled` | `boolean` | No | `true` | Whether the validator is active |
-
-### Step 3: Control validation modes
-
-Configure in `.claude.hooks.json`:
-
-```json
-{
-  "validateCommit": {
-    "mode": "strict",
-    "disabled": ["validator-name-to-skip"]
-  }
-}
-```
-
-#### Validation Modes
-
-| Mode | Behavior | Use When |
-|------|----------|----------|
-| `strict` | Blocks commits that violate rules (NACK) | Production projects |
-| `warn` | Warns but allows commits | Learning/migration phase |
-| `off` | No validation | Quick experiments |
 
 ---
 
@@ -338,7 +371,7 @@ EOF
 
 | Mode | Behavior |
 |------|----------|
-| `strict` | Blocks commits that violate CLAUDE.md |
+| `strict` | Blocks commits that violate project rules |
 | `warn` | Warns but allows commits |
 | `off` | No commit validation |
 
@@ -555,15 +588,17 @@ when:
 
 ## Clean Up Old Logs
 
-### Manual cleanup
+### Using the CLI command
 
 ```bash
-# Remove logs older than 60 minutes
-npx tsx -e "
-const { cleanLogs } = require('claude-ketchup');
-const result = cleanLogs('.claude/logs/hooks', 60);
-console.log('Deleted:', result.deleted.length, 'Kept:', result.kept);
-"
+# Keep only the 100 most recent logs
+npx claude-ketchup clean-logs --older-than=100
+
+# Keep only the 50 most recent logs
+npx claude-ketchup clean-logs --older-than=50
+
+# Clean all logs (keep none)
+npx claude-ketchup clean-logs --older-than=0
 ```
 
 ### Programmatic cleanup
@@ -571,6 +606,7 @@ console.log('Deleted:', result.deleted.length, 'Kept:', result.kept);
 ```typescript
 import { cleanLogs } from 'claude-ketchup/clean-logs';
 
+// Remove logs older than 120 minutes
 const result = cleanLogs('/project/.claude/logs/hooks', 120);
 console.log(`Deleted ${result.deleted.length} old logs`);
 ```
