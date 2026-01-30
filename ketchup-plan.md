@@ -2,15 +2,6 @@
 
 ## TODO
 
-### Bottle: File Structure Updates
-
-- [ ] Burst 13: Update architecture.md directory structure diagrams [depends: 10, 11, 12]
-
-### Bottle: Terminology Migration (Skills to Reminders)
-
-- [ ] Burst 17: Replace "skills" with "reminders" in ketchup-technique.md [depends: none]
-- [ ] Burst 18: Update API reference function names from skills to reminders [depends: none]
-
 ### Bottle: Configuration System Updates
 - [ ] Burst 20: Add cosmiconfig (.ketchuprc.json) documentation to configuration.md [depends: none]
 - [ ] Burst 21: Update settings merge strategy documentation [depends: none]
@@ -63,3 +54,7 @@
 - [x] Burst 16: Replace "skills" with "reminders" in configuration.md (29c183e)
 - [x] Burst 19: Document .claude.hooks.json as primary hook state file in configuration.md (29c183e)
 - [x] Burst 23: Update hooks-guide.md to use npx tsx instead of node for scripts (4b6aa95)
+- [x] Burst 13: Update architecture.md directory structure diagrams (c9c6e4d)
+- [x] Burst 17: Replace "skills" with "reminders" in ketchup-technique.md (add7400)
+- [x] Burst 18: Update API reference function names from skills to reminders (add7400)
+- [x] Burst 27: Create installation.md with detailed npx installation guide (178e348)
