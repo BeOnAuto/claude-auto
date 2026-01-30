@@ -1,0 +1,294 @@
+# Installation Guide
+
+Complete guide for installing and configuring Claude Ketchup in your project.
+
+---
+
+## Quick Install
+
+```bash
+npx claude-ketchup install
+```
+
+That's it! This single command sets up everything you need.
+
+---
+
+## What Gets Installed
+
+When you run `npx claude-ketchup install`, the following happens:
+
+### 1. Directory Creation
+
+Creates these directories in your project:
+
+```
+.claude/
+├── scripts/       # Hook scripts (symlinked from package)
+├── commands/      # Custom Claude commands (symlinked)
+└── logs/          # Session and debug logs
+
+.ketchup/
+├── reminders/     # Context injection reminders (symlinked)
+└── validators/    # Commit validation rules (symlinked)
+```
+
+### 2. Symlink Creation
+
+Creates symlinks to package-provided scripts:
+
+- `.claude/scripts/session-start.ts` → Hook for session initialization
+- `.claude/scripts/user-prompt-submit.ts` → Hook for prompt modification
+- `.claude/scripts/pre-tool-use.ts` → Hook for tool validation
+- `.claude/scripts/auto-continue.ts` → Hook for automatic continuation
+
+### 3. Configuration Files
+
+Generates these configuration files:
+
+- `.claude/settings.json` - Merged hook configuration
+- `.claude/.gitignore` - Auto-generated gitignore for Claude directory
+- `.claude.hooks.json` - Runtime hook state (if not exists)
+
+### 4. Reminders and Validators
+
+Symlinks built-in reminders and validators:
+
+**Reminders:**
+- Documentation reminder
+- Emergent design principles
+- Extreme ownership rules
+- IDE diagnostics checks
+- Ketchup core methodology
+- Parallelization guidelines
+- Sub-agent rules
+- Test specifications
+
+**Validators:**
+- No dangerous git operations
+- TCR workflow compliance
+- Test coverage requirements
+- Commit message standards
+- And more...
+
+---
+
+## Verify Installation
+
+After installation, verify everything is set up correctly:
+
+```bash
+npx claude-ketchup doctor
+```
+
+You should see green checkmarks for all components:
+
+```
+✓ Project root found
+✓ .claude directory exists
+✓ .ketchup directory exists
+✓ All symlinks valid
+✓ Settings merged successfully
+✓ Hook scripts executable
+```
+
+---
+
+## Manual Installation
+
+If you prefer to install manually or need custom control:
+
+### Step 1: Clone the structure
+
+```bash
+# Create directories
+mkdir -p .claude/scripts .claude/commands
+mkdir -p .ketchup/reminders .ketchup/validators
+
+# Create initial configuration
+cat > .claude.hooks.json << 'EOF'
+{
+  "autoContinue": {
+    "mode": "smart",
+    "maxIterations": 0
+  },
+  "validateCommit": {
+    "mode": "strict"
+  }
+}
+EOF
+```
+
+### Step 2: Set up hooks
+
+Create `.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": "npx tsx .claude/scripts/session-start.ts" }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit|Bash",
+        "hooks": [
+          { "type": "command", "command": "npx tsx .claude/scripts/pre-tool-use.ts" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Step 3: Add custom reminders
+
+Create `.ketchup/reminders/my-project.md`:
+
+```markdown
+---
+when:
+  hook: SessionStart
+priority: 100
+---
+
+# My Project Guidelines
+
+Your project-specific rules here...
+```
+
+---
+
+## Troubleshooting
+
+### Command not found
+
+If `npx claude-ketchup` doesn't work:
+
+```bash
+# Install globally
+npm install -g claude-ketchup
+
+# Then run
+claude-ketchup install
+```
+
+### Permission denied
+
+On Unix systems, you might need to fix permissions:
+
+```bash
+chmod +x .claude/scripts/*.ts
+```
+
+### Symlinks not created
+
+If symlinks fail (common on Windows without admin rights):
+
+```bash
+# Run repair command
+npx claude-ketchup repair
+
+# Or manually copy files instead of symlinking
+cp -r node_modules/claude-ketchup/scripts/* .claude/scripts/
+```
+
+### Hooks not firing
+
+Verify Claude Code can find your settings:
+
+1. Check `.claude/settings.json` exists
+2. Ensure you're in the project root when starting Claude
+3. Check logs in `.claude/logs/` for errors
+
+---
+
+## Uninstall
+
+To remove Claude Ketchup from your project:
+
+```bash
+# Remove directories
+rm -rf .claude .ketchup
+
+# Remove state file
+rm -f .claude.hooks.json
+
+# Remove from package.json if installed
+npm uninstall claude-ketchup
+```
+
+---
+
+## Environment Variables
+
+Control installation behavior with these environment variables:
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `KETCHUP_ROOT` | Force project root path | Auto-detected |
+| `KETCHUP_SKIP_POSTINSTALL` | Skip automatic setup | `false` |
+| `DEBUG` | Enable debug logging | - |
+
+Example:
+
+```bash
+# Install with debug logging
+DEBUG=ketchup* npx claude-ketchup install
+
+# Install in specific directory
+KETCHUP_ROOT=/path/to/project npx claude-ketchup install
+```
+
+---
+
+## CI/CD Integration
+
+### Skip installation in CI
+
+Set environment variable to skip postinstall:
+
+```yaml
+# GitHub Actions
+env:
+  KETCHUP_SKIP_POSTINSTALL: true
+```
+
+### Docker
+
+Add to Dockerfile:
+
+```dockerfile
+# Install without postinstall
+ENV KETCHUP_SKIP_POSTINSTALL=true
+RUN npm install
+
+# Manually run install when needed
+RUN npx claude-ketchup install
+```
+
+---
+
+## Next Steps
+
+After installation:
+
+1. [Configure your hooks](./hooks-guide.md) - Customize supervision rules
+2. [Add reminders](./configuration.md#reminder-frontmatter) - Inject your guidelines
+3. [Set up file protection](./hooks-guide.md#protect-files-with-deny-list) - Protect sensitive files
+4. [Enable auto-continue](./configuration.md#autocontinue) - Keep AI working
+
+---
+
+## Support
+
+If you encounter issues:
+
+1. Run `npx claude-ketchup doctor` for diagnostics
+2. Check `.claude/logs/` for error messages
+3. Report issues at [GitHub Issues](https://github.com/xolvio/claude-ketchup/issues)
