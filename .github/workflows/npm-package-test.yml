@@ -34,31 +34,31 @@ jobs:
         run: |
           VERSION="${{ inputs.version || 'latest' }}"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Testing @xolvio/claude-ketchup@$VERSION"
+          echo "Testing claude-ketchup@$VERSION"
 
       - name: Install claude-ketchup via npx
         working-directory: test-project
         run: |
-          echo "Installing @xolvio/claude-ketchup@${{ steps.version.outputs.version }}..."
-          npx @xolvio/claude-ketchup@${{ steps.version.outputs.version }} install
+          echo "Installing claude-ketchup@${{ steps.version.outputs.version }}..."
+          npx claude-ketchup@${{ steps.version.outputs.version }} install
 
       - name: Run status command
         working-directory: test-project
         run: |
           echo "Running status command..."
-          npx @xolvio/claude-ketchup@${{ steps.version.outputs.version }} status
+          npx claude-ketchup@${{ steps.version.outputs.version }} status
 
       - name: Run doctor command
         working-directory: test-project
         run: |
           echo "Running doctor command..."
-          npx @xolvio/claude-ketchup@${{ steps.version.outputs.version }} doctor
+          npx claude-ketchup@${{ steps.version.outputs.version }} doctor
 
       - name: Run reminders command
         working-directory: test-project
         run: |
           echo "Running reminders command..."
-          npx @xolvio/claude-ketchup@${{ steps.version.outputs.version }} reminders
+          npx claude-ketchup@${{ steps.version.outputs.version }} reminders
 
       - name: Verify installation structure
         working-directory: test-project
@@ -79,10 +79,10 @@ jobs:
         working-directory: test-project
         run: |
           echo "Running repair command..."
-          npx @xolvio/claude-ketchup@${{ steps.version.outputs.version }} repair
+          npx claude-ketchup@${{ steps.version.outputs.version }} repair
 
       - name: Final doctor check
         working-directory: test-project
         run: |
           echo "Final doctor check after repair..."
-          npx @xolvio/claude-ketchup@${{ steps.version.outputs.version }} doctor
+          npx claude-ketchup@${{ steps.version.outputs.version }} doctor
