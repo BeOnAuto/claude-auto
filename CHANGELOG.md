@@ -1,5 +1,19 @@
 # claude-ketchup
 
+## 0.7.0
+
+### Minor Changes
+
+- 6510c34: - Added install command so users can run `claude-ketchup install` to set up hooks directly
+  - Added hook execution logging and diagnostics for debugging and auditing all hook invocations
+  - Replaced the skills system with a new reminders system, including frontmatter-based matching rules
+  - Added auto-continue stop hook, activity logging with KETCHUP_LOG filtering, and session input parsing across all hooks
+  - Set up CI pipeline with automated releases, changeset generation, and GitHub Packages publishing
+
+### Patch Changes
+
+- f24454f: - Fixed pre-push hook failing when there are no new commits to check
+
 ## 0.6.0
 
 ### Minor Changes
