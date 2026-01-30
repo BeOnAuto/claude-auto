@@ -9,17 +9,9 @@
 
 ### Bottle: Hook System Updates
 
-- [ ] Burst 23: Update hooks-guide.md to use npx tsx instead of node for scripts [depends: none]
 - [ ] Burst 24: Document reminder frontmatter schema in hooks-guide.md [depends: 15]
 - [ ] Burst 25: Document validator frontmatter schema in hooks-guide.md [depends: none]
 - [ ] Burst 26: Update hook execution flow in architecture.md [depends: 23]
-
-### Bottle: New Documentation Files
-
-- [ ] Burst 27: Create installation.md with detailed npx installation guide [depends: 1, 3]
-- [ ] Burst 28: Create reminders-guide.md with complete reminders documentation [depends: 14, 15, 16, 17]
-- [ ] Burst 29: Create validators-guide.md with validator system documentation [depends: 12, 25]
-- [ ] Burst 30: Add links to new guides in README.md documentation section [depends: 27, 28, 29]
 
 ### Bottle: Package.json and Build Updates
 
@@ -58,3 +50,6 @@
 - [x] Burst 17: Replace "skills" with "reminders" in ketchup-technique.md (add7400)
 - [x] Burst 18: Update API reference function names from skills to reminders (add7400)
 - [x] Burst 27: Create installation.md with detailed npx installation guide (178e348)
+- [x] Burst 28: Create reminders-guide.md with complete reminders documentation (bed5ce4)
+- [x] Burst 29: Create validators-guide.md with validator system documentation (bed5ce4)
+- [x] Burst 30: Add links to new guides in README.md documentation section (0740d3b)
