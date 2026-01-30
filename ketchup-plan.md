@@ -2,39 +2,16 @@
 
 ## TODO
 
-### Bottle: Critical Installation Updates
-
-- [ ] Burst 1: Update README.md installation commands to use npx claude-ketchup install [depends: none]
-- [ ] Burst 2: Remove GitHub Packages authentication section from README.md [depends: none]
-- [ ] Burst 3: Update getting-started.md installation instructions to use npx approach [depends: none]
-- [ ] Burst 4: Replace all @xolvio/claude-ketchup references with claude-ketchup in README.md [depends: none]
-- [ ] Burst 5: Replace all @xolvio/claude-ketchup references with claude-ketchup in getting-started.md [depends: none]
-
-### Bottle: CLI Commands Documentation
-
-- [ ] Burst 6: Add claude-ketchup install command to CLI reference in README.md [depends: 1]
-- [ ] Burst 7: Add claude-ketchup init command to CLI reference [depends: 6]
-- [ ] Burst 8: Add claude-ketchup reminders command to CLI reference [depends: 6]
-- [ ] Burst 9: Update claude-ketchup doctor command documentation [depends: 6]
-
 ### Bottle: File Structure Updates
 
-- [ ] Burst 10: Update getting-started.md directory structure to show .ketchup/ folders [depends: none]
-- [ ] Burst 11: Document .ketchup/reminders/ directory in configuration.md [depends: none]
-- [ ] Burst 12: Document .ketchup/validators/ directory in configuration.md [depends: none]
 - [ ] Burst 13: Update architecture.md directory structure diagrams [depends: 10, 11, 12]
 
 ### Bottle: Terminology Migration (Skills to Reminders)
 
-- [ ] Burst 14: Replace "skills" with "reminders" in getting-started.md [depends: none]
-- [ ] Burst 15: Replace "skills" with "reminders" in hooks-guide.md [depends: none]
-- [ ] Burst 16: Replace "skills" with "reminders" in configuration.md [depends: none]
 - [ ] Burst 17: Replace "skills" with "reminders" in ketchup-technique.md [depends: none]
 - [ ] Burst 18: Update API reference function names from skills to reminders [depends: none]
 
 ### Bottle: Configuration System Updates
-
-- [ ] Burst 19: Document .claude.hooks.json as primary hook state file in configuration.md [depends: none]
 - [ ] Burst 20: Add cosmiconfig (.ketchuprc.json) documentation to configuration.md [depends: none]
 - [ ] Burst 21: Update settings merge strategy documentation [depends: none]
 - [ ] Burst 22: Document new environment variables in configuration.md [depends: none]
@@ -69,3 +46,20 @@
 ## DONE
 
 - [x] Burst 0: Analyze codebase and identify all documentation discrepancies (e22c19b)
+- [x] Burst 1: Update README.md installation commands to use npx claude-ketchup install (b6d0582)
+- [x] Burst 2: Remove GitHub Packages authentication section from README.md (b6d0582)
+- [x] Burst 3: Update getting-started.md installation instructions to use npx approach (1ab7766)
+- [x] Burst 4: Replace all @xolvio/claude-ketchup references with claude-ketchup in README.md (b6d0582)
+- [x] Burst 5: Replace all @xolvio/claude-ketchup references with claude-ketchup in getting-started.md (1ab7766)
+- [x] Burst 6: Add claude-ketchup install command to CLI reference in README.md (b6d0582)
+- [x] Burst 7: Add claude-ketchup init command to CLI reference (b6d0582)
+- [x] Burst 8: Add claude-ketchup reminders command to CLI reference (b6d0582)
+- [x] Burst 9: Update claude-ketchup doctor command documentation (b6d0582)
+- [x] Burst 10: Update getting-started.md directory structure to show .ketchup/ folders (1ab7766)
+- [x] Burst 11: Document .ketchup/reminders/ directory in configuration.md (29c183e)
+- [x] Burst 12: Document .ketchup/validators/ directory in configuration.md (29c183e)
+- [x] Burst 14: Replace "skills" with "reminders" in getting-started.md (1ab7766)
+- [x] Burst 15: Replace "skills" with "reminders" in hooks-guide.md (4b6aa95)
+- [x] Burst 16: Replace "skills" with "reminders" in configuration.md (29c183e)
+- [x] Burst 19: Document .claude.hooks.json as primary hook state file in configuration.md (29c183e)
+- [x] Burst 23: Update hooks-guide.md to use npx tsx instead of node for scripts (4b6aa95)
