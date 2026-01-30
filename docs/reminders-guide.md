@@ -551,6 +551,6 @@ If reminders conflict:
 ## Next Steps
 
 - [Create your first reminder](#creating-your-first-reminder)
-- [View built-in reminders](.ketchup/reminders/)
+- [View built-in reminders](https://github.com/BeOnAuto/claude-ketchup/tree/main/reminders)
 - [Configure validators](/validators-guide)
 - [Manage hook state](./configuration.md#hook-state)

@@ -17,7 +17,7 @@ hero:
       link: /ketchup-technique
     - theme: alt
       text: View on GitHub
-      link: https://github.com/xolvio/claude-ketchup
+      link: https://github.com/BeOnAuto/claude-ketchup
 
 features:
   - icon:

@@ -308,4 +308,4 @@ If diagnostic commands don't resolve your issue:
 1. Run `npx claude-ketchup doctor` first for diagnostics
 2. Try `npx claude-ketchup repair` to fix common issues
 3. Check `.claude/logs/` for detailed error messages
-4. Report persistent issues at [GitHub Issues](https://github.com/xolvio/claude-ketchup/issues)
+4. Report persistent issues at [GitHub Issues](https://github.com/BeOnAuto/claude-ketchup/issues)

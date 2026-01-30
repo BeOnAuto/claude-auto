@@ -154,7 +154,7 @@ The on.auto team ships 5-10 features per week. Not 1-2.
 ## Development
 
 ```bash
-git clone https://github.com/xolvio/claude-ketchup.git
+git clone https://github.com/BeOnAuto/claude-ketchup.git
 cd claude-ketchup
 pnpm install
 pnpm test
@@ -165,7 +165,7 @@ pnpm build
 
 ## License
 
-MIT © 2025 Xolvio, Inc.
+MIT © 2025 BeOnAuto, Inc.
 
 See [LICENSE](LICENSE) for details.
 

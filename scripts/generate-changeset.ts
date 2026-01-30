@@ -53,7 +53,7 @@ const CONVENTIONAL_PATTERN = /^(feat|fix|docs|style|refactor|perf|test|build|ci|
 
 // Configuration
 const CHANGESET_DIR = '.changeset';
-const PACKAGE_NAME = '@xolvio/claude-ketchup';
+const PACKAGE_NAME = 'claude-ketchup';
 
 // Logging utilities
 function logStep(message: string): void {

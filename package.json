@@ -1,5 +1,5 @@
 {
-  "name": "@xolvio/claude-ketchup",
+  "name": "claude-ketchup",
   "version": "0.6.0",
   "authors": [
     {
@@ -9,7 +9,7 @@
   "description": "Husky-style hooks and skills management for Claude Code",
   "repository": {
     "type": "git",
-    "url": "https://github.com/xolvio/claude-ketchup.git"
+    "url": "https://github.com/BeOnAuto/claude-ketchup.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

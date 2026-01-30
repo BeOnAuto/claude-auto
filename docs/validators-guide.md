@@ -706,7 +706,7 @@ If team pushes back on validators:
 
 ## Next Steps
 
-- [View built-in validators](.ketchup/validators/)
+- [View built-in validators](https://github.com/BeOnAuto/claude-ketchup/tree/main/validators)
 - [Create your first validator](#creating-custom-validators)
 - [Configure validation modes](/configuration#validatecommit)
 - [Learn about reminders](/reminders-guide)
