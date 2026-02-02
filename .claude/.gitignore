@@ -1,9 +1,3 @@
-scripts/auto-continue.js
-scripts/generate-changeset.js
-scripts/pre-tool-use.js
-scripts/session-start.js
-scripts/user-prompt-submit.js
-commands/ketchup.md
 *.local.*
 state.json
 logs/

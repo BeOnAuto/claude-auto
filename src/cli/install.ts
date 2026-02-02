@@ -7,18 +7,31 @@ export type InstallResult = {
   settingsCreated: boolean;
 };
 
+const debug = process.env.DEBUG ? (...args: unknown[]) => console.error('[ketchup]', ...args) : () => {};
+
 function getPackageRoot(): string {
-  return path.resolve(__dirname, '..', '..');
+  let dir = __dirname;
+  while (dir !== path.dirname(dir)) {
+    if (fs.existsSync(path.join(dir, 'package.json'))) {
+      debug('packageRoot:', dir, '(__dirname:', __dirname, ')');
+      return dir;
+    }
+    dir = path.dirname(dir);
+  }
+  throw new Error(`Could not find package root from ${__dirname}`);
 }
 
 function copyDir(sourceDir: string, targetDir: string): void {
+  debug('copyDir:', sourceDir, '→', targetDir);
   if (!fs.existsSync(sourceDir)) {
+    debug('  source does not exist, skipping');
     return;
   }
   fs.mkdirSync(targetDir, { recursive: true });
   const entries = fs.readdirSync(sourceDir, { withFileTypes: true });
   for (const entry of entries) {
     if (entry.isFile()) {
+      debug('  copy:', entry.name);
       fs.copyFileSync(path.join(sourceDir, entry.name), path.join(targetDir, entry.name));
     }
   }
@@ -30,14 +43,21 @@ export async function install(targetPath?: string): Promise<InstallResult> {
   const settingsPath = path.join(claudeDir, 'settings.json');
   const pkgRoot = getPackageRoot();
 
+  debug('target:', resolvedTarget);
+  debug('claudeDir:', claudeDir);
+
   fs.mkdirSync(claudeDir, { recursive: true });
 
   let settingsCreated = false;
   if (!fs.existsSync(settingsPath)) {
     const templatePath = path.join(pkgRoot, 'templates', 'settings.json');
+    debug('template:', templatePath);
     const template = fs.readFileSync(templatePath, 'utf-8');
     fs.writeFileSync(settingsPath, template);
     settingsCreated = true;
+    debug('settings.json created');
+  } else {
+    debug('settings.json already exists, skipping');
   }
 
   copyDir(path.join(pkgRoot, 'dist', 'bundle', 'scripts'), path.join(claudeDir, 'scripts'));
