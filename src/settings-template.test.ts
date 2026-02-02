@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 describe('settings template', () => {
-  it('uses .claude/scripts symlink paths for hook commands', () => {
+  it('uses .ketchup/scripts paths for hook commands', () => {
     const templatePath = path.resolve(__dirname, '..', 'templates', 'settings.json');
     const template = JSON.parse(fs.readFileSync(templatePath, 'utf-8'));
 
@@ -57,6 +57,6 @@ describe('settings template', () => {
 
     const hook = preToolUseHooks[0];
     expect(hook.matcher).toBe('Edit|Write|NotebookEdit|Bash');
-    expect(hook.hooks[0].command).toBe('node .claude/scripts/pre-tool-use.js');
+    expect(hook.hooks[0].command).toBe('node .ketchup/scripts/pre-tool-use.js');
   });
 });

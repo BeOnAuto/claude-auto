@@ -28,15 +28,12 @@ describe('cli status', () => {
     process.env = originalEnv;
   });
 
-  it('lists expected symlinks from scripts and commands directories', async () => {
-    fs.mkdirSync(path.join(packageDir, 'scripts'), { recursive: true });
+  it('lists expected symlinks from commands directory', async () => {
     fs.mkdirSync(path.join(packageDir, 'commands'), { recursive: true });
-    fs.writeFileSync(path.join(packageDir, 'scripts', 'session-start.ts'), 'export default {}');
     fs.writeFileSync(path.join(packageDir, 'commands', 'cmd.md'), '# Command');
 
     const result = await getStatus(packageDir, claudeDir);
 
-    expect(result.symlinks).toContainEqual({ path: 'scripts/session-start.ts', status: 'ok' });
     expect(result.symlinks).toContainEqual({ path: 'commands/cmd.md', status: 'ok' });
   });
 

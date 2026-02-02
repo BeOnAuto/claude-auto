@@ -32,8 +32,8 @@ describe('e2e', () => {
       expect(fs.existsSync(path.join(projectDir, '.ketchup'))).toBe(true);
       expect(fs.existsSync(path.join(projectDir, '.claude', 'settings.json'))).toBe(true);
 
-      // Scripts are regular files, not symlinks
-      const scriptPath = path.join(projectDir, '.claude', 'scripts', 'session-start.js');
+      // Scripts are regular files in .ketchup/scripts, not symlinks
+      const scriptPath = path.join(projectDir, '.ketchup', 'scripts', 'session-start.js');
       expect(fs.existsSync(scriptPath)).toBe(true);
       expect(fs.lstatSync(scriptPath).isSymbolicLink()).toBe(false);
 

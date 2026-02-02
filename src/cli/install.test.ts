@@ -38,10 +38,10 @@ describe('cli install', () => {
     expect(settings.hooks.Stop).toBeDefined();
   });
 
-  it('copies bundled scripts to .claude/scripts/', async () => {
+  it('copies bundled scripts to .ketchup/scripts/', async () => {
     await install(tempDir);
 
-    const scriptsDir = path.join(tempDir, '.claude', 'scripts');
+    const scriptsDir = path.join(tempDir, '.ketchup', 'scripts');
     expect(fs.existsSync(path.join(scriptsDir, 'session-start.js'))).toBe(true);
     expect(fs.existsSync(path.join(scriptsDir, 'pre-tool-use.js'))).toBe(true);
     expect(fs.existsSync(path.join(scriptsDir, 'user-prompt-submit.js'))).toBe(true);
@@ -176,10 +176,10 @@ describe('local install', () => {
     expect(settings.hooks.Stop[0].hooks[0].command).toBe('pnpm tsx scripts/auto-continue.ts');
   });
 
-  it('does NOT copy bundled scripts to .claude/scripts/', async () => {
+  it('does NOT copy bundled scripts to .ketchup/scripts/', async () => {
     await install(tempDir, { local: true });
 
-    const scriptsDir = path.join(tempDir, '.claude', 'scripts');
+    const scriptsDir = path.join(tempDir, '.ketchup', 'scripts');
     expect(fs.existsSync(scriptsDir)).toBe(false);
   });
 

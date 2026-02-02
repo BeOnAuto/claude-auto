@@ -14,7 +14,7 @@ interface ExpectedSymlinks {
 }
 
 export function getExpectedSymlinks(packageDir: string): ExpectedSymlinks {
-  const claudeDirs = ['scripts', 'commands'];
+  const claudeDirs = ['commands'];
   const ketchupDirs = ['validators', 'reminders'];
 
   const claudeFiles: string[] = [];

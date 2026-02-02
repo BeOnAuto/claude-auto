@@ -29,11 +29,11 @@ describe('cli doctor', () => {
   });
 
   it('reports healthy when all symlinks are valid', async () => {
-    fs.mkdirSync(path.join(packageDir, 'scripts'), { recursive: true });
-    const sourceFile = path.join(packageDir, 'scripts', 'session-start.ts');
-    fs.writeFileSync(sourceFile, 'export default {}');
-    fs.mkdirSync(path.join(claudeDir, 'scripts'), { recursive: true });
-    fs.symlinkSync(sourceFile, path.join(claudeDir, 'scripts', 'session-start.ts'));
+    fs.mkdirSync(path.join(packageDir, 'commands'), { recursive: true });
+    const sourceFile = path.join(packageDir, 'commands', 'cmd.md');
+    fs.writeFileSync(sourceFile, '# Command');
+    fs.mkdirSync(path.join(claudeDir, 'commands'), { recursive: true });
+    fs.symlinkSync(sourceFile, path.join(claudeDir, 'commands', 'cmd.md'));
 
     const result = await doctor(packageDir, claudeDir);
 
@@ -44,8 +44,8 @@ describe('cli doctor', () => {
   });
 
   it('reports unhealthy when symlinks are missing', async () => {
-    fs.mkdirSync(path.join(packageDir, 'scripts'), { recursive: true });
-    fs.writeFileSync(path.join(packageDir, 'scripts', 'session-start.ts'), '');
+    fs.mkdirSync(path.join(packageDir, 'commands'), { recursive: true });
+    fs.writeFileSync(path.join(packageDir, 'commands', 'cmd.md'), '');
 
     const result = await doctor(packageDir, claudeDir);
 

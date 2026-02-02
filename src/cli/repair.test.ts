@@ -17,7 +17,7 @@ describe('cli repair', () => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-repair-'));
     packageDir = path.join(tempDir, 'node_modules', 'claude-ketchup');
     claudeDir = path.join(tempDir, '.claude');
-    fs.mkdirSync(path.join(packageDir, 'scripts'), { recursive: true });
+    fs.mkdirSync(path.join(packageDir, 'commands'), { recursive: true });
     fs.mkdirSync(claudeDir, { recursive: true });
     fs.writeFileSync(path.join(tempDir, 'package.json'), '{}');
     process.env = { ...originalEnv };
@@ -29,18 +29,18 @@ describe('cli repair', () => {
   });
 
   it('recreates symlinks for specified files', async () => {
-    const sourceFile = path.join(packageDir, 'scripts', 'session-start.ts');
+    const sourceFile = path.join(packageDir, 'commands', 'cmd.md');
     fs.writeFileSync(sourceFile, 'export default {}');
 
     const result = await repair(packageDir, claudeDir, {
-      claudeFiles: ['scripts/session-start.ts'],
+      claudeFiles: ['commands/cmd.md'],
       ketchupFiles: [],
     });
 
     expect(result).toEqual({
-      repaired: ['scripts/session-start.ts'],
+      repaired: ['commands/cmd.md'],
     });
-    expect(fs.readlinkSync(path.join(claudeDir, 'scripts', 'session-start.ts'))).toBe(sourceFile);
+    expect(fs.readlinkSync(path.join(claudeDir, 'commands', 'cmd.md'))).toBe(sourceFile);
   });
 
   it('repairs ketchup files to ketchup directory', async () => {
@@ -59,8 +59,6 @@ describe('cli repair', () => {
   });
 
   it('getExpectedSymlinks separates claude and ketchup files', () => {
-    fs.writeFileSync(path.join(packageDir, 'scripts', 'hook.ts'), '');
-    fs.mkdirSync(path.join(packageDir, 'commands'), { recursive: true });
     fs.writeFileSync(path.join(packageDir, 'commands', 'cmd.md'), '');
     fs.mkdirSync(path.join(packageDir, '.ketchup', 'validators'), { recursive: true });
     fs.writeFileSync(path.join(packageDir, '.ketchup', 'validators', 'rule.md'), '');
@@ -69,7 +67,7 @@ describe('cli repair', () => {
 
     const result = getExpectedSymlinks(packageDir);
 
-    expect(result.claudeFiles).toEqual(['scripts/hook.ts', 'commands/cmd.md']);
+    expect(result.claudeFiles).toEqual(['commands/cmd.md']);
     expect(result.ketchupFiles).toEqual(['validators/rule.md', 'reminders/reminder.md']);
   });
 });

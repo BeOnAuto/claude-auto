@@ -74,7 +74,7 @@ export async function install(targetPath?: string, options?: { local?: boolean }
   }
 
   if (!local) {
-    copyDir(path.join(pkgRoot, 'dist', 'bundle', 'scripts'), path.join(claudeDir, 'scripts'));
+    copyDir(path.join(pkgRoot, 'dist', 'bundle', 'scripts'), path.join(ketchupDir, 'scripts'));
   }
 
   copyDir(path.join(pkgRoot, 'commands'), path.join(claudeDir, 'commands'));

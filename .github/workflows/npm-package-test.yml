@@ -46,8 +46,8 @@ jobs:
           echo "=== .claude directory ==="
           ls -la .claude/ || echo "No .claude directory"
           echo ""
-          echo "=== .claude/scripts ==="
-          ls -la .claude/scripts/ || echo "No scripts directory"
+          echo "=== .ketchup/scripts ==="
+          ls -la .ketchup/scripts/ || echo "No scripts directory"
           echo ""
           echo "=== .claude/settings.json ==="
           cat .claude/settings.json || echo "No settings.json"
@@ -71,11 +71,11 @@ jobs:
         working-directory: test-project
         run: |
           for script in session-start.js pre-tool-use.js user-prompt-submit.js auto-continue.js; do
-            if [ ! -f ".claude/scripts/$script" ]; then
+            if [ ! -f ".ketchup/scripts/$script" ]; then
               echo "FAIL: Missing script $script"
               exit 1
             fi
-            if [ -L ".claude/scripts/$script" ]; then
+            if [ -L ".ketchup/scripts/$script" ]; then
               echo "FAIL: $script is a symlink, should be a regular file"
               exit 1
             fi
