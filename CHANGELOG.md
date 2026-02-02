@@ -1,5 +1,13 @@
 # claude-ketchup
 
+## 0.11.0
+
+### Minor Changes
+
+- fba8b01: - Added batched validator execution, running multiple validations per commit check instead of one at a time
+  - Configurable batch count (default of 3) for controlling how many validators run simultaneously
+  - Updated the pre-tool-use hook to pass batch count through the validation pipeline
+
 ## 0.10.0
 
 ### Minor Changes
