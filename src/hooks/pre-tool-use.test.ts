@@ -52,6 +52,15 @@ describe('pre-tool-use hook', () => {
     expect(result).toEqual({ decision: 'allow' });
   });
 
+  it('does not write to activity.log for non-commit non-blocked tool use', async () => {
+    const toolInput = { command: 'echo hello' };
+
+    await handlePreToolUse(claudeDir, 'session-silent', toolInput);
+
+    const logPath = path.join(ketchupDir, 'logs', 'activity.log');
+    expect(fs.existsSync(logPath)).toBe(false);
+  });
+
   it('logs to activity.log with session ID', async () => {
     fs.writeFileSync(path.join(claudeDir, 'deny-list.project.txt'), '*.secret\n');
     const toolInput = { file_path: '/project/config.secret' };
@@ -95,7 +104,11 @@ Validate this commit`,
 
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: '{"decision":"NACK","reason":"Missing tests"}',
+      stdout: JSON.stringify({
+        type: 'result',
+        subtype: 'success',
+        result: '{"decision":"NACK","reason":"Missing tests"}',
+      }),
     });
 
     const toolInput = {
@@ -125,7 +138,7 @@ Validate this commit`,
 
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: '{"decision":"ACK"}',
+      stdout: JSON.stringify({ type: 'result', subtype: 'success', result: '{"decision":"ACK"}' }),
     });
 
     const toolInput = {
@@ -135,6 +148,43 @@ Validate this commit`,
     const result = await handlePreToolUse(claudeDir, 'session-4', toolInput, { executor });
 
     expect(result).toEqual({ decision: 'allow' });
+  });
+
+  it('excludes appeal-system from regular validator run', async () => {
+    const validatorsDir = path.join(ketchupDir, 'validators');
+    fs.mkdirSync(validatorsDir);
+    fs.writeFileSync(
+      path.join(validatorsDir, 'test.md'),
+      `---
+name: test-validator
+description: Test
+enabled: true
+---
+Validate this commit`,
+    );
+    fs.writeFileSync(
+      path.join(validatorsDir, 'appeal-system.md'),
+      `---
+name: appeal-system
+description: Evaluates appeals
+enabled: true
+---
+You are the appeal system.`,
+    );
+
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: JSON.stringify({ type: 'result', subtype: 'success', result: '{"decision":"ACK"}' }),
+    });
+
+    const toolInput = {
+      command: 'git commit -m "Test commit"',
+    };
+
+    const result = await handlePreToolUse(claudeDir, 'session-appeal-exclude', toolInput, { executor });
+
+    expect(result).toEqual({ decision: 'allow' });
+    expect(executor).toHaveBeenCalledTimes(1);
   });
 
   it('validates commit when command uses cd into a sub-repo and hook cwd differs', async () => {
@@ -164,7 +214,11 @@ Validate this commit`,
 
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: '{"decision":"NACK","reason":"Missing tests"}',
+      stdout: JSON.stringify({
+        type: 'result',
+        subtype: 'success',
+        result: '{"decision":"NACK","reason":"Missing tests"}',
+      }),
     });
 
     const toolInput = {

@@ -75,17 +75,44 @@ export interface ValidatorResult {
   reason?: string;
 }
 
+const INVALID_RESPONSE: ValidatorResult = {
+  decision: 'NACK',
+  reason: 'validator returned invalid response (no ACK decision)',
+};
+
+export function parseClaudeJsonOutput(stdout: string): ValidatorResult {
+  const outer = JSON.parse(stdout);
+  let parsed = outer;
+  if (typeof outer.result === 'string') {
+    try {
+      parsed = JSON.parse(outer.result);
+    } catch {
+      return INVALID_RESPONSE;
+    }
+  }
+  if (parsed.decision !== 'ACK' && parsed.decision !== 'NACK') {
+    return INVALID_RESPONSE;
+  }
+  return parsed;
+}
+
 export async function runValidator(
   validator: Validator,
   context: CommitContext,
   executor: Executor = spawnAsync,
 ): Promise<ValidatorResult> {
   const prompt = buildPrompt(validator, context);
-  const result = await executor('claude', ['-p', '--no-session-persistence', prompt, '--output-format', 'json'], {
-    encoding: 'utf8',
-  });
+  const args = ['-p', '--no-session-persistence', prompt, '--output-format', 'json'];
+  const opts = { encoding: 'utf8' } as const;
 
-  return JSON.parse(result.stdout);
+  const first = await executor('claude', args, opts);
+  const firstResult = parseClaudeJsonOutput(first.stdout);
+  if (firstResult !== INVALID_RESPONSE) {
+    return firstResult;
+  }
+
+  const second = await executor('claude', args, opts);
+  return parseClaudeJsonOutput(second.stdout);
 }
 
 function buildPrompt(validator: Validator, context: CommitContext): string {
@@ -147,7 +174,7 @@ export async function runAppealValidator(
     encoding: 'utf8',
   });
 
-  return JSON.parse(result.stdout);
+  return parseClaudeJsonOutput(result.stdout);
 }
 
 const NON_APPEALABLE_VALIDATORS = ['no-dangerous-git'];

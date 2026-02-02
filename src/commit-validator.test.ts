@@ -11,11 +11,16 @@ import {
   getCommitContext,
   handleCommitValidation,
   isCommitCommand,
+  parseClaudeJsonOutput,
   runAppealValidator,
   runValidator,
   validateCommit,
 } from './commit-validator.js';
 import type { Validator } from './validator-loader.js';
+
+function claudeJson(inner: Record<string, unknown>): string {
+  return JSON.stringify({ type: 'result', subtype: 'success', result: JSON.stringify(inner) });
+}
 
 describe('extractAppeal', () => {
   it('extracts appeal from commit message with [appeal: reason]', () => {
@@ -145,11 +150,81 @@ describe('extractCdTarget', () => {
   });
 });
 
+describe('parseClaudeJsonOutput', () => {
+  it('extracts inner result from claude json wrapper', () => {
+    const stdout = JSON.stringify({
+      type: 'result',
+      subtype: 'success',
+      result: '{"decision":"ACK"}',
+    });
+
+    const parsed = parseClaudeJsonOutput(stdout);
+
+    expect(parsed).toEqual({ decision: 'ACK' });
+  });
+
+  it('extracts NACK with reason from wrapper', () => {
+    const stdout = JSON.stringify({
+      type: 'result',
+      subtype: 'success',
+      result: '{"decision":"NACK","reason":"Missing tests"}',
+    });
+
+    const parsed = parseClaudeJsonOutput(stdout);
+
+    expect(parsed).toEqual({ decision: 'NACK', reason: 'Missing tests' });
+  });
+
+  it('returns outer object when result is not a string', () => {
+    const stdout = '{"decision":"ACK"}';
+
+    const parsed = parseClaudeJsonOutput(stdout);
+
+    expect(parsed).toEqual({ decision: 'ACK' });
+  });
+
+  it('defaults to NACK when decision is missing', () => {
+    const stdout = JSON.stringify({
+      type: 'result',
+      subtype: 'success',
+      result: '{"some":"garbage"}',
+    });
+
+    const parsed = parseClaudeJsonOutput(stdout);
+
+    expect(parsed).toEqual({ decision: 'NACK', reason: 'validator returned invalid response (no ACK decision)' });
+  });
+
+  it('defaults to NACK when decision is not ACK or NACK', () => {
+    const stdout = JSON.stringify({
+      type: 'result',
+      subtype: 'success',
+      result: '{"decision":"MAYBE"}',
+    });
+
+    const parsed = parseClaudeJsonOutput(stdout);
+
+    expect(parsed).toEqual({ decision: 'NACK', reason: 'validator returned invalid response (no ACK decision)' });
+  });
+
+  it('defaults to NACK when inner result is not valid JSON', () => {
+    const stdout = JSON.stringify({
+      type: 'result',
+      subtype: 'success',
+      result: 'just some text response',
+    });
+
+    const parsed = parseClaudeJsonOutput(stdout);
+
+    expect(parsed).toEqual({ decision: 'NACK', reason: 'validator returned invalid response (no ACK decision)' });
+  });
+});
+
 describe('runValidator', () => {
   it('calls executor with formatted prompt', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: '{"decision":"ACK"}',
+      stdout: claudeJson({ decision: 'ACK' }),
     });
 
     const validator: Validator = {
@@ -177,7 +252,7 @@ describe('runValidator', () => {
   it('includes validator content in prompt', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: '{"decision":"ACK"}',
+      stdout: claudeJson({ decision: 'ACK' }),
     });
 
     const validator: Validator = {
@@ -205,10 +280,14 @@ describe('runValidator', () => {
     expect(prompt).toContain('test.txt');
   });
 
-  it('parses ACK response', async () => {
+  it('parses ACK response from claude json wrapper', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: '{"decision":"ACK"}',
+      stdout: JSON.stringify({
+        type: 'result',
+        subtype: 'success',
+        result: '{"decision":"ACK"}',
+      }),
     });
 
     const validator: Validator = {
@@ -228,7 +307,7 @@ describe('runValidator', () => {
   it('parses NACK response with reason', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: '{"decision":"NACK","reason":"Missing tests"}',
+      stdout: claudeJson({ decision: 'NACK', reason: 'Missing tests' }),
     });
 
     const validator: Validator = {
@@ -244,13 +323,61 @@ describe('runValidator', () => {
 
     expect(result).toEqual({ decision: 'NACK', reason: 'Missing tests' });
   });
+
+  it('retries once when response is invalid then succeeds', async () => {
+    const executor = vi
+      .fn()
+      .mockReturnValueOnce({
+        status: 0,
+        stdout: claudeJson({ some: 'garbage' }),
+      })
+      .mockReturnValueOnce({
+        status: 0,
+        stdout: claudeJson({ decision: 'ACK' }),
+      });
+
+    const validator: Validator = {
+      name: 'test',
+      description: 'Test',
+      enabled: true,
+      content: 'Check',
+      path: '/test.md',
+    };
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+
+    const result = await runValidator(validator, context, executor);
+
+    expect(result).toEqual({ decision: 'ACK' });
+    expect(executor).toHaveBeenCalledTimes(2);
+  });
+
+  it('returns NACK after retry also fails', async () => {
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: claudeJson({ some: 'garbage' }),
+    });
+
+    const validator: Validator = {
+      name: 'test',
+      description: 'Test',
+      enabled: true,
+      content: 'Check',
+      path: '/test.md',
+    };
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+
+    const result = await runValidator(validator, context, executor);
+
+    expect(result).toEqual({ decision: 'NACK', reason: 'validator returned invalid response (no ACK decision)' });
+    expect(executor).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('runAppealValidator', () => {
   it('includes validator results and appeal in prompt', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: '{"decision":"ACK"}',
+      stdout: claudeJson({ decision: 'ACK' }),
     });
 
     const appealValidator: Validator = {
@@ -283,7 +410,7 @@ describe('runAppealValidator', () => {
   it('returns ACK when appeal is valid', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: '{"decision":"ACK"}',
+      stdout: claudeJson({ decision: 'ACK' }),
     });
 
     const appealValidator: Validator = {
@@ -304,7 +431,7 @@ describe('runAppealValidator', () => {
   it('returns NACK when appeal is invalid', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: '{"decision":"NACK","reason":"Appeal does not justify violation"}',
+      stdout: claudeJson({ decision: 'NACK', reason: 'Appeal does not justify violation' }),
     });
 
     const appealValidator: Validator = {
@@ -334,7 +461,7 @@ describe('validateCommit', () => {
       return new Promise((resolve) => {
         setTimeout(() => {
           callLog.push(`end:${name}`);
-          resolve({ status: 0, stdout: '{"decision":"ACK"}' });
+          resolve({ status: 0, stdout: claudeJson({ decision: 'ACK' }) });
         }, 50);
       });
     });
@@ -361,14 +488,14 @@ describe('validateCommit', () => {
   it('aggregates NACK reasons from multiple validators', async () => {
     const executor = vi
       .fn()
-      .mockReturnValueOnce({ status: 0, stdout: '{"decision":"ACK"}' })
+      .mockReturnValueOnce({ status: 0, stdout: claudeJson({ decision: 'ACK' }) })
       .mockReturnValueOnce({
         status: 0,
-        stdout: '{"decision":"NACK","reason":"Missing tests"}',
+        stdout: claudeJson({ decision: 'NACK', reason: 'Missing tests' }),
       })
       .mockReturnValueOnce({
         status: 0,
-        stdout: '{"decision":"NACK","reason":"No coverage"}',
+        stdout: claudeJson({ decision: 'NACK', reason: 'No coverage' }),
       });
 
     const validators: Validator[] = [
@@ -390,7 +517,7 @@ describe('validateCommit', () => {
   it('marks no-dangerous-git validator as not appealable', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: '{"decision":"NACK","reason":"--force is forbidden"}',
+      stdout: claudeJson({ decision: 'NACK', reason: '--force is forbidden' }),
     });
 
     const validators: Validator[] = [
@@ -408,7 +535,7 @@ describe('validateCommit', () => {
 
 describe('handleCommitValidation', () => {
   it('allows commit when all validators ACK', async () => {
-    const executor = vi.fn().mockReturnValue({ status: 0, stdout: '{"decision":"ACK"}' });
+    const executor = vi.fn().mockReturnValue({ status: 0, stdout: claudeJson({ decision: 'ACK' }) });
     const validators: Validator[] = [{ name: 'v1', description: 'd', enabled: true, content: 'c', path: '/v.md' }];
     const context = { diff: '+a', files: ['a.txt'], message: 'feat: add feature' };
 
@@ -420,7 +547,7 @@ describe('handleCommitValidation', () => {
   it('blocks commit when validator NACKs without appeal', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: '{"decision":"NACK","reason":"Missing tests"}',
+      stdout: claudeJson({ decision: 'NACK', reason: 'Missing tests' }),
     });
     const validators: Validator[] = [
       { name: 'coverage-rules', description: 'd', enabled: true, content: 'c', path: '/v.md' },
@@ -441,11 +568,11 @@ describe('handleCommitValidation', () => {
       .fn()
       .mockReturnValueOnce({
         status: 0,
-        stdout: '{"decision":"NACK","reason":"Missing tests"}',
+        stdout: claudeJson({ decision: 'NACK', reason: 'Missing tests' }),
       })
       .mockReturnValueOnce({
         status: 0,
-        stdout: '{"decision":"ACK"}',
+        stdout: claudeJson({ decision: 'ACK' }),
       });
     const validators: Validator[] = [
       { name: 'coverage-rules', description: 'd', enabled: true, content: 'c', path: '/v.md' },
@@ -477,11 +604,11 @@ describe('handleCommitValidation', () => {
       .fn()
       .mockReturnValueOnce({
         status: 0,
-        stdout: '{"decision":"NACK","reason":"Missing tests"}',
+        stdout: claudeJson({ decision: 'NACK', reason: 'Missing tests' }),
       })
       .mockReturnValueOnce({
         status: 0,
-        stdout: '{"decision":"NACK","reason":"Appeal does not justify violation"}',
+        stdout: claudeJson({ decision: 'NACK', reason: 'Appeal does not justify violation' }),
       });
     const validators: Validator[] = [
       { name: 'coverage-rules', description: 'd', enabled: true, content: 'c', path: '/v.md' },
@@ -511,7 +638,7 @@ describe('handleCommitValidation', () => {
   it('blocks commit when no appeal validator provided and NACK with appeal', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: '{"decision":"NACK","reason":"Missing tests"}',
+      stdout: claudeJson({ decision: 'NACK', reason: 'Missing tests' }),
     });
     const validators: Validator[] = [
       { name: 'coverage-rules', description: 'd', enabled: true, content: 'c', path: '/v.md' },

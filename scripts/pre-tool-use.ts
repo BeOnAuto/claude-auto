@@ -2,6 +2,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+import { isCommitCommand } from '../src/commit-validator.js';
 import { parseHookInput } from '../src/hook-input.js';
 import { writeHookLog } from '../src/hook-logger.js';
 import { handlePreToolUse } from '../src/hooks/pre-tool-use.js';
@@ -14,14 +15,18 @@ const startTime = Date.now();
 (async () => {
   const { ketchupDir } = await resolvePaths(claudeDir);
   try {
-    const result = await handlePreToolUse(claudeDir, input.session_id, input.tool_input || {});
-    writeHookLog(ketchupDir, {
-      hookName: 'pre-tool-use',
-      timestamp: new Date().toISOString(),
-      input,
-      output: result,
-      durationMs: Date.now() - startTime,
-    });
+    const toolInput = input.tool_input || {};
+    const command = toolInput.command as string | undefined;
+    const result = await handlePreToolUse(claudeDir, input.session_id, toolInput);
+    if (command && isCommitCommand(command)) {
+      writeHookLog(ketchupDir, {
+        hookName: 'pre-tool-use',
+        timestamp: new Date().toISOString(),
+        input,
+        output: result,
+        durationMs: Date.now() - startTime,
+      });
+    }
     console.log(JSON.stringify(result));
     process.exit(0);
   } catch (err) {

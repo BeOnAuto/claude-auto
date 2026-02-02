@@ -72,7 +72,8 @@ async function handleCommitValidation(
   ketchupDir: string,
 ): Promise<HookResult> {
   const paths = await resolvePaths(claudeDir);
-  const validators = loadValidators([paths.validatorsDir]);
+  const allValidators = loadValidators([paths.validatorsDir]);
+  const validators = allValidators.filter((v) => v.name !== 'appeal-system');
 
   if (validators.length === 0) {
     activityLog(ketchupDir, sessionId, 'pre-tool-use', 'commit allowed (no validators)');
