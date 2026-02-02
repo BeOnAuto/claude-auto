@@ -1,5 +1,12 @@
 # claude-ketchup
 
+## 0.12.1
+
+### Patch Changes
+
+- f36cd07: - Updated documentation references to use the .ketchup directory and improved installation instructions
+  - Removed outdated ketchup.md documentation file
+
 ## 0.12.0
 
 ### Minor Changes
