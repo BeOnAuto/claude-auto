@@ -31,7 +31,7 @@ export function getExpectedSymlinks(packageDir: string): ExpectedSymlinks {
   }
 
   for (const dir of ketchupDirs) {
-    const dirPath = path.join(packageDir, dir);
+    const dirPath = path.join(packageDir, '.ketchup', dir);
     if (fs.existsSync(dirPath)) {
       const entries = fs.readdirSync(dirPath);
       for (const entry of entries) {
@@ -62,7 +62,7 @@ export async function repair(packageDir: string, claudeDir: string, files: Expec
   }
 
   for (const file of files.ketchupFiles) {
-    const source = path.join(packageDir, file);
+    const source = path.join(packageDir, '.ketchup', file);
     const target = path.join(ketchupDir, file);
     const targetDir = path.dirname(target);
 

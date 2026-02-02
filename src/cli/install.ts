@@ -40,23 +40,27 @@ function copyDir(sourceDir: string, targetDir: string): void {
   }
 }
 
-export async function install(targetPath?: string): Promise<InstallResult> {
+export async function install(targetPath?: string, options?: { local?: boolean }): Promise<InstallResult> {
   const resolvedTarget = path.resolve(targetPath ?? '.');
   const claudeDir = path.join(resolvedTarget, '.claude');
   const settingsPath = path.join(claudeDir, 'settings.json');
+  const ketchupDir = path.join(resolvedTarget, '.ketchup');
   const pkgRoot = getPackageRoot();
+  const local = options?.local ?? false;
 
   debug('target:', resolvedTarget);
   debug('claudeDir:', claudeDir);
+  debug('local:', local);
 
   fs.mkdirSync(claudeDir, { recursive: true });
 
-  const scriptsDir = path.join(claudeDir, 'scripts');
-  const alreadyInstalled = fs.existsSync(scriptsDir) && fs.readdirSync(scriptsDir).length > 0;
+  const hookStatePath = path.join(ketchupDir, '.claude.hooks.json');
+  const alreadyInstalled = fs.existsSync(hookStatePath);
 
   let settingsCreated = false;
   if (!fs.existsSync(settingsPath)) {
-    const templatePath = path.join(pkgRoot, 'templates', 'settings.json');
+    const templateName = local ? 'settings.local.json' : 'settings.json';
+    const templatePath = path.join(pkgRoot, 'templates', templateName);
     debug('template:', templatePath);
     const template = fs.readFileSync(templatePath, 'utf-8');
     fs.writeFileSync(settingsPath, template);
@@ -66,12 +70,16 @@ export async function install(targetPath?: string): Promise<InstallResult> {
     debug('settings.json already exists, skipping');
   }
 
-  copyDir(path.join(pkgRoot, 'dist', 'bundle', 'scripts'), path.join(claudeDir, 'scripts'));
+  if (!local) {
+    copyDir(path.join(pkgRoot, 'dist', 'bundle', 'scripts'), path.join(claudeDir, 'scripts'));
+  }
+
   copyDir(path.join(pkgRoot, 'commands'), path.join(claudeDir, 'commands'));
 
-  const ketchupDir = path.join(resolvedTarget, '.ketchup');
-  copyDir(path.join(pkgRoot, 'validators'), path.join(ketchupDir, 'validators'));
-  copyDir(path.join(pkgRoot, 'reminders'), path.join(ketchupDir, 'reminders'));
+  if (!local) {
+    copyDir(path.join(pkgRoot, '.ketchup', 'validators'), path.join(ketchupDir, 'validators'));
+    copyDir(path.join(pkgRoot, '.ketchup', 'reminders'), path.join(ketchupDir, 'reminders'));
+  }
 
   // Initialize hook state with defaults if it doesn't exist
   const hookState = createHookState(ketchupDir);

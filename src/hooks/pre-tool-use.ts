@@ -83,7 +83,7 @@ async function handleCommitValidation(
   }
 
   const context = getCommitContext(process.cwd(), command);
-  const results = validateCommit(validators, context, options.executor);
+  const results = await validateCommit(validators, context, options.executor);
 
   const nacks = results.filter((r) => r.decision === 'NACK');
 

@@ -41,10 +41,10 @@ describe('cli status', () => {
   });
 
   it('lists ketchup files with ketchup prefix', async () => {
-    fs.mkdirSync(path.join(packageDir, 'validators'), { recursive: true });
-    fs.mkdirSync(path.join(packageDir, 'reminders'), { recursive: true });
-    fs.writeFileSync(path.join(packageDir, 'validators', 'rule.md'), '');
-    fs.writeFileSync(path.join(packageDir, 'reminders', 'reminder.md'), '');
+    fs.mkdirSync(path.join(packageDir, '.ketchup', 'validators'), { recursive: true });
+    fs.mkdirSync(path.join(packageDir, '.ketchup', 'reminders'), { recursive: true });
+    fs.writeFileSync(path.join(packageDir, '.ketchup', 'validators', 'rule.md'), '');
+    fs.writeFileSync(path.join(packageDir, '.ketchup', 'reminders', 'reminder.md'), '');
 
     const result = await getStatus(packageDir, claudeDir);
 

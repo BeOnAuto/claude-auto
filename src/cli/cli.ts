@@ -11,8 +11,9 @@ export function createCli(): Command {
     .command('install')
     .description('Install claude-ketchup hooks configuration into a project')
     .argument('[path]', 'target project directory', '.')
-    .action(async (targetPath: string) => {
-      const result = await install(targetPath);
+    .option('--local', 'install from source using tsx (for local dev)')
+    .action(async (targetPath: string, options: { local?: boolean }) => {
+      const result = await install(targetPath, { local: options.local });
       if (result.status === 'updated') {
         console.log(`ketchup already installed, updating ${result.targetDir}`);
       } else {

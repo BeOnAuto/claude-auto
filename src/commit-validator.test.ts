@@ -146,7 +146,7 @@ describe('extractCdTarget', () => {
 });
 
 describe('runValidator', () => {
-  it('calls executor with formatted prompt', () => {
+  it('calls executor with formatted prompt', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
       stdout: '{"decision":"ACK"}',
@@ -165,16 +165,16 @@ describe('runValidator', () => {
       message: 'Add test',
     };
 
-    runValidator(validator, context, executor);
+    await runValidator(validator, context, executor);
 
     expect(executor).toHaveBeenCalledWith(
       'claude',
-      ['-p', expect.stringContaining('<diff>'), '--output-format', 'json'],
+      ['-p', '--no-session-persistence', expect.stringContaining('<diff>'), '--output-format', 'json'],
       expect.objectContaining({ encoding: 'utf8' }),
     );
   });
 
-  it('includes validator content in prompt', () => {
+  it('includes validator content in prompt', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
       stdout: '{"decision":"ACK"}',
@@ -193,9 +193,9 @@ describe('runValidator', () => {
       message: 'Test commit',
     };
 
-    runValidator(validator, context, executor);
+    await runValidator(validator, context, executor);
 
-    const prompt = executor.mock.calls[0][1][1];
+    const prompt = executor.mock.calls[0][1][2];
     expect(prompt).toContain('Check that tests pass');
     expect(prompt).toContain('<diff>');
     expect(prompt).toContain('+hello');
@@ -205,7 +205,7 @@ describe('runValidator', () => {
     expect(prompt).toContain('test.txt');
   });
 
-  it('parses ACK response', () => {
+  it('parses ACK response', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
       stdout: '{"decision":"ACK"}',
@@ -220,12 +220,12 @@ describe('runValidator', () => {
     };
     const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
 
-    const result = runValidator(validator, context, executor);
+    const result = await runValidator(validator, context, executor);
 
     expect(result).toEqual({ decision: 'ACK' });
   });
 
-  it('parses NACK response with reason', () => {
+  it('parses NACK response with reason', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
       stdout: '{"decision":"NACK","reason":"Missing tests"}',
@@ -240,14 +240,14 @@ describe('runValidator', () => {
     };
     const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
 
-    const result = runValidator(validator, context, executor);
+    const result = await runValidator(validator, context, executor);
 
     expect(result).toEqual({ decision: 'NACK', reason: 'Missing tests' });
   });
 });
 
 describe('runAppealValidator', () => {
-  it('includes validator results and appeal in prompt', () => {
+  it('includes validator results and appeal in prompt', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
       stdout: '{"decision":"ACK"}',
@@ -270,9 +270,9 @@ describe('runAppealValidator', () => {
     ];
     const appeal = 'these files are tightly coupled';
 
-    runAppealValidator(appealValidator, context, results, appeal, executor);
+    await runAppealValidator(appealValidator, context, results, appeal, executor);
 
-    const prompt = executor.mock.calls[0][1][1];
+    const prompt = executor.mock.calls[0][1][2];
     expect(prompt).toContain('<validator-results>');
     expect(prompt).toContain('coverage-rules: NACK - Missing tests');
     expect(prompt).toContain('<appeal>');
@@ -280,7 +280,7 @@ describe('runAppealValidator', () => {
     expect(prompt).toContain('Judge the appeal');
   });
 
-  it('returns ACK when appeal is valid', () => {
+  it('returns ACK when appeal is valid', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
       stdout: '{"decision":"ACK"}',
@@ -296,12 +296,12 @@ describe('runAppealValidator', () => {
     const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
     const results = [{ validator: 'v1', decision: 'NACK' as const, reason: 'reason', appealable: true }];
 
-    const result = runAppealValidator(appealValidator, context, results, 'coherence', executor);
+    const result = await runAppealValidator(appealValidator, context, results, 'coherence', executor);
 
     expect(result).toEqual({ decision: 'ACK' });
   });
 
-  it('returns NACK when appeal is invalid', () => {
+  it('returns NACK when appeal is invalid', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
       stdout: '{"decision":"NACK","reason":"Appeal does not justify violation"}',
@@ -317,35 +317,48 @@ describe('runAppealValidator', () => {
     const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
     const results = [{ validator: 'v1', decision: 'NACK' as const, reason: 'reason', appealable: true }];
 
-    const result = runAppealValidator(appealValidator, context, results, 'please let me in', executor);
+    const result = await runAppealValidator(appealValidator, context, results, 'please let me in', executor);
 
     expect(result).toEqual({ decision: 'NACK', reason: 'Appeal does not justify violation' });
   });
 });
 
 describe('validateCommit', () => {
-  it('runs validators in parallel and returns results', () => {
-    const executor = vi
-      .fn()
-      .mockReturnValueOnce({ status: 0, stdout: '{"decision":"ACK"}' })
-      .mockReturnValueOnce({ status: 0, stdout: '{"decision":"ACK"}' });
+  it('runs validators in parallel and returns results', async () => {
+    const callLog: string[] = [];
+
+    const asyncExecutor = vi.fn().mockImplementation((_cmd: string, args: string[]) => {
+      const prompt = args[2];
+      const name = prompt.includes('c1') ? 'v1' : prompt.includes('c2') ? 'v2' : 'v3';
+      callLog.push(`start:${name}`);
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          callLog.push(`end:${name}`);
+          resolve({ status: 0, stdout: '{"decision":"ACK"}' });
+        }, 50);
+      });
+    });
 
     const validators: Validator[] = [
       { name: 'v1', description: 'd1', enabled: true, content: 'c1', path: '/v1.md' },
       { name: 'v2', description: 'd2', enabled: true, content: 'c2', path: '/v2.md' },
+      { name: 'v3', description: 'd3', enabled: true, content: 'c3', path: '/v3.md' },
     ];
     const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
 
-    const results = validateCommit(validators, context, executor);
+    const results = await validateCommit(validators, context, asyncExecutor);
 
     expect(results).toEqual([
       { validator: 'v1', decision: 'ACK', appealable: true },
       { validator: 'v2', decision: 'ACK', appealable: true },
+      { validator: 'v3', decision: 'ACK', appealable: true },
     ]);
-    expect(executor).toHaveBeenCalledTimes(2);
+    expect(asyncExecutor).toHaveBeenCalledTimes(3);
+    // All validators must start before any finishes (parallel execution)
+    expect(callLog).toEqual(['start:v1', 'start:v2', 'start:v3', 'end:v1', 'end:v2', 'end:v3']);
   });
 
-  it('aggregates NACK reasons from multiple validators', () => {
+  it('aggregates NACK reasons from multiple validators', async () => {
     const executor = vi
       .fn()
       .mockReturnValueOnce({ status: 0, stdout: '{"decision":"ACK"}' })
@@ -365,7 +378,7 @@ describe('validateCommit', () => {
     ];
     const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
 
-    const results = validateCommit(validators, context, executor);
+    const results = await validateCommit(validators, context, executor);
 
     expect(results).toEqual([
       { validator: 'v1', decision: 'ACK', appealable: true },
@@ -374,7 +387,7 @@ describe('validateCommit', () => {
     ]);
   });
 
-  it('marks no-dangerous-git validator as not appealable', () => {
+  it('marks no-dangerous-git validator as not appealable', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
       stdout: '{"decision":"NACK","reason":"--force is forbidden"}',
@@ -385,7 +398,7 @@ describe('validateCommit', () => {
     ];
     const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
 
-    const results = validateCommit(validators, context, executor);
+    const results = await validateCommit(validators, context, executor);
 
     expect(results).toEqual([
       { validator: 'no-dangerous-git', decision: 'NACK', reason: '--force is forbidden', appealable: false },
@@ -394,17 +407,17 @@ describe('validateCommit', () => {
 });
 
 describe('handleCommitValidation', () => {
-  it('allows commit when all validators ACK', () => {
+  it('allows commit when all validators ACK', async () => {
     const executor = vi.fn().mockReturnValue({ status: 0, stdout: '{"decision":"ACK"}' });
     const validators: Validator[] = [{ name: 'v1', description: 'd', enabled: true, content: 'c', path: '/v.md' }];
     const context = { diff: '+a', files: ['a.txt'], message: 'feat: add feature' };
 
-    const result = handleCommitValidation(validators, context, executor);
+    const result = await handleCommitValidation(validators, context, executor);
 
     expect(result).toEqual({ allowed: true, results: expect.any(Array) });
   });
 
-  it('blocks commit when validator NACKs without appeal', () => {
+  it('blocks commit when validator NACKs without appeal', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
       stdout: '{"decision":"NACK","reason":"Missing tests"}',
@@ -414,7 +427,7 @@ describe('handleCommitValidation', () => {
     ];
     const context = { diff: '+a', files: ['a.txt'], message: 'feat: add feature' };
 
-    const result = handleCommitValidation(validators, context, executor);
+    const result = await handleCommitValidation(validators, context, executor);
 
     expect(result).toEqual({
       allowed: false,
@@ -423,7 +436,7 @@ describe('handleCommitValidation', () => {
     });
   });
 
-  it('allows commit when appeal validator ACKs the appeal', () => {
+  it('allows commit when appeal validator ACKs the appeal', async () => {
     const executor = vi
       .fn()
       .mockReturnValueOnce({
@@ -450,7 +463,7 @@ describe('handleCommitValidation', () => {
       message: 'feat: add feature [appeal: these files are tightly coupled]',
     };
 
-    const result = handleCommitValidation(validators, context, executor, appealValidator);
+    const result = await handleCommitValidation(validators, context, executor, appealValidator);
 
     expect(result).toEqual({
       allowed: true,
@@ -459,7 +472,7 @@ describe('handleCommitValidation', () => {
     });
   });
 
-  it('blocks commit when appeal validator NACKs the appeal', () => {
+  it('blocks commit when appeal validator NACKs the appeal', async () => {
     const executor = vi
       .fn()
       .mockReturnValueOnce({
@@ -486,7 +499,7 @@ describe('handleCommitValidation', () => {
       message: 'feat: add feature [appeal: please let this through]',
     };
 
-    const result = handleCommitValidation(validators, context, executor, appealValidator);
+    const result = await handleCommitValidation(validators, context, executor, appealValidator);
 
     expect(result).toEqual({
       allowed: false,
@@ -495,7 +508,7 @@ describe('handleCommitValidation', () => {
     });
   });
 
-  it('blocks commit when no appeal validator provided and NACK with appeal', () => {
+  it('blocks commit when no appeal validator provided and NACK with appeal', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
       stdout: '{"decision":"NACK","reason":"Missing tests"}',
@@ -509,7 +522,7 @@ describe('handleCommitValidation', () => {
       message: 'feat: add feature [appeal: coherence]',
     };
 
-    const result = handleCommitValidation(validators, context, executor);
+    const result = await handleCommitValidation(validators, context, executor);
 
     expect(result).toEqual({
       allowed: false,

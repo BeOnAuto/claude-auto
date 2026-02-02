@@ -44,8 +44,8 @@ describe('cli repair', () => {
   });
 
   it('repairs ketchup files to ketchup directory', async () => {
-    fs.mkdirSync(path.join(packageDir, 'validators'), { recursive: true });
-    const sourceFile = path.join(packageDir, 'validators', 'rule.md');
+    fs.mkdirSync(path.join(packageDir, '.ketchup', 'validators'), { recursive: true });
+    const sourceFile = path.join(packageDir, '.ketchup', 'validators', 'rule.md');
     fs.writeFileSync(sourceFile, '');
 
     const result = await repair(packageDir, claudeDir, {
@@ -54,17 +54,18 @@ describe('cli repair', () => {
     });
 
     expect(result.repaired).toContain(`${DEFAULT_KETCHUP_DIR}/validators/rule.md`);
-    expect(fs.readlinkSync(path.join(tempDir, DEFAULT_KETCHUP_DIR, 'validators', 'rule.md'))).toBe(sourceFile);
+    const symlinkTarget = fs.readlinkSync(path.join(tempDir, DEFAULT_KETCHUP_DIR, 'validators', 'rule.md'));
+    expect(symlinkTarget).toBe(sourceFile);
   });
 
   it('getExpectedSymlinks separates claude and ketchup files', () => {
     fs.writeFileSync(path.join(packageDir, 'scripts', 'hook.ts'), '');
     fs.mkdirSync(path.join(packageDir, 'commands'), { recursive: true });
     fs.writeFileSync(path.join(packageDir, 'commands', 'cmd.md'), '');
-    fs.mkdirSync(path.join(packageDir, 'validators'), { recursive: true });
-    fs.writeFileSync(path.join(packageDir, 'validators', 'rule.md'), '');
-    fs.mkdirSync(path.join(packageDir, 'reminders'), { recursive: true });
-    fs.writeFileSync(path.join(packageDir, 'reminders', 'reminder.md'), '');
+    fs.mkdirSync(path.join(packageDir, '.ketchup', 'validators'), { recursive: true });
+    fs.writeFileSync(path.join(packageDir, '.ketchup', 'validators', 'rule.md'), '');
+    fs.mkdirSync(path.join(packageDir, '.ketchup', 'reminders'), { recursive: true });
+    fs.writeFileSync(path.join(packageDir, '.ketchup', 'reminders', 'reminder.md'), '');
 
     const result = getExpectedSymlinks(packageDir);
 

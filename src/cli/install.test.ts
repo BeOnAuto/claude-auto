@@ -136,10 +136,10 @@ describe('cli install', () => {
     expect(result.status).toBe('installed');
   });
 
-  it('returns status "updated" when scripts already exist', async () => {
-    const scriptsDir = path.join(tempDir, '.claude', 'scripts');
-    fs.mkdirSync(scriptsDir, { recursive: true });
-    fs.writeFileSync(path.join(scriptsDir, 'session-start.js'), '// old');
+  it('returns status "updated" when .ketchup/.claude.hooks.json already exists', async () => {
+    const ketchupDir = path.join(tempDir, '.ketchup');
+    fs.mkdirSync(ketchupDir, { recursive: true });
+    fs.writeFileSync(path.join(ketchupDir, '.claude.hooks.json'), '{}');
 
     const result = await install(tempDir);
 
@@ -150,6 +150,95 @@ describe('cli install', () => {
     await install(tempDir);
     const result = await install(tempDir);
 
+    expect(result.status).toBe('updated');
+  });
+});
+
+describe('local install', () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-install-local-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  it('creates settings.json with tsx commands', async () => {
+    await install(tempDir, { local: true });
+
+    const settingsPath = path.join(tempDir, '.claude', 'settings.json');
+    const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
+
+    expect(settings.hooks.SessionStart[0].hooks[0].command).toBe('pnpm tsx scripts/session-start.ts');
+    expect(settings.hooks.PreToolUse[0].hooks[0].command).toBe('pnpm tsx scripts/pre-tool-use.ts');
+    expect(settings.hooks.UserPromptSubmit[0].hooks[0].command).toBe('pnpm tsx scripts/user-prompt-submit.ts');
+    expect(settings.hooks.Stop[0].hooks[0].command).toBe('pnpm tsx scripts/auto-continue.ts');
+  });
+
+  it('does NOT copy bundled scripts to .claude/scripts/', async () => {
+    await install(tempDir, { local: true });
+
+    const scriptsDir = path.join(tempDir, '.claude', 'scripts');
+    expect(fs.existsSync(scriptsDir)).toBe(false);
+  });
+
+  it('does NOT copy reminders', async () => {
+    await install(tempDir, { local: true });
+
+    const remindersDir = path.join(tempDir, '.ketchup', 'reminders');
+    expect(fs.existsSync(remindersDir)).toBe(false);
+  });
+
+  it('does NOT copy validators', async () => {
+    await install(tempDir, { local: true });
+
+    const validatorsDir = path.join(tempDir, '.ketchup', 'validators');
+    expect(fs.existsSync(validatorsDir)).toBe(false);
+  });
+
+  it('copies commands to .claude/commands/', async () => {
+    await install(tempDir, { local: true });
+
+    const commandsDir = path.join(tempDir, '.claude', 'commands');
+    expect(fs.existsSync(path.join(commandsDir, 'ketchup.md'))).toBe(true);
+  });
+
+  it('initializes hook state at .ketchup/.claude.hooks.json', async () => {
+    await install(tempDir, { local: true });
+
+    const hookStatePath = path.join(tempDir, '.ketchup', '.claude.hooks.json');
+    expect(fs.existsSync(hookStatePath)).toBe(true);
+
+    const state = JSON.parse(fs.readFileSync(hookStatePath, 'utf-8'));
+    expect(state.autoContinue.mode).toBe('smart');
+    expect(state.validateCommit.mode).toBe('strict');
+    expect(state.denyList.enabled).toBe(true);
+  });
+
+  it('returns status "installed" on fresh install', async () => {
+    const result = await install(tempDir, { local: true });
+
+    expect(result.status).toBe('installed');
+  });
+
+  it('returns status "updated" when .ketchup/.claude.hooks.json exists', async () => {
+    const ketchupDir = path.join(tempDir, '.ketchup');
+    fs.mkdirSync(ketchupDir, { recursive: true });
+    fs.writeFileSync(path.join(ketchupDir, '.claude.hooks.json'), '{}');
+
+    const result = await install(tempDir, { local: true });
+
+    expect(result.status).toBe('updated');
+  });
+
+  it('is idempotent — running twice succeeds', async () => {
+    await install(tempDir, { local: true });
+    const result = await install(tempDir, { local: true });
+
+    expect(result.claudeDir).toBe(path.join(tempDir, '.claude'));
+    expect(result.settingsCreated).toBe(false);
     expect(result.status).toBe('updated');
   });
 });

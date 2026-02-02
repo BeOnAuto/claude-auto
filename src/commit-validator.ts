@@ -40,20 +40,24 @@ export function extractAppeal(message: string): string | null {
   return match ? match[1].trim() : null;
 }
 
-export type Executor = (cmd: string, args: string[], options: { encoding: 'utf8' }) => SpawnSyncReturns<string>;
+export type Executor = (
+  cmd: string,
+  args: string[],
+  options: { encoding: 'utf8' },
+) => SpawnSyncReturns<string> | Promise<SpawnSyncReturns<string>>;
 
 export interface ValidatorResult {
   decision: 'ACK' | 'NACK';
   reason?: string;
 }
 
-export function runValidator(
+export async function runValidator(
   validator: Validator,
   context: CommitContext,
   executor: Executor = spawnSync,
-): ValidatorResult {
+): Promise<ValidatorResult> {
   const prompt = buildPrompt(validator, context);
-  const result = executor('claude', ['-p', prompt, '--output-format', 'json'], {
+  const result = await executor('claude', ['-p', '--no-session-persistence', prompt, '--output-format', 'json'], {
     encoding: 'utf8',
   });
 
@@ -107,15 +111,15 @@ ${appeal}
 ${appealValidator.content}`;
 }
 
-export function runAppealValidator(
+export async function runAppealValidator(
   appealValidator: Validator,
   context: CommitContext,
   results: CommitValidationResult[],
   appeal: string,
   executor: Executor = spawnSync,
-): ValidatorResult {
+): Promise<ValidatorResult> {
   const prompt = buildAppealPrompt(appealValidator, context, results, appeal);
-  const result = executor('claude', ['-p', prompt, '--output-format', 'json'], {
+  const result = await executor('claude', ['-p', '--no-session-persistence', prompt, '--output-format', 'json'], {
     encoding: 'utf8',
   });
 
@@ -131,13 +135,13 @@ export interface CommitValidationResult {
   appealable: boolean;
 }
 
-export function validateCommit(
+export async function validateCommit(
   validators: Validator[],
   context: CommitContext,
   executor: Executor = spawnSync,
-): CommitValidationResult[] {
-  return validators.map((validator) => {
-    const result = runValidator(validator, context, executor);
+): Promise<CommitValidationResult[]> {
+  const pending = validators.map(async (validator) => {
+    const result = await runValidator(validator, context, executor);
     return {
       validator: validator.name,
       decision: result.decision,
@@ -145,6 +149,7 @@ export function validateCommit(
       appealable: !NON_APPEALABLE_VALIDATORS.includes(validator.name),
     };
   });
+  return Promise.all(pending);
 }
 
 export interface HandleCommitValidationResult {
@@ -154,13 +159,13 @@ export interface HandleCommitValidationResult {
   appeal?: string;
 }
 
-export function handleCommitValidation(
+export async function handleCommitValidation(
   validators: Validator[],
   context: CommitContext,
   executor: Executor = spawnSync,
   appealValidator?: Validator,
-): HandleCommitValidationResult {
-  const results = validateCommit(validators, context, executor);
+): Promise<HandleCommitValidationResult> {
+  const results = await validateCommit(validators, context, executor);
   const appeal = extractAppeal(context.message);
 
   const nacks = results.filter((r) => r.decision === 'NACK');
@@ -185,7 +190,7 @@ export function handleCommitValidation(
     };
   }
 
-  const appealResult = runAppealValidator(appealValidator, context, results, appeal, executor);
+  const appealResult = await runAppealValidator(appealValidator, context, results, appeal, executor);
 
   if (appealResult.decision === 'ACK') {
     return { allowed: true, results, appeal };

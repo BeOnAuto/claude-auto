@@ -54,8 +54,8 @@ describe('cli doctor', () => {
   });
 
   it('reports unhealthy when ketchup symlinks are missing', async () => {
-    fs.mkdirSync(path.join(packageDir, 'validators'), { recursive: true });
-    fs.writeFileSync(path.join(packageDir, 'validators', 'test.md'), '');
+    fs.mkdirSync(path.join(packageDir, '.ketchup', 'validators'), { recursive: true });
+    fs.writeFileSync(path.join(packageDir, '.ketchup', 'validators', 'test.md'), '');
 
     const result = await doctor(packageDir, claudeDir);
 

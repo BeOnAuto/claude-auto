@@ -252,7 +252,7 @@ Now generate the changelog for the commits above:`;
     writeFileSync(tempFile, prompt);
 
     try {
-      const result = execSync(`claude -p "$(cat ${tempFile})"`, {
+      const result = execSync(`claude -p --no-session-persistence "$(cat ${tempFile})"`, {
         encoding: 'utf8',
         stdio: ['pipe', 'pipe', 'pipe'],
         timeout: 30000,

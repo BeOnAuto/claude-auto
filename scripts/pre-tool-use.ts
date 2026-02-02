@@ -23,6 +23,7 @@ const startTime = Date.now();
       durationMs: Date.now() - startTime,
     });
     console.log(JSON.stringify(result));
+    process.exit(0);
   } catch (err) {
     writeHookLog(ketchupDir, {
       hookName: 'pre-tool-use',
