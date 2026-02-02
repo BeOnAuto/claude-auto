@@ -10,7 +10,7 @@ Ketchup uses a layered configuration system with multiple files:
 
 | File | Purpose | Committed? | Auto-Created? |
 |------|---------|------------|---------------|
-| `.claude.hooks.json` | Primary runtime hook state | No | Yes |
+| `.ketchup/.claude.hooks.json` | Primary runtime hook state | No | Yes |
 | `.claude/settings.json` | Merged hook configuration | No | Yes |
 | `.claude/settings.project.json` | Project-level overrides | Yes | No |
 | `.claude/settings.local.json` | Local/personal overrides | No | No |
@@ -19,16 +19,17 @@ Ketchup uses a layered configuration system with multiple files:
 | `.claude/deny-list.local.txt` | Local file protection | No | No |
 | `.claude/state.json` | Project state for conditionals | No | No |
 | `.ketchuprc.json` (or variants) | Cosmiconfig options | Yes | No |
-| `.ketchup/reminders/*.md` | Context injection reminders | Yes/No | Yes (symlinked) |
-| `.ketchup/validators/*.md` | Commit validation rules | Yes/No | Yes (symlinked) |
+| `.ketchup/scripts/*.js` | Hook scripts | No | Yes (copied) |
+| `.ketchup/reminders/*.md` | Context injection reminders | Yes/No | Yes (copied) |
+| `.ketchup/validators/*.md` | Commit validation rules | Yes/No | Yes (copied) |
 
 ---
 
-## Hook State (`.claude.hooks.json`)
+## Hook State (`.ketchup/.claude.hooks.json`)
 
 The primary runtime configuration file. Controls auto-continue, commit validation, and other behaviors.
 
-**Location:** Project root (next to `package.json`)
+**Location:** `.ketchup/.claude.hooks.json` (inside the ketchup directory)
 
 ### Full Schema
 
@@ -146,7 +147,7 @@ See [Architecture Guide](/architecture#settings-merge-strategy) for detailed mer
 {
   "hooks": {
     "PreToolUse": {
-      "_disabled": ["node .claude/scripts/pre-tool-use.js"]
+      "_disabled": ["node .ketchup/scripts/pre-tool-use.js"]
     }
   }
 }
@@ -195,7 +196,7 @@ The package provides these default hooks:
       {
         "matcher": "",
         "hooks": [
-          { "type": "command", "command": "node .claude/scripts/session-start.js" }
+          { "type": "command", "command": "node .ketchup/scripts/session-start.js" }
         ]
       }
     ],
@@ -203,7 +204,7 @@ The package provides these default hooks:
       {
         "matcher": "Edit|Write|NotebookEdit|Bash",
         "hooks": [
-          { "type": "command", "command": "node .claude/scripts/pre-tool-use.js" }
+          { "type": "command", "command": "node .ketchup/scripts/pre-tool-use.js" }
         ]
       }
     ],
@@ -211,7 +212,7 @@ The package provides these default hooks:
       {
         "matcher": "",
         "hooks": [
-          { "type": "command", "command": "node .claude/scripts/user-prompt-submit.js" }
+          { "type": "command", "command": "node .ketchup/scripts/user-prompt-submit.js" }
         ]
       }
     ],
@@ -219,7 +220,7 @@ The package provides these default hooks:
       {
         "matcher": "",
         "hooks": [
-          { "type": "command", "command": "node .claude/scripts/stop.js" }
+          { "type": "command", "command": "node .ketchup/scripts/auto-continue.js" }
         ]
       }
     ]
@@ -382,7 +383,7 @@ Enable debug logging:
 DEBUG=ketchup* claude
 ```
 
-Logs written to `.claude/logs/ketchup/debug.log`.
+Logs written to `.ketchup/logs/debug.log`.
 
 ### `KETCHUP_LOG`
 
@@ -399,7 +400,7 @@ KETCHUP_LOG="*,-allowed" claude
 KETCHUP_LOG="session-start,block" claude
 ```
 
-Activity logs written to `.claude/logs/activity.log`.
+Activity logs written to `.ketchup/logs/activity.log`.
 
 ### `KETCHUP_SKIP_POSTINSTALL`
 
@@ -424,7 +425,7 @@ KETCHUP_VALIDATOR_MODE=strict claude
 KETCHUP_VALIDATOR_MODE=warn claude
 ```
 
-Overrides the `validateCommit.mode` setting in `.claude.hooks.json`.
+Overrides the `validateCommit.mode` setting in `.ketchup/.claude.hooks.json`.
 
 ### `KETCHUP_AUTO_CONTINUE`
 
@@ -441,7 +442,7 @@ KETCHUP_AUTO_CONTINUE=smart claude
 KETCHUP_AUTO_CONTINUE=off claude
 ```
 
-Overrides the `autoContinue.mode` setting in `.claude.hooks.json`.
+Overrides the `autoContinue.mode` setting in `.ketchup/.claude.hooks.json`.
 
 ---
 
@@ -487,8 +488,8 @@ Reminders are Markdown files with YAML frontmatter that inject context into Clau
 
 ### Location
 
-- Package reminders: `node_modules/claude-ketchup/reminders/` (symlinked to `.ketchup/reminders/`)
-- Custom reminders: `.ketchup/reminders/`
+- Default reminders: `.ketchup/reminders/` (copied from package during install)
+- Custom reminders: `.ketchup/reminders/` (add your own `.md` files)
 
 ### Frontmatter Schema
 
@@ -515,8 +516,8 @@ Validators are Markdown files with YAML frontmatter.
 
 ### Location
 
-- Package validators: `node_modules/claude-ketchup/validators/` (symlinked to `.ketchup/validators/`)
-- Custom validators: `.ketchup/validators/`
+- Default validators: `.ketchup/validators/` (copied from package during install)
+- Custom validators: `.ketchup/validators/` (add your own `.md` files)
 
 ### Frontmatter Schema
 
@@ -545,7 +546,7 @@ Ketchup finds the project root in this order:
 
 ### Debug Logs
 
-**Location:** `.claude/logs/ketchup/debug.log`
+**Location:** `.ketchup/logs/debug.log`
 
 **Enable:** `DEBUG=ketchup*`
 
@@ -553,17 +554,11 @@ Ketchup finds the project root in this order:
 
 ### Activity Logs
 
-**Location:** `.claude/logs/activity.log`
+**Location:** `.ketchup/logs/activity.log`
 
 **Filter:** `KETCHUP_LOG` environment variable
 
 **Format:** `MM-DD HH:MM:SS [session-id] hook-name: message`
-
-### Hook Session Logs
-
-**Location:** `.claude/logs/hooks/`
-
-**Format:** `{prefix}-{timestamp}.log` (8-char session prefix)
 
 **Levels:** ACK, NACK, ERROR, WARN, SKIP, INFO, DENIED, CONTINUE
 
@@ -585,10 +580,14 @@ Ketchup finds the project root in this order:
 }
 ```
 
+::: tip Script Location
+Hook scripts are located at `.ketchup/scripts/`, not `.claude/scripts/`. The `settings.json` commands reference `.ketchup/scripts/*.js`.
+:::
+
 ### Enable non-stop mode
 
 ```json
-// .claude.hooks.json
+// .ketchup/.claude.hooks.json
 {
   "autoContinue": {
     "mode": "non-stop",
@@ -600,7 +599,7 @@ Ketchup finds the project root in this order:
 ### Disable commit validation
 
 ```json
-// .claude.hooks.json
+// .ketchup/.claude.hooks.json
 {
   "validateCommit": {
     "mode": "off"
@@ -611,7 +610,7 @@ Ketchup finds the project root in this order:
 ### Add custom file protection
 
 ```json
-// .claude.hooks.json
+// .ketchup/.claude.hooks.json
 {
   "denyList": {
     "enabled": true,
@@ -623,7 +622,7 @@ Ketchup finds the project root in this order:
 ### Skip validation for explore agents
 
 ```json
-// .claude.hooks.json
+// .ketchup/.claude.hooks.json
 {
   "subagentHooks": {
     "validateCommitOnExplore": false,

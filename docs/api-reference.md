@@ -6,6 +6,84 @@ Use these functions to build custom hooks, integrate with CI/CD, or extend the s
 
 ---
 
+## Types
+
+### `Reminder`
+
+A parsed reminder with metadata and content.
+
+```typescript
+interface Reminder {
+  name: string;
+  when: ReminderWhen;
+  priority: number;
+  content: string;
+}
+```
+
+| Property | Type | Description |
+| -------- | ---- | ----------- |
+| `name` | `string` | Filename without `.md` extension |
+| `when` | `ReminderWhen` | Conditions for when this reminder applies |
+| `priority` | `number` | Sort order (higher = earlier). Default: `0` |
+| `content` | `string` | Markdown body (trimmed, without frontmatter) |
+
+---
+
+### `ReminderWhen`
+
+Conditions that control when a reminder is active.
+
+```typescript
+interface ReminderWhen {
+  hook?: string;
+  mode?: string;
+  toolName?: string;
+  [key: string]: unknown;
+}
+```
+
+All conditions use AND logic — every key/value pair must match the context.
+
+---
+
+### `ReminderContext`
+
+Context passed to `matchReminders` and `loadReminders` for filtering.
+
+```typescript
+interface ReminderContext {
+  hook: string;
+  mode?: string;
+  toolName?: string;
+  [key: string]: unknown;
+}
+```
+
+---
+
+### `InstallResult`
+
+Result returned by the `install` function.
+
+```typescript
+type InstallResult = {
+  targetDir: string;
+  claudeDir: string;
+  settingsCreated: boolean;
+  status: 'installed' | 'updated';
+};
+```
+
+| Property | Type | Description |
+| -------- | ---- | ----------- |
+| `targetDir` | `string` | Resolved absolute path to the project root |
+| `claudeDir` | `string` | Path to the `.claude/` directory |
+| `settingsCreated` | `boolean` | `true` if `settings.json` was created (not already present) |
+| `status` | `'installed' \| 'updated'` | `'installed'` on first run, `'updated'` on subsequent runs |
+
+---
+
 ## Core Utilities
 
 ### `findProjectRoot(): string`
@@ -13,9 +91,9 @@ Use these functions to build custom hooks, integrate with CI/CD, or extend the s
 Finds the project root directory by walking up the directory tree.
 
 **Search order:**
-1. `KETCHUP_ROOT` environment variable
-2. Walk up from `INIT_CWD` or `process.cwd()` to find `package.json`
-3. Walk up to find `.git` directory
+1. `KETCHUP_ROOT` environment variable (if set and path exists)
+2. Walk up from `INIT_CWD` to find `package.json`
+3. Walk up from `INIT_CWD` to find `.git` directory
 4. Falls back to `process.cwd()`
 
 ```typescript
@@ -25,6 +103,12 @@ const root = findProjectRoot();
 // → '/Users/sam/my-project'
 ```
 
+**Edge cases (from tests):**
+- Returns `process.cwd()` when `INIT_CWD` path does not exist
+- Returns `process.cwd()` when no env vars are set
+- Walks up nested directories to find the nearest `package.json`
+- Falls back to `.git` detection when no `package.json` found
+
 ---
 
 ### `createSymlink(source: string, target: string): void`
@@ -32,26 +116,26 @@ const root = findProjectRoot();
 Creates a symbolic link from source to target.
 
 **Behavior:**
-- If target exists as symlink pointing elsewhere, removes it first
-- If target exists as regular file, renames to `.backup`
-- If target already points to source, no-op (idempotent)
+- If target is a symlink pointing elsewhere, removes it first (no backup)
+- If target is a regular file, renames to `.backup` before creating symlink
+- If target already points to source, no-op (idempotent — same inode preserved)
 
 ```typescript
 import { createSymlink } from 'claude-ketchup';
 
-createSymlink('/pkg/scripts/hook.ts', '/project/.claude/scripts/hook.ts');
+createSymlink('/pkg/scripts/hook.js', '/project/.ketchup/scripts/hook.js');
 ```
 
 ---
 
 ### `removeSymlink(target: string): void`
 
-Removes a symbolic link. Does nothing if target is not a symlink.
+Removes a symbolic link. Does nothing if target is not a symlink (preserves regular files).
 
 ```typescript
 import { removeSymlink } from 'claude-ketchup';
 
-removeSymlink('/project/.claude/scripts/hook.ts');
+removeSymlink('/project/.ketchup/scripts/hook.js');
 ```
 
 ---
@@ -60,12 +144,17 @@ removeSymlink('/project/.claude/scripts/hook.ts');
 
 Checks if a symlink exists and points to the expected source.
 
+Returns `false` when:
+- Target does not exist
+- Target is not a symlink (regular file)
+- Target points to a different source
+
 ```typescript
 import { verifySymlink } from 'claude-ketchup';
 
 const valid = verifySymlink(
-  '/project/.claude/scripts/hook.ts',
-  '/pkg/scripts/hook.ts'
+  '/project/.ketchup/scripts/hook.js',
+  '/pkg/scripts/hook.js'
 );
 // → true
 ```
@@ -74,18 +163,23 @@ const valid = verifySymlink(
 
 ### `generateGitignore(targetDir: string, symlinkedFiles: string[]): void`
 
-Generates a `.gitignore` file for the `.claude/` directory.
+Generates a `.gitignore` file in the target directory.
 
-**Includes:**
-- All symlinked file paths
-- `*.local.*` pattern
-- `state.json`
-- `logs/`
+**Includes (in order):**
+1. All symlinked file paths
+2. `*.local.*` pattern
+3. `state.json`
+4. `logs/`
 
 ```typescript
 import { generateGitignore } from 'claude-ketchup';
 
-generateGitignore('/project/.claude', ['scripts/hook.ts', 'skills/coding.md']);
+generateGitignore('/project/.claude', ['scripts/session-start.ts']);
+// Creates .gitignore with content:
+// scripts/session-start.ts
+// *.local.*
+// state.json
+// logs/
 ```
 
 ---
@@ -99,7 +193,14 @@ Merges settings from multiple sources with lock file caching.
 2. `{targetDir}/settings.project.json` (project overrides)
 3. `{targetDir}/settings.local.json` (local overrides)
 
-**Lock file:** Stores SHA-256 hash of inputs. Skips merge if unchanged.
+**Lock file:** Stores SHA-256 hash of inputs. Skips merge if unchanged. Re-merges when inputs change.
+
+**Merge behaviors:**
+- **Default (array append):** Hook arrays from all layers are concatenated, then deduplicated by command (last occurrence wins)
+- **`_disabled` array:** Removes hooks matching specified commands from the base
+- **`_mode: 'replace'`:** Replaces the entire hook array with `_value` (or empty array if no `_value`)
+- **Non-hooks keys:** Deep merged (e.g., `permissions`, `customKey`)
+- **No-op:** Does nothing when package template doesn't exist
 
 ```typescript
 import { mergeSettings } from 'claude-ketchup';
@@ -111,111 +212,145 @@ mergeSettings('/node_modules/claude-ketchup', '/project/.claude');
 
 ## State Management
 
-### `readState(dir: string): State`
+### `readState(dir: string): Record<string, unknown>`
 
-Reads state from `state.json` in the given directory.
+Reads state from `state.json` in the given directory. Returns empty object when file doesn't exist.
 
 ```typescript
 import { readState } from 'claude-ketchup';
 
 const state = readState('/project/.claude');
-// → { projectType: 'typescript', ... }
+// → { lastRun: '2024-01-01', counter: 5 }
+// → {} (when state.json doesn't exist)
 ```
 
 ---
 
-### `writeState(dir: string, state: State): void`
+### `writeState(dir: string, state: Record<string, unknown>): void`
 
-Writes state to `state.json`, creating a backup first.
+Writes state to `state.json`. Creates a backup at `state.backup.json` before overwriting existing state.
 
 ```typescript
 import { writeState } from 'claude-ketchup';
 
-writeState('/project/.claude', { projectType: 'typescript' });
+writeState('/project/.claude', { lastRun: '2024-01-01', counter: 5 });
+// Also creates state.backup.json with previous contents
 ```
 
 ---
 
 ## Reminders
 
-### `scanReminders(dir: string): string[]`
+### `scanReminders(remindersDir: string): string[]`
 
-Scans the `reminders/` subdirectory for `.md` files.
+Scans a directory for `.md` files. Returns filenames (not full paths). Returns empty array when directory doesn't exist. Non-`.md` files are ignored.
 
 ```typescript
 import { scanReminders } from 'claude-ketchup';
 
-const reminderPaths = scanReminders('/project/.ketchup');
-// → ['/project/.ketchup/reminders/coding.md', ...]
+const filenames = scanReminders('/project/.ketchup/reminders');
+// → ['ketchup.md', 'plan-mode.md']
 ```
 
 ---
 
-### `parseReminder(raw: string): ParsedReminder`
+### `parseReminder(content: string, filename: string): Reminder`
 
-Parses a reminder file, extracting YAML frontmatter.
+Parses a reminder file's raw content, extracting YAML frontmatter and body.
 
 ```typescript
 import { parseReminder } from 'claude-ketchup';
 
-const reminder = parseReminder(`---
+const reminder = parseReminder(
+  `---
 when:
   hook: SessionStart
+  mode: plan
 priority: 100
 ---
 
-# Reminder Content`);
+Ask clarifying questions until crystal clear.`,
+  'plan-mode.md'
+);
 
-// → { frontmatter: { when: { hook: 'SessionStart' }, priority: 100 }, content: '# Reminder Content' }
+// → {
+//   name: 'plan-mode',
+//   when: { hook: 'SessionStart', mode: 'plan' },
+//   priority: 100,
+//   content: 'Ask clarifying questions until crystal clear.'
+// }
 ```
 
----
-
-### `filterByHook(reminders: ParsedReminder[], hookType: string): ParsedReminder[]`
-
-Filters reminders by hook type.
+When no frontmatter is present, returns empty `when` and priority `0`:
 
 ```typescript
-import { filterByHook } from 'claude-ketchup';
-
-const sessionStartReminders = filterByHook(reminders, 'SessionStart');
+const simple = parseReminder('# Simple\n\nJust content.', 'simple.md');
+// → { name: 'simple', when: {}, priority: 0, content: '# Simple\n\nJust content.' }
 ```
 
 ---
 
-### `filterByMode(reminders: ParsedReminder[], mode: string): ParsedReminder[]`
+### `matchReminders(reminders: Reminder[], context: ReminderContext): Reminder[]`
 
-Filters reminders by mode (plan/code). Reminders without `mode` always pass.
+Filters reminders by context. All `when` conditions use AND logic — every key/value pair in `when` must match the corresponding key in `context`.
+
+Reminders with empty `when` always match.
 
 ```typescript
-import { filterByMode } from 'claude-ketchup';
+import { matchReminders } from 'claude-ketchup';
+import type { Reminder, ReminderContext } from 'claude-ketchup';
 
-const codeReminders = filterByMode(reminders, 'code');
+const reminders: Reminder[] = [
+  { name: 'always', when: {}, priority: 0, content: 'Always shown' },
+  { name: 'session-only', when: { hook: 'SessionStart' }, priority: 0, content: 'Session' },
+  { name: 'plan-mode', when: { mode: 'plan' }, priority: 0, content: 'Plan' },
+  { name: 'session-plan', when: { hook: 'SessionStart', mode: 'plan' }, priority: 0, content: 'Both' },
+  { name: 'bash-tool', when: { hook: 'PreToolUse', toolName: 'Bash' }, priority: 0, content: 'Bash' },
+];
+
+const context: ReminderContext = { hook: 'SessionStart', mode: 'plan' };
+const result = matchReminders(reminders, context);
+
+// → ['always', 'session-only', 'plan-mode', 'session-plan']
+// 'bash-tool' excluded: hook doesn't match
 ```
 
 ---
 
-### `filterByState(reminders: ParsedReminder[], state: State): ParsedReminder[]`
+### `sortByPriority(reminders: Reminder[]): Reminder[]`
 
-Filters reminders by `when` conditions. Reminders without `when` always pass.
-
-```typescript
-import { filterByState } from 'claude-ketchup';
-
-const activeReminders = filterByState(reminders, { projectType: 'typescript' });
-```
-
----
-
-### `sortByPriority(reminders: ParsedReminder[]): ParsedReminder[]`
-
-Sorts reminders by priority (higher first). Default priority is 0.
+Sorts reminders by priority (highest first). Returns a new array (does not mutate input). Default priority is `0`.
 
 ```typescript
 import { sortByPriority } from 'claude-ketchup';
 
 const sorted = sortByPriority(reminders);
+// Priority 100 → 50 → 10 → 0
 ```
+
+---
+
+### `loadReminders(remindersDir: string, context: ReminderContext): Reminder[]`
+
+High-level function that scans, parses, matches, and sorts reminders from a directory in one call.
+
+Equivalent to: `sortByPriority(matchReminders(reminders.map(parseReminder), context))`
+
+```typescript
+import { loadReminders } from 'claude-ketchup';
+import type { ReminderContext } from 'claude-ketchup';
+
+const context: ReminderContext = { hook: 'SessionStart' };
+const reminders = loadReminders('/project/.ketchup/reminders', context);
+// → Sorted, filtered reminders matching SessionStart hook
+```
+
+**Behavior (from tests):**
+- Reads all `.md` files from the directory
+- Parses each with `parseReminder`
+- Filters using `matchReminders` against the context
+- Sorts by priority (highest first)
+- Reminders whose `when` conditions don't match the context are excluded
 
 ---
 
@@ -223,104 +358,162 @@ const sorted = sortByPriority(reminders);
 
 ### `loadDenyPatterns(dir: string): string[]`
 
-Loads deny patterns from project and local files.
+Loads deny patterns from project and local files. Returns empty array when no files exist.
+
+**Sources:**
+1. `{dir}/deny-list.project.txt` — project-wide patterns
+2. `{dir}/deny-list.local.txt` — personal patterns
+
+Empty lines and lines starting with `#` (comments) are ignored. Patterns from both files are merged.
 
 ```typescript
 import { loadDenyPatterns } from 'claude-ketchup';
 
 const patterns = loadDenyPatterns('/project/.claude');
-// → ['*.secret', '.env', 'dist/**']
+// → ['*.secret', '/private/**', '/my-local/**']
 ```
 
 ---
 
 ### `isDenied(filePath: string, patterns: string[]): boolean`
 
-Checks if a file path matches any deny pattern using micromatch.
+Checks if a file path matches any deny pattern using [micromatch](https://github.com/micromatch/micromatch) glob matching.
+
+Returns `false` when patterns array is empty.
 
 ```typescript
 import { isDenied } from 'claude-ketchup';
 
-isDenied('/project/.env', ['*.secret', '.env']);
+isDenied('/config/api.secret', ['*.secret', '/private/**']);
 // → true
+
+isDenied('/config/api.json', ['*.secret', '/private/**']);
+// → false
+
+isDenied('/any/path.txt', []);
+// → false
 ```
 
 ---
 
 ## CLI Functions
 
-### `getStatus(packageDir: string): StatusResult`
+### `install(targetPath?: string, options?: { local?: boolean }): Promise<InstallResult>`
 
-Returns status of all expected symlinks.
+Installs Ketchup into a project directory. Creates `.claude/` and `.ketchup/` directories, copies hook scripts, validators, and reminders, and initializes hook state.
+
+**Standard install:**
+- Creates `settings.json` from package template (skips if already exists)
+- Copies bundled scripts to `.ketchup/scripts/`
+- Copies validators to `.ketchup/validators/`
+- Copies reminders to `.ketchup/reminders/`
+- Initializes `.ketchup/.claude.hooks.json` with defaults (`autoContinue.mode: 'smart'`, `validateCommit.mode: 'strict'`, `denyList.enabled: true`)
+
+**Local install** (`{ local: true }`):
+- Creates `settings.json` from local template (uses `pnpm tsx` commands instead of `node`)
+- Does NOT copy scripts, validators, or reminders
+- Still initializes hook state
+
+**Idempotent:** Running twice succeeds. Does not overwrite existing `settings.json`.
+
+```typescript
+import { install } from 'claude-ketchup';
+
+const result = await install('/path/to/project');
+// → { targetDir: '/path/to/project', claudeDir: '/path/to/project/.claude', settingsCreated: true, status: 'installed' }
+
+const result2 = await install('/path/to/project');
+// → { ...same paths..., settingsCreated: false, status: 'updated' }
+```
+
+---
+
+### `getStatus(packageDir: string, claudeDir: string): Promise<StatusResult>`
+
+Returns status of all expected symlinks, including both `.claude/` and `.ketchup/` files.
 
 ```typescript
 import { getStatus } from 'claude-ketchup';
 
-const status = getStatus('/node_modules/claude-ketchup');
-// → { symlinks: [{ path: 'scripts/hook.ts', status: 'ok' }, ...] }
+const status = await getStatus('/node_modules/claude-ketchup', '/project/.claude');
+// → {
+//   symlinks: [
+//     { path: 'commands/cmd.md', status: 'ok' },
+//     { path: '.ketchup/validators/rule.md', status: 'ok' },
+//     { path: '.ketchup/reminders/reminder.md', status: 'ok' }
+//   ]
+// }
 ```
 
 ---
 
-### `repair(packageDir: string, claudeDir: string, files: string[]): RepairResult`
+### `getExpectedSymlinks(packageDir: string): { claudeFiles: string[], ketchupFiles: string[] }`
 
-Recreates symlinks for specified files.
+Returns lists of files that should be symlinked, separated by target directory.
 
-```typescript
-import { repair } from 'claude-ketchup';
-
-const result = repair(
-  '/node_modules/claude-ketchup',
-  '/project/.claude',
-  ['scripts/hook.ts']
-);
-// → { repaired: ['scripts/hook.ts'] }
-```
-
----
-
-### `getExpectedSymlinks(packageDir: string): string[]`
-
-Returns list of files that should be symlinked from the package.
+- `claudeFiles`: Files from `commands/` (symlinked to `.claude/commands/`)
+- `ketchupFiles`: Files from `.ketchup/validators/` and `.ketchup/reminders/` (symlinked to `.ketchup/`)
 
 ```typescript
 import { getExpectedSymlinks } from 'claude-ketchup';
 
 const files = getExpectedSymlinks('/node_modules/claude-ketchup');
-// → ['scripts/pre-tool-use.ts', 'scripts/user-prompt-submit.ts', 'skills/ketchup.enforced.md', ...]
+// → {
+//   claudeFiles: ['commands/cmd.md'],
+//   ketchupFiles: ['validators/rule.md', 'reminders/reminder.md']
+// }
 ```
 
 ---
 
-### `doctor(packageDir: string, claudeDir: string): DoctorResult`
+### `repair(packageDir: string, claudeDir: string, files: { claudeFiles: string[], ketchupFiles: string[] }): Promise<RepairResult>`
 
-Diagnoses symlink health.
+Recreates symlinks for specified files. Claude files are linked to `.claude/`, ketchup files to `.ketchup/`.
+
+```typescript
+import { getExpectedSymlinks, repair } from 'claude-ketchup';
+
+const files = getExpectedSymlinks('/node_modules/claude-ketchup');
+const result = await repair('/node_modules/claude-ketchup', '/project/.claude', files);
+// → { repaired: ['commands/cmd.md', '.ketchup/validators/rule.md'] }
+```
+
+---
+
+### `doctor(packageDir: string, claudeDir: string): Promise<DoctorResult>`
+
+Diagnoses symlink health for both `.claude/` and `.ketchup/` directories.
 
 ```typescript
 import { doctor } from 'claude-ketchup';
 
-const result = doctor('/node_modules/claude-ketchup', '/project/.claude');
+const result = await doctor('/node_modules/claude-ketchup', '/project/.claude');
 // → { healthy: true, issues: [] }
+// → { healthy: false, issues: ['Missing or invalid symlink: /project/.claude/commands/cmd.md'] }
 ```
 
 ---
 
-### `listReminders(ketchupDir: string): RemindersResult`
+### `listReminders(remindersDir: string): RemindersResult`
 
-Lists all reminders with metadata.
+Lists all reminders with their metadata (without content).
 
 ```typescript
 import { listReminders } from 'claude-ketchup';
 
-const result = listReminders('/project/.ketchup');
-// → { reminders: [{ name: 'coding.md', hook: 'SessionStart', priority: 100 }, ...] }
+const result = listReminders('/project/.ketchup/reminders');
+// → {
+//   reminders: [
+//     { name: 'plan-mode', when: { hook: 'SessionStart', mode: 'plan' }, priority: 100 }
+//   ]
+// }
 ```
 
 ---
 
 ### `createCli(): Command`
 
-Creates the Commander CLI instance.
+Creates the Commander CLI instance with all subcommands registered.
 
 ```typescript
 import { createCli } from 'claude-ketchup';
@@ -328,4 +521,3 @@ import { createCli } from 'claude-ketchup';
 const program = createCli();
 program.parse();
 ```
-

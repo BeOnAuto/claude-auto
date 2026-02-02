@@ -29,10 +29,10 @@ This single command sets up everything you need - no package installation or con
 
 Behind the scenes, claude-ketchup:
 
-- Injects hooks that validate every commit
+- Copies hook scripts to `.ketchup/scripts/`
 - Creates reminders that inject your guidelines
 - Sets up the supervisor that ACKs or NACKs changes
-- Merges settings with smart overrides
+- Initializes hook state with sensible defaults
 
 ---
 

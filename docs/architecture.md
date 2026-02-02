@@ -52,7 +52,7 @@ Understanding how the Quality Stack works under the hood.
 claude-ketchup follows several key principles:
 
 1. **Convention over Configuration**: Sensible defaults that just work
-2. **Symlinks over Copies**: Changes to package propagate automatically
+2. **Copied Scripts, Layered Settings**: Hook scripts are copied to `.ketchup/scripts/` for reliability; settings use a layered merge strategy
 3. **Layered Settings**: Package → Project → Local override chain
 4. **Transparent Operation**: All files are human-readable
 5. **Minimal Dependencies**: Only three runtime dependencies
@@ -66,23 +66,23 @@ claude-ketchup follows several key principles:
 │                     Your Project                             │
 ├─────────────────────────────────────────────────────────────┤
 │  .claude/                                                    │
-│  ├── scripts/ ──────────────┐                               │
-│  ├── commands/ ─────────────┴──► Symlinks to package        │
+│  ├── commands/ ────────────────► Copied from package        │
 │  ├── settings.json ────────────► Merged configuration       │
 │  ├── settings.project.json ────► Project overrides          │
 │  ├── settings.local.json ──────► Local overrides            │
 │  ├── deny-list.project.txt ────► File protection patterns   │
 │  ├── deny-list.local.txt ──────► Local protection patterns  │
-│  ├── state.json ───────────────► Runtime state              │
-│  └── logs/                                                   │
-│      ├── ketchup/debug.log ────► Debug output               │
-│      └── hooks/*.log ──────────► Session logs               │
+│  └── state.json ───────────────► Runtime state              │
 │                                                              │
 │  .ketchup/                                                   │
+│  ├── scripts/ ─────────────────► Hook scripts (copied)      │
 │  ├── reminders/ ───────────────► Context injection files    │
-│  └── validators/ ──────────────► Commit validation rules    │
+│  ├── validators/ ──────────────► Commit validation rules    │
+│  ├── .claude.hooks.json ───────► Hook behavior state        │
+│  └── logs/                                                   │
+│      └── activity.log ─────────► Activity log               │
 │                                                              │
-│  .claude.hooks.json ───────────► Hook behavior state        │
+│                                                              │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
                               │
@@ -109,30 +109,29 @@ claude-ketchup follows several key principles:
 When you run `npx claude-ketchup install`, the installation script:
 
 ```
-postinstall.ts
+install()
     │
-    ├─► findProjectRoot()
-    │   ├─► Check KETCHUP_ROOT env
-    │   ├─► Walk up to find package.json
-    │   └─► Walk up to find .git
+    ├─► Resolve target path
     │
     ├─► Create .claude/ directory
     │
-    ├─► For each directory (scripts, reminders, commands):
-    │   └─► createSymlink(source, target)
-    │       ├─► If symlink exists → verify or replace
-    │       ├─► If file exists → backup and replace
-    │       └─► If nothing → create symlink
+    ├─► Create settings.json from template
+    │   └─► Skip if settings.json already exists
     │
-    ├─► generateGitignore()
-    │   └─► Write symlinked files + runtime patterns
+    ├─► Copy bundled scripts to .ketchup/scripts/
+    │   └─► session-start.js, pre-tool-use.js,
+    │       user-prompt-submit.js, auto-continue.js
     │
-    └─► mergeSettings()
-        ├─► Load templates/settings.json
-        ├─► Merge settings.project.json (if exists)
-        ├─► Merge settings.local.json (if exists)
-        ├─► Check lock file hash
-        └─► Write settings.json + lock file
+    ├─► Copy commands to .claude/commands/
+    │
+    ├─► Copy validators to .ketchup/validators/
+    │
+    ├─► Copy reminders to .ketchup/reminders/
+    │
+    └─► Initialize hook state
+        └─► .ketchup/.claude.hooks.json with defaults
+            (autoContinue: smart, validateCommit: strict,
+             denyList: enabled)
 ```
 
 ### Preuninstall
@@ -174,7 +173,7 @@ Claude Code Session Starts
 │  handleSessionStart()       │
 │  ├─► scanReminders()        │
 │  ├─► parseReminder() each   │
-│  ├─► filterByHook()         │
+│  ├─► matchReminders()       │
 │  ├─► sortByPriority()       │
 │  └─► Concatenate content    │
 └──────────────┬──────────────┘
@@ -546,7 +545,7 @@ claude-ketchup/
 │       ├── auto-continue.ts     Stop hook / auto-continue
 │       └── validate-commit.ts   Commit validation
 │
-├── scripts/                 Symlink targets (copied to .claude/scripts/)
+├── scripts/                 Source scripts (bundled to dist/bundle/scripts/)
 │   ├── pre-tool-use.ts
 │   ├── user-prompt-submit.ts
 │   └── test-hooks.sh
@@ -569,31 +568,27 @@ claude-ketchup/
 ```
 your-project/
 ├── .claude/
-│   ├── scripts/
-│   │   ├── pre-tool-use.ts       → symlink to package
-│   │   ├── user-prompt-submit.ts → symlink to package
-│   │   ├── session-start.ts      → symlink to package
-│   │   └── auto-continue.ts      → symlink to package
 │   ├── commands/
-│   │   ├── ketchup.md            → symlink to package
-│   │   └── *.md                  Your custom commands
-│   ├── logs/
-│   │   ├── hooks/                Session logs
-│   │   └── ketchup/              Debug logs
+│   │   └── *.md                  Copied from package
 │   ├── settings.json             Merged (generated)
 │   ├── settings.project.json     Project overrides (optional)
 │   ├── settings.local.json       Local overrides (optional)
 │   ├── deny-list.project.txt     Project deny patterns
-│   ├── deny-list.local.txt       Local deny patterns
-│   └── .gitignore                Generated
+│   └── deny-list.local.txt       Local deny patterns
 │
 ├── .ketchup/
+│   ├── scripts/
+│   │   ├── session-start.js      Copied from package bundle
+│   │   ├── pre-tool-use.js       Copied from package bundle
+│   │   ├── user-prompt-submit.js Copied from package bundle
+│   │   └── auto-continue.js      Copied from package bundle
 │   ├── reminders/
-│   │   └── *.md                  → symlinks to package + custom
-│   └── validators/
-│       └── *.md                  → symlinks to package + custom
-│
-└── .claude.hooks.json            Hook behavior state
+│   │   └── *.md                  Copied from package
+│   ├── validators/
+│   │   └── *.md                  Copied from package
+│   ├── .claude.hooks.json        Hook behavior state
+│   └── logs/
+│       └── activity.log          Activity log
 ```
 
 ---
@@ -604,7 +599,7 @@ your-project/
 |---------|---------|
 | **commander** | CLI argument parsing for `claude-ketchup` commands |
 | **micromatch** | Glob pattern matching for deny-list file filtering |
-| **yaml** | YAML parsing for skill frontmatter extraction |
+| **gray-matter** | YAML frontmatter parsing for reminders and validators |
 
 All dependencies are chosen for:
 - Small footprint

@@ -161,7 +161,7 @@ enabled: true
 
 ## Validation Modes
 
-Control validation strictness in `.claude.hooks.json`:
+Control validation strictness in `.ketchup/.claude.hooks.json`:
 
 ```json
 {
@@ -379,7 +379,7 @@ Active Validators:
 
 ### Temporarily Disable
 
-In `.claude.hooks.json`:
+In `.ketchup/.claude.hooks.json`:
 
 ```json
 {
@@ -574,7 +574,7 @@ git add test.js
 git commit -m "test: checking validator"
 
 # Check validator output in logs
-cat .claude/logs/hooks/*-validate-commit.log
+cat .ketchup/logs/activity.log
 ```
 
 ### Validator Not Triggering

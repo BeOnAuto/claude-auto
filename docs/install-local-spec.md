@@ -6,7 +6,7 @@ An npm script (`pnpm install:local`) for package maintainers that installs ketch
 
 ## Requirements
 
-1. **Hooks run from source**: `.claude/settings.json` commands use `npx tsx scripts/<name>.ts` instead of `node .claude/scripts/<name>.js`
+1. **Hooks run from source**: `.claude/settings.json` commands use `pnpm tsx scripts/<name>.ts` instead of `node .ketchup/scripts/<name>.js`
 
 2. **No copying reminders/validators**: The normal install copies from `reminders/` and `validators/` into `.ketchup/`. Local install skips this — `.ketchup/reminders/` and `.ketchup/validators/` ARE the source. You edit them in-place and they become what gets published.
 
@@ -23,6 +23,6 @@ An npm script (`pnpm install:local`) for package maintainers that installs ketch
 ## Current Architecture
 
 - Entry scripts: `scripts/session-start.ts`, `scripts/pre-tool-use.ts`, `scripts/user-prompt-submit.ts`, `scripts/auto-continue.ts`
-- Normal install bundles these via esbuild into `dist/bundle/scripts/` then copies to `.claude/scripts/`
+- Normal install bundles these via esbuild into `dist/bundle/scripts/` then copies to `.ketchup/scripts/`
 - Hooks resolve `ketchupDir` from `claudeDir` via `resolvePaths()` (uses cosmiconfig, defaults to `.ketchup`)
 - `install()` in `src/cli/install.ts` returns `{ targetDir, claudeDir, settingsCreated, status }`

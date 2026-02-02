@@ -19,9 +19,10 @@ That's it! This single command sets up everything you need.
 When you run `npx claude-ketchup install`:
 
 1. Creates `.claude/` and `.ketchup/` directories
-2. Symlinks hook scripts for session management and validation
-3. Generates configuration files (settings.json, .gitignore)
-4. Sets up built-in reminders and validators
+2. Copies hook scripts to `.ketchup/scripts/`
+3. Creates `settings.json` from package template
+4. Copies built-in reminders and validators
+5. Initializes hook state at `.ketchup/.claude.hooks.json`
 
 See the [Architecture Guide](/architecture#directory-structure) for complete directory structure details.
 
@@ -58,11 +59,11 @@ If you prefer to install manually or need custom control:
 
 ```bash
 # Create directories
-mkdir -p .claude/scripts .claude/commands
-mkdir -p .ketchup/reminders .ketchup/validators
+mkdir -p .claude/commands
+mkdir -p .ketchup/scripts .ketchup/reminders .ketchup/validators
 
-# Create initial configuration
-cat > .claude.hooks.json << 'EOF'
+# Create initial hook state
+cat > .ketchup/.claude.hooks.json << 'EOF'
 {
   "autoContinue": {
     "mode": "smart",
@@ -70,6 +71,9 @@ cat > .claude.hooks.json << 'EOF'
   },
   "validateCommit": {
     "mode": "strict"
+  },
+  "denyList": {
+    "enabled": true
   }
 }
 EOF
@@ -86,7 +90,7 @@ Create `.claude/settings.json`:
       {
         "matcher": "",
         "hooks": [
-          { "type": "command", "command": "npx tsx .claude/scripts/session-start.ts" }
+          { "type": "command", "command": "node .ketchup/scripts/session-start.js" }
         ]
       }
     ],
@@ -94,7 +98,7 @@ Create `.claude/settings.json`:
       {
         "matcher": "Edit|Write|NotebookEdit|Bash",
         "hooks": [
-          { "type": "command", "command": "npx tsx .claude/scripts/pre-tool-use.ts" }
+          { "type": "command", "command": "node .ketchup/scripts/pre-tool-use.js" }
         ]
       }
     ]
@@ -139,19 +143,19 @@ claude-ketchup install
 On Unix systems, you might need to fix permissions:
 
 ```bash
-chmod +x .claude/scripts/*.ts
+chmod +x .ketchup/scripts/*.js
 ```
 
-### Symlinks not created
+### Scripts not created
 
-If symlinks fail (common on Windows without admin rights):
+If scripts are missing:
 
 ```bash
 # Run repair command
 npx claude-ketchup repair
 
-# Or manually copy files instead of symlinking
-cp -r node_modules/claude-ketchup/scripts/* .claude/scripts/
+# Or re-run install
+npx claude-ketchup install
 ```
 
 ### Hooks not firing
@@ -160,7 +164,7 @@ Verify Claude Code can find your settings:
 
 1. Check `.claude/settings.json` exists
 2. Ensure you're in the project root when starting Claude
-3. Check logs in `.claude/logs/` for errors
+3. Check logs in `.ketchup/logs/` for errors
 
 ---
 
@@ -171,9 +175,6 @@ To remove Claude Ketchup from your project:
 ```bash
 # Remove directories
 rm -rf .claude .ketchup
-
-# Remove state file
-rm -f .claude.hooks.json
 
 # Remove from package.json if installed
 npm uninstall claude-ketchup
@@ -307,5 +308,5 @@ If diagnostic commands don't resolve your issue:
 
 1. Run `npx claude-ketchup doctor` first for diagnostics
 2. Try `npx claude-ketchup repair` to fix common issues
-3. Check `.claude/logs/` for detailed error messages
+3. Check `.ketchup/logs/` for detailed error messages
 4. Report persistent issues at [GitHub Issues](https://github.com/BeOnAuto/claude-ketchup/issues)

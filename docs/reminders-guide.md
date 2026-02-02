@@ -404,7 +404,7 @@ import { parseReminder } from 'claude-ketchup';
 import { readFileSync } from 'fs';
 
 const content = readFileSync('.ketchup/reminders/my-reminder.md', 'utf-8');
-const parsed = parseReminder(content);
+const parsed = parseReminder(content, 'my-reminder.md');
 console.log(JSON.stringify(parsed, null, 2));
 "
 ```
@@ -414,7 +414,7 @@ console.log(JSON.stringify(parsed, null, 2));
 Check what was injected:
 
 ```bash
-tail -f .claude/logs/hooks/session-*.log
+tail -f .ketchup/logs/activity.log
 ```
 
 ---
