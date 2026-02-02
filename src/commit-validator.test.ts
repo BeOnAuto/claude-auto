@@ -151,28 +151,30 @@ describe('extractCdTarget', () => {
 });
 
 describe('parseClaudeJsonOutput', () => {
-  it('extracts inner result from claude json wrapper', () => {
+  it('extracts inner result and token usage from claude json wrapper', () => {
     const stdout = JSON.stringify({
       type: 'result',
       subtype: 'success',
       result: '{"decision":"ACK"}',
+      usage: { input_tokens: 100, output_tokens: 9, cache_read_input_tokens: 500, cache_creation_input_tokens: 200 },
     });
 
     const parsed = parseClaudeJsonOutput(stdout);
 
-    expect(parsed).toEqual({ decision: 'ACK' });
+    expect(parsed).toEqual({ decision: 'ACK', inputTokens: 100, outputTokens: 9 });
   });
 
-  it('extracts NACK with reason from wrapper', () => {
+  it('extracts NACK with reason and tokens from wrapper', () => {
     const stdout = JSON.stringify({
       type: 'result',
       subtype: 'success',
       result: '{"decision":"NACK","reason":"Missing tests"}',
+      usage: { input_tokens: 150, output_tokens: 12 },
     });
 
     const parsed = parseClaudeJsonOutput(stdout);
 
-    expect(parsed).toEqual({ decision: 'NACK', reason: 'Missing tests' });
+    expect(parsed).toEqual({ decision: 'NACK', reason: 'Missing tests', inputTokens: 150, outputTokens: 12 });
   });
 
   it('returns outer object when result is not a string', () => {

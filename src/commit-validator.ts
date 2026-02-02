@@ -73,6 +73,8 @@ export type Executor = (
 export interface ValidatorResult {
   decision: 'ACK' | 'NACK';
   reason?: string;
+  inputTokens?: number;
+  outputTokens?: number;
 }
 
 const INVALID_RESPONSE: ValidatorResult = {
@@ -93,7 +95,15 @@ export function parseClaudeJsonOutput(stdout: string): ValidatorResult {
   if (parsed.decision !== 'ACK' && parsed.decision !== 'NACK') {
     return INVALID_RESPONSE;
   }
-  return parsed;
+  const result: ValidatorResult = { decision: parsed.decision };
+  if (parsed.reason) {
+    result.reason = parsed.reason;
+  }
+  if (outer.usage) {
+    result.inputTokens = outer.usage.input_tokens;
+    result.outputTokens = outer.usage.output_tokens;
+  }
+  return result;
 }
 
 export async function runValidator(
@@ -198,7 +208,8 @@ export async function validateCommit(
     onLog?.('spawn', validator.name);
     try {
       const result = await runValidator(validator, context, executor);
-      onLog?.('complete', validator.name, `${result.decision}${result.reason ? `: ${result.reason}` : ''}`);
+      const tokens = result.inputTokens != null ? ` (in:${result.inputTokens} out:${result.outputTokens})` : '';
+      onLog?.('complete', validator.name, `${result.decision}${result.reason ? `: ${result.reason}` : ''}${tokens}`);
       return {
         validator: validator.name,
         decision: result.decision,
