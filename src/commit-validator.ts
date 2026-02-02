@@ -13,15 +13,21 @@ export interface CommitContext {
 }
 
 export function getCommitContext(cwd: string, command: string): CommitContext {
-  const diff = execSync('git diff --cached', { cwd, encoding: 'utf8' });
+  const gitCwd = extractCdTarget(command) ?? cwd;
+  const diff = execSync('git diff --cached', { cwd: gitCwd, encoding: 'utf8' });
   const filesOutput = execSync('git diff --cached --name-only', {
-    cwd,
+    cwd: gitCwd,
     encoding: 'utf8',
   });
   const files = filesOutput.trim().split('\n').filter(Boolean);
   const message = extractCommitMessage(command);
 
   return { diff, files, message };
+}
+
+export function extractCdTarget(command: string): string | null {
+  const match = command.match(/^cd\s+(\S+)/);
+  return match ? match[1] : null;
 }
 
 function extractCommitMessage(command: string): string {

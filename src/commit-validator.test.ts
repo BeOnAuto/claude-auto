@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   extractAppeal,
+  extractCdTarget,
   formatBlockMessage,
   getCommitContext,
   handleCommitValidation,
@@ -103,6 +104,44 @@ describe('getCommitContext', () => {
       files: ['test.txt'],
       message: '',
     });
+  });
+
+  it('uses cd target from command when cwd is a non-repo parent', () => {
+    // Previously this threw because getCommitContext ran git diff --cached
+    // in the parent dir (not a repo). Now it extracts the cd target.
+    const { execSync } = require('node:child_process');
+    const parentDir = tempDir; // not a git repo
+    const repoDir = path.join(parentDir, 'sub-repo');
+    fs.mkdirSync(repoDir);
+    execSync('git init', { cwd: repoDir, stdio: 'pipe' });
+    execSync('git config user.email "test@test.com"', { cwd: repoDir, stdio: 'pipe' });
+    execSync('git config user.name "Test"', { cwd: repoDir, stdio: 'pipe' });
+    fs.writeFileSync(path.join(repoDir, 'file.ts'), 'const x = 1;');
+    execSync('git add file.ts', { cwd: repoDir, stdio: 'pipe' });
+
+    const command = `cd ${repoDir} && git add file.ts && git commit -m "test: no-op"`;
+
+    const result = getCommitContext(parentDir, command);
+
+    expect(result).toEqual({
+      diff: expect.stringContaining('+const x = 1;'),
+      files: ['file.ts'],
+      message: 'test: no-op',
+    });
+  });
+});
+
+describe('extractCdTarget', () => {
+  it('extracts path from cd command', () => {
+    expect(extractCdTarget('cd /foo/bar && git commit -m "msg"')).toBe('/foo/bar');
+  });
+
+  it('returns null when no cd prefix', () => {
+    expect(extractCdTarget('git commit -m "msg"')).toBe(null);
+  });
+
+  it('extracts path when cd is followed by &&', () => {
+    expect(extractCdTarget('cd /a/b/c && git add . && git commit -m "x"')).toBe('/a/b/c');
   });
 });
 

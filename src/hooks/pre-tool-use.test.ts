@@ -137,6 +137,54 @@ Validate this commit`,
     expect(result).toEqual({ decision: 'allow' });
   });
 
+  it('validates commit when command uses cd into a sub-repo and hook cwd differs', async () => {
+    // Previously the hook crashed because process.cwd() pointed to a
+    // non-repo parent while the command did "cd /sub-repo && git commit".
+    // Now getCommitContext extracts the cd target and uses it as the git cwd.
+    const { execSync } = require('node:child_process');
+    const repoDir = path.join(tempDir, 'sub-repo');
+    fs.mkdirSync(repoDir);
+    execSync('git init', { cwd: repoDir, stdio: 'pipe' });
+    execSync('git config user.email "test@test.com"', { cwd: repoDir, stdio: 'pipe' });
+    execSync('git config user.name "Test"', { cwd: repoDir, stdio: 'pipe' });
+    fs.writeFileSync(path.join(repoDir, 'file.ts'), 'const x = 1;');
+    execSync('git add file.ts', { cwd: repoDir, stdio: 'pipe' });
+
+    const validatorsDir = path.join(ketchupDir, 'validators');
+    fs.mkdirSync(validatorsDir);
+    fs.writeFileSync(
+      path.join(validatorsDir, 'test.md'),
+      `---
+name: test-validator
+description: Test
+enabled: true
+---
+Validate this commit`,
+    );
+
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: '{"decision":"NACK","reason":"Missing tests"}',
+    });
+
+    const toolInput = {
+      command: `cd ${repoDir} && git add file.ts && git commit -m "test: no-op"`,
+    };
+
+    const cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(tempDir);
+
+    try {
+      const result = await handlePreToolUse(claudeDir, 'session-cd-fix', toolInput, { executor });
+
+      expect(result).toEqual({
+        decision: 'block',
+        reason: 'test-validator: Missing tests',
+      });
+    } finally {
+      cwdSpy.mockRestore();
+    }
+  });
+
   it('injects reminders matching PreToolUse hook and toolName', async () => {
     const remindersDir = path.join(ketchupDir, 'reminders');
     fs.mkdirSync(remindersDir, { recursive: true });
