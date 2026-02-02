@@ -17,4 +17,12 @@ describe('createCli', () => {
       commands: ['install', 'status', 'doctor', 'repair', 'reminders'],
     });
   });
+
+  it('install command accepts an optional path argument', () => {
+    const program = createCli();
+    const installCmd = program.commands.find((cmd) => cmd.name() === 'install');
+    expect(installCmd).toBeDefined();
+    expect(installCmd!.registeredArguments).toHaveLength(1);
+    expect(installCmd!.registeredArguments[0].required).toBe(false);
+  });
 });

@@ -9,14 +9,14 @@ export function createCli(): Command {
 
   program
     .command('install')
-    .description('Install claude-ketchup into the current project')
-    .action(async () => {
-      const result = await install();
-      console.log(`Installed claude-ketchup into ${result.projectRoot}`);
-      console.log(`Symlinked ${result.symlinkedFiles.length} files:`);
-      for (const file of result.symlinkedFiles) {
-        console.log(`  ${file}`);
+    .description('Install claude-ketchup hooks configuration into a project')
+    .argument('[path]', 'target project directory', '.')
+    .action(async (targetPath: string) => {
+      const result = await install(targetPath);
+      if (result.settingsCreated) {
+        console.log(`Created ${result.claudeDir}/settings.json`);
       }
+      console.log(`Installed claude-ketchup into ${result.targetDir}`);
     });
 
   program.command('status').description('Show symlink status');

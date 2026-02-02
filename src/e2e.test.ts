@@ -4,69 +4,57 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { DEFAULT_KETCHUP_DIR } from './config-loader.js';
-import { runPostinstall } from './postinstall.js';
-import { runPreuninstallSync } from './preuninstall.js';
+import { install } from './cli/install.js';
 
 describe('e2e', () => {
   describe('full installation flow', () => {
     let tempDir: string;
     let projectDir: string;
-    let packageDir: string;
-    const originalEnv = process.env;
 
     beforeEach(() => {
       tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-e2e-'));
       projectDir = path.join(tempDir, 'my-project');
-      packageDir = path.join(tempDir, 'claude-ketchup');
-
       fs.mkdirSync(projectDir, { recursive: true });
-      fs.writeFileSync(path.join(projectDir, 'package.json'), '{}');
-
-      fs.mkdirSync(path.join(packageDir, 'dist', 'scripts'), { recursive: true });
-      fs.mkdirSync(path.join(packageDir, 'commands'), { recursive: true });
-      fs.mkdirSync(path.join(packageDir, 'reminders'), { recursive: true });
-      fs.mkdirSync(path.join(packageDir, 'templates'), { recursive: true });
-
-      fs.writeFileSync(path.join(packageDir, 'dist', 'scripts', 'session-start.js'), 'export default {}');
-      fs.writeFileSync(path.join(packageDir, 'reminders', 'my-reminder.md'), '---\npriority: 100\n---\n# Reminder');
-      fs.writeFileSync(
-        path.join(packageDir, 'templates', 'settings.json'),
-        JSON.stringify({ hooks: { SessionStart: [] } }),
-      );
-
-      process.env = { ...originalEnv, KETCHUP_ROOT: projectDir };
     });
 
     afterEach(() => {
       fs.rmSync(tempDir, { recursive: true, force: true });
-      process.env = originalEnv;
     });
 
-    it('installs and uninstalls cleanly', async () => {
-      const result = await runPostinstall(packageDir);
+    it('installs all files into target directory', async () => {
+      const result = await install(projectDir);
 
-      expect(result.projectRoot).toBe(projectDir);
+      expect(result.targetDir).toBe(projectDir);
       expect(result.claudeDir).toBe(path.join(projectDir, '.claude'));
-      expect(result.ketchupDir).toBe(path.join(projectDir, DEFAULT_KETCHUP_DIR));
-      expect(result.symlinkedFiles).toContain('scripts/session-start.js');
-      expect(result.symlinkedFiles).toContain(`${DEFAULT_KETCHUP_DIR}/reminders/my-reminder.md`);
+      expect(result.settingsCreated).toBe(true);
 
       expect(fs.existsSync(path.join(projectDir, '.claude'))).toBe(true);
-      expect(fs.existsSync(path.join(projectDir, DEFAULT_KETCHUP_DIR))).toBe(true);
-      expect(fs.lstatSync(path.join(projectDir, '.claude', 'scripts', 'session-start.js')).isSymbolicLink()).toBe(true);
-      expect(
-        fs.lstatSync(path.join(projectDir, DEFAULT_KETCHUP_DIR, 'reminders', 'my-reminder.md')).isSymbolicLink(),
-      ).toBe(true);
+      expect(fs.existsSync(path.join(projectDir, '.ketchup'))).toBe(true);
       expect(fs.existsSync(path.join(projectDir, '.claude', 'settings.json'))).toBe(true);
-      expect(fs.existsSync(path.join(projectDir, '.claude', '.gitignore'))).toBe(true);
 
-      runPreuninstallSync();
+      // Scripts are regular files, not symlinks
+      const scriptPath = path.join(projectDir, '.claude', 'scripts', 'session-start.js');
+      expect(fs.existsSync(scriptPath)).toBe(true);
+      expect(fs.lstatSync(scriptPath).isSymbolicLink()).toBe(false);
 
-      expect(fs.existsSync(path.join(projectDir, '.claude', 'scripts', 'session-start.js'))).toBe(false);
-      expect(fs.existsSync(path.join(projectDir, DEFAULT_KETCHUP_DIR, 'reminders', 'my-reminder.md'))).toBe(false);
-      expect(fs.existsSync(path.join(projectDir, '.claude', 'settings.json'))).toBe(true);
-      expect(fs.existsSync(path.join(projectDir, '.claude', '.gitignore'))).toBe(true);
+      // Reminders are regular files, not symlinks
+      const reminderFiles = fs.readdirSync(path.join(projectDir, '.ketchup', 'reminders'));
+      expect(reminderFiles.length).toBeGreaterThan(0);
+      for (const file of reminderFiles) {
+        expect(fs.lstatSync(path.join(projectDir, '.ketchup', 'reminders', file)).isSymbolicLink()).toBe(false);
+      }
+    });
+
+    it('is idempotent — second install preserves existing settings', async () => {
+      await install(projectDir);
+
+      const settingsPath = path.join(projectDir, '.claude', 'settings.json');
+      const settingsBefore = fs.readFileSync(settingsPath, 'utf-8');
+
+      const result = await install(projectDir);
+
+      expect(result.settingsCreated).toBe(false);
+      expect(fs.readFileSync(settingsPath, 'utf-8')).toBe(settingsBefore);
     });
   });
 });

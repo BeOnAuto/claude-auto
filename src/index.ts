@@ -1,5 +1,6 @@
 export { createCli } from './cli/cli.js';
 export { doctor } from './cli/doctor.js';
+export type { InstallResult } from './cli/install.js';
 export { install } from './cli/install.js';
 export { listReminders } from './cli/reminders.js';
 export { getExpectedSymlinks, repair } from './cli/repair.js';

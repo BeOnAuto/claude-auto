@@ -26,8 +26,6 @@ jobs:
           mkdir test-project
           cd test-project
           git init
-          npm init -y
-          mkdir -p .claude
 
       - name: Determine package version
         id: version
@@ -42,37 +40,44 @@ jobs:
           echo "Installing claude-ketchup@${{ steps.version.outputs.version }}..."
           npx claude-ketchup@${{ steps.version.outputs.version }} install
 
-      - name: Run status command
-        working-directory: test-project
-        run: npx claude-ketchup status
-
-      - name: Run doctor command
-        working-directory: test-project
-        run: npx claude-ketchup doctor
-
-      - name: Run reminders command
-        working-directory: test-project
-        run: npx claude-ketchup reminders
-
       - name: Verify installation structure
         working-directory: test-project
         run: |
-          echo "=== Directory structure ==="
-          ls -la
-          echo ""
           echo "=== .claude directory ==="
           ls -la .claude/ || echo "No .claude directory"
           echo ""
+          echo "=== .claude/scripts ==="
+          ls -la .claude/scripts/ || echo "No scripts directory"
+          echo ""
+          echo "=== .claude/settings.json ==="
+          cat .claude/settings.json || echo "No settings.json"
+          echo ""
           echo "=== .ketchup directory ==="
           ls -la .ketchup/ || echo "No .ketchup directory"
-          echo ""
-          echo "=== Symlink verification ==="
-          find . -type l -exec ls -la {} \; 2>/dev/null || echo "No symlinks found"
 
-      - name: Test repair command
+      - name: Verify settings.json has hooks
         working-directory: test-project
-        run: npx claude-ketchup repair
+        run: |
+          node -e "
+            const s = require('./.claude/settings.json');
+            const hooks = ['SessionStart', 'PreToolUse', 'UserPromptSubmit', 'Stop'];
+            for (const h of hooks) {
+              if (!s.hooks[h]) { console.error('Missing hook: ' + h); process.exit(1); }
+            }
+            console.log('All hooks present');
+          "
 
-      - name: Final doctor check
+      - name: Verify scripts are copied (not symlinks)
         working-directory: test-project
-        run: npx claude-ketchup doctor
+        run: |
+          for script in session-start.js pre-tool-use.js user-prompt-submit.js auto-continue.js; do
+            if [ ! -f ".claude/scripts/$script" ]; then
+              echo "FAIL: Missing script $script"
+              exit 1
+            fi
+            if [ -L ".claude/scripts/$script" ]; then
+              echo "FAIL: $script is a symlink, should be a regular file"
+              exit 1
+            fi
+            echo "OK: $script is a regular file"
+          done

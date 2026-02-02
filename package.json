@@ -21,7 +21,8 @@
     "claude-ketchup": "dist/bin/cli.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && pnpm build:bundle",
+    "build:bundle": "esbuild scripts/session-start.ts scripts/pre-tool-use.ts scripts/user-prompt-submit.ts scripts/auto-continue.ts --bundle --platform=node --target=node18 --format=cjs --outdir=dist/bundle/scripts --external:typescript",
     "test": "vitest run",
     "test:watch": "vitest",
     "type-check": "tsc --noEmit",
@@ -32,8 +33,6 @@
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm publish",
-    "postinstall": "node dist/bin/postinstall.js",
-    "preuninstall": "node dist/bin/preuninstall.js",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
@@ -68,6 +67,8 @@
     "@commitlint/config-conventional": "^20.3.1",
     "@types/micromatch": "^4.0.10",
     "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^1.6.1",
+    "esbuild": "^0.27.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "tsx": "^4.0.0",
