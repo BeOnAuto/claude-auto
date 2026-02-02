@@ -670,6 +670,46 @@ RESPOND WITH JSON ONLY - NO PROSE, NO MARKDOWN, NO EXPLANATION OUTSIDE THE JSON.
       { event: 'complete', name: 'v1', detail: 'ACK (in:150 out:20)' },
     ]);
   });
+
+  it('uses provided batchCount to control chunk size', async () => {
+    const executor = vi.fn().mockImplementation((_cmd: string, args: string[]) => {
+      const prompt = args[2];
+      if (prompt.includes('"v1"') && prompt.includes('"v2"')) {
+        return {
+          status: 0,
+          stdout: claudeBatchJson([
+            { id: 'v1', decision: 'ACK' },
+            { id: 'v2', decision: 'ACK' },
+          ]),
+        };
+      }
+      return {
+        status: 0,
+        stdout: claudeBatchJson([
+          { id: 'v3', decision: 'ACK' },
+          { id: 'v4', decision: 'ACK' },
+        ]),
+      };
+    });
+
+    const validators: Validator[] = [
+      { name: 'v1', description: 'd', enabled: true, content: 'c1', path: '/v1.md' },
+      { name: 'v2', description: 'd', enabled: true, content: 'c2', path: '/v2.md' },
+      { name: 'v3', description: 'd', enabled: true, content: 'c3', path: '/v3.md' },
+      { name: 'v4', description: 'd', enabled: true, content: 'c4', path: '/v4.md' },
+    ];
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+
+    const results = await validateCommit(validators, context, executor, undefined, 2);
+
+    expect(results).toEqual([
+      { validator: 'v1', decision: 'ACK', appealable: true },
+      { validator: 'v2', decision: 'ACK', appealable: true },
+      { validator: 'v3', decision: 'ACK', appealable: true },
+      { validator: 'v4', decision: 'ACK', appealable: true },
+    ]);
+    expect(executor).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('handleCommitValidation', () => {

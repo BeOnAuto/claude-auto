@@ -8,6 +8,7 @@ import {
 } from '../commit-validator.js';
 import { debugLog } from '../debug-logger.js';
 import { isDenied, loadDenyPatterns } from '../deny-list.js';
+import { createHookState } from '../hook-state.js';
 import { resolvePaths } from '../path-resolver.js';
 import { loadReminders } from '../reminder-loader.js';
 import { loadValidators } from '../validator-loader.js';
@@ -81,10 +82,11 @@ async function handleCommitValidation(
   }
 
   const context = getCommitContext(process.cwd(), command);
+  const state = createHookState(ketchupDir).read();
   const onLog: ValidatorLogger = (event, name, detail) => {
     activityLog(ketchupDir, sessionId, 'pre-tool-use', `validator ${event}: ${name}${detail ? ` → ${detail}` : ''}`);
   };
-  const results = await validateCommit(validators, context, options.executor, onLog);
+  const results = await validateCommit(validators, context, options.executor, onLog, state.validateCommit.batchCount);
 
   const nacks = results.filter((r) => r.decision === 'NACK');
 

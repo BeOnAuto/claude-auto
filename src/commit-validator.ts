@@ -333,8 +333,9 @@ export async function validateCommit(
   context: CommitContext,
   executor: Executor = spawnAsync,
   onLog?: ValidatorLogger,
+  batchCount: number = BATCH_COUNT,
 ): Promise<CommitValidationResult[]> {
-  const chunks = chunkArray(validators, BATCH_COUNT);
+  const chunks = chunkArray(validators, batchCount);
 
   const pending = chunks.map(async (chunk, chunkIndex) => {
     const names = chunk.map((v) => v.name);
@@ -398,8 +399,9 @@ export async function handleCommitValidation(
   context: CommitContext,
   executor: Executor = spawnAsync,
   appealValidator?: Validator,
+  batchCount?: number,
 ): Promise<HandleCommitValidationResult> {
-  const results = await validateCommit(validators, context, executor);
+  const results = await validateCommit(validators, context, executor, undefined, batchCount);
   const appeal = extractAppeal(context.message);
 
   const nacks = results.filter((r) => r.decision === 'NACK');
