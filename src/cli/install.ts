@@ -1,6 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+import { createHookState } from '../hook-state.js';
+
 export type InstallResult = {
   targetDir: string;
   claudeDir: string;
@@ -66,6 +68,10 @@ export async function install(targetPath?: string): Promise<InstallResult> {
   const ketchupDir = path.join(resolvedTarget, '.ketchup');
   copyDir(path.join(pkgRoot, 'validators'), path.join(ketchupDir, 'validators'));
   copyDir(path.join(pkgRoot, 'reminders'), path.join(ketchupDir, 'reminders'));
+
+  // Initialize hook state with defaults if it doesn't exist
+  const hookState = createHookState(ketchupDir);
+  hookState.read();
 
   return { targetDir: resolvedTarget, claudeDir, settingsCreated };
 }

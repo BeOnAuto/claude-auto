@@ -83,6 +83,18 @@ describe('cli install', () => {
     }
   });
 
+  it('creates .ketchup/.claude.hooks.json with defaults', async () => {
+    await install(tempDir);
+
+    const hookStatePath = path.join(tempDir, '.ketchup', '.claude.hooks.json');
+    expect(fs.existsSync(hookStatePath)).toBe(true);
+
+    const state = JSON.parse(fs.readFileSync(hookStatePath, 'utf-8'));
+    expect(state.autoContinue.mode).toBe('smart');
+    expect(state.validateCommit.mode).toBe('strict');
+    expect(state.denyList.enabled).toBe(true);
+  });
+
   it('resolves "." to current working directory', async () => {
     const result = await install(tempDir);
 
