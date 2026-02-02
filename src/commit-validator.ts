@@ -109,6 +109,85 @@ export function parseClaudeJsonOutput(stdout: string): ValidatorResult {
   return result;
 }
 
+export interface BatchedValidatorResult {
+  validator: string;
+  decision: 'ACK' | 'NACK';
+  reason?: string;
+}
+
+function extractJsonArray(raw: string): unknown[] | null {
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed;
+  } catch {}
+
+  const fenceMatch = raw.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
+  if (fenceMatch) {
+    try {
+      const parsed = JSON.parse(fenceMatch[1]);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {}
+  }
+
+  const bracketMatch = raw.match(/\[[\s\S]*\]/);
+  if (bracketMatch) {
+    try {
+      const parsed = JSON.parse(bracketMatch[0]);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {}
+  }
+
+  return null;
+}
+
+function isValidDecision(value: unknown): value is 'ACK' | 'NACK' {
+  return value === 'ACK' || value === 'NACK';
+}
+
+function findEntryByName(arr: unknown[], name: string): Record<string, unknown> | undefined {
+  for (const item of arr) {
+    if (typeof item === 'object' && item !== null) {
+      const obj = item as Record<string, unknown>;
+      if (obj.id === name || obj.validator === name) return obj;
+    }
+  }
+  return undefined;
+}
+
+export function parseBatchedOutput(stdout: string, validatorNames: string[]): BatchedValidatorResult[] {
+  const outer = JSON.parse(stdout);
+  const innerRaw = typeof outer.result === 'string' ? outer.result : outer;
+
+  const parsed = typeof innerRaw === 'string' ? extractJsonArray(innerRaw) : Array.isArray(innerRaw) ? innerRaw : null;
+
+  if (!parsed) {
+    const nack: BatchedValidatorResult['decision'] = 'NACK';
+    return validatorNames.map((name) => ({
+      validator: name,
+      decision: nack,
+      reason: 'batched validator returned unparseable response',
+    }));
+  }
+
+  const results: BatchedValidatorResult[] = [];
+  for (const name of validatorNames) {
+    const entry = findEntryByName(parsed, name);
+    if (!entry || !isValidDecision(entry.decision)) {
+      results.push({ validator: name, decision: 'NACK', reason: 'validator missing or invalid in batched response' });
+    } else {
+      const result: BatchedValidatorResult = {
+        validator: name,
+        decision: entry.decision,
+      };
+      if (typeof entry.reason === 'string') {
+        result.reason = entry.reason;
+      }
+      results.push(result);
+    }
+  }
+  return results;
+}
+
 export async function runValidator(
   validator: Validator,
   context: CommitContext,

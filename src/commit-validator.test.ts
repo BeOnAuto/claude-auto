@@ -11,6 +11,7 @@ import {
   getCommitContext,
   handleCommitValidation,
   isCommitCommand,
+  parseBatchedOutput,
   parseClaudeJsonOutput,
   runAppealValidator,
   runValidator,
@@ -20,6 +21,10 @@ import type { Validator } from './validator-loader.js';
 
 function claudeJson(inner: Record<string, unknown>): string {
   return JSON.stringify({ type: 'result', subtype: 'success', result: JSON.stringify(inner) });
+}
+
+function claudeBatchJson(results: Array<{ id: string; decision: string; reason?: string }>): string {
+  return JSON.stringify({ type: 'result', subtype: 'success', result: JSON.stringify(results) });
 }
 
 describe('extractAppeal', () => {
@@ -219,6 +224,62 @@ describe('parseClaudeJsonOutput', () => {
     const parsed = parseClaudeJsonOutput(stdout);
 
     expect(parsed).toEqual({ decision: 'NACK', reason: 'validator returned invalid response (no ACK decision)' });
+  });
+});
+
+describe('parseBatchedOutput', () => {
+  it('parses valid batched JSON array from claude envelope', () => {
+    const stdout = claudeBatchJson([
+      { id: 'coverage-rules', decision: 'ACK' },
+      { id: 'no-comments', decision: 'NACK', reason: 'Found comments' },
+    ]);
+
+    const results = parseBatchedOutput(stdout, ['coverage-rules', 'no-comments']);
+
+    expect(results).toEqual([
+      { validator: 'coverage-rules', decision: 'ACK' },
+      { validator: 'no-comments', decision: 'NACK', reason: 'Found comments' },
+    ]);
+  });
+
+  it('extracts JSON array from markdown code fences', () => {
+    const inner = '```json\n[{"id":"v1","decision":"ACK"}]\n```';
+    const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: inner });
+
+    const results = parseBatchedOutput(stdout, ['v1']);
+
+    expect(results).toEqual([{ validator: 'v1', decision: 'ACK' }]);
+  });
+
+  it('NACKs validators missing from response', () => {
+    const stdout = claudeBatchJson([{ id: 'v1', decision: 'ACK' }]);
+
+    const results = parseBatchedOutput(stdout, ['v1', 'v2']);
+
+    expect(results).toEqual([
+      { validator: 'v1', decision: 'ACK' },
+      { validator: 'v2', decision: 'NACK', reason: 'validator missing or invalid in batched response' },
+    ]);
+  });
+
+  it('NACKs all when response is unparseable', () => {
+    const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: 'not json at all' });
+
+    const results = parseBatchedOutput(stdout, ['v1', 'v2']);
+
+    expect(results).toEqual([
+      { validator: 'v1', decision: 'NACK', reason: 'batched validator returned unparseable response' },
+      { validator: 'v2', decision: 'NACK', reason: 'batched validator returned unparseable response' },
+    ]);
+  });
+
+  it('accepts validator key as alias for id', () => {
+    const inner = [{ validator: 'v1', decision: 'ACK' }];
+    const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: JSON.stringify(inner) });
+
+    const results = parseBatchedOutput(stdout, ['v1']);
+
+    expect(results).toEqual([{ validator: 'v1', decision: 'ACK' }]);
   });
 });
 
