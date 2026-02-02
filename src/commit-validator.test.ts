@@ -514,17 +514,50 @@ describe('runAppealValidator', () => {
 });
 
 describe('validateCommit', () => {
-  it('runs validators in parallel and returns results', async () => {
+  it('builds batched prompt with validator tags and stripped boilerplate', async () => {
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: claudeBatchJson([{ id: 'v1', decision: 'ACK' }]),
+    });
+
+    const boilerplateContent = `You are a commit validator. You MUST respond with ONLY a JSON object, no other text.
+
+Valid responses:
+{"decision":"ACK"}
+{"decision":"NACK","reason":"one sentence explanation"}
+
+Check for tests.
+
+RESPOND WITH JSON ONLY - NO PROSE, NO MARKDOWN, NO EXPLANATION OUTSIDE THE JSON.`;
+
+    const validators: Validator[] = [
+      { name: 'v1', description: 'd1', enabled: true, content: boilerplateContent, path: '/v1.md' },
+    ];
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+
+    await validateCommit(validators, context, executor);
+
+    const prompt = executor.mock.calls[0][1][2];
+    expect(prompt).toContain('<validator id="v1">');
+    expect(prompt).toContain('Check for tests.');
+    expect(prompt).not.toContain('You are a commit validator. You MUST');
+    expect(prompt).not.toContain('RESPOND WITH JSON ONLY');
+    expect(prompt).not.toContain('Valid responses:');
+    expect(prompt).toContain('Respond with ONLY a JSON array');
+  });
+
+  it('runs batches in parallel and returns flattened results', async () => {
     const callLog: string[] = [];
 
     const asyncExecutor = vi.fn().mockImplementation((_cmd: string, args: string[]) => {
       const prompt = args[2];
-      const name = prompt.includes('c1') ? 'v1' : prompt.includes('c2') ? 'v2' : 'v3';
-      callLog.push(`start:${name}`);
+      const batchName = prompt.includes('"v1"') ? 'batch-0' : prompt.includes('"v2"') ? 'batch-1' : 'batch-2';
+      callLog.push(`start:${batchName}`);
       return new Promise((resolve) => {
         setTimeout(() => {
-          callLog.push(`end:${name}`);
-          resolve({ status: 0, stdout: claudeJson({ decision: 'ACK' }) });
+          callLog.push(`end:${batchName}`);
+          const id = batchName === 'batch-0' ? 'v1' : batchName === 'batch-1' ? 'v2' : 'v3';
+          resolve({ status: 0, stdout: claudeBatchJson([{ id, decision: 'ACK' }]) });
         }, 50);
       });
     });
@@ -544,21 +577,27 @@ describe('validateCommit', () => {
       { validator: 'v3', decision: 'ACK', appealable: true },
     ]);
     expect(asyncExecutor).toHaveBeenCalledTimes(3);
-    // All validators must start before any finishes (parallel execution)
-    expect(callLog).toEqual(['start:v1', 'start:v2', 'start:v3', 'end:v1', 'end:v2', 'end:v3']);
+    expect(callLog).toEqual([
+      'start:batch-0',
+      'start:batch-1',
+      'start:batch-2',
+      'end:batch-0',
+      'end:batch-1',
+      'end:batch-2',
+    ]);
   });
 
-  it('aggregates NACK reasons from multiple validators', async () => {
+  it('aggregates NACK reasons from batched responses', async () => {
     const executor = vi
       .fn()
-      .mockReturnValueOnce({ status: 0, stdout: claudeJson({ decision: 'ACK' }) })
+      .mockReturnValueOnce({ status: 0, stdout: claudeBatchJson([{ id: 'v1', decision: 'ACK' }]) })
       .mockReturnValueOnce({
         status: 0,
-        stdout: claudeJson({ decision: 'NACK', reason: 'Missing tests' }),
+        stdout: claudeBatchJson([{ id: 'v2', decision: 'NACK', reason: 'Missing tests' }]),
       })
       .mockReturnValueOnce({
         status: 0,
-        stdout: claudeJson({ decision: 'NACK', reason: 'No coverage' }),
+        stdout: claudeBatchJson([{ id: 'v3', decision: 'NACK', reason: 'No coverage' }]),
       });
 
     const validators: Validator[] = [
@@ -577,10 +616,10 @@ describe('validateCommit', () => {
     ]);
   });
 
-  it('marks no-dangerous-git validator as not appealable', async () => {
+  it('marks no-dangerous-git as not appealable', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: claudeJson({ decision: 'NACK', reason: '--force is forbidden' }),
+      stdout: claudeBatchJson([{ id: 'no-dangerous-git', decision: 'NACK', reason: '--force is forbidden' }]),
     });
 
     const validators: Validator[] = [
@@ -594,11 +633,51 @@ describe('validateCommit', () => {
       { validator: 'no-dangerous-git', decision: 'NACK', reason: '--force is forbidden', appealable: false },
     ]);
   });
+
+  it('NACKs all validators in a batch when executor throws', async () => {
+    const executor = vi.fn().mockRejectedValue(new Error('connection refused'));
+
+    const validators: Validator[] = [{ name: 'v1', description: 'd', enabled: true, content: 'c', path: '/v.md' }];
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+
+    const results = await validateCommit(validators, context, executor);
+
+    expect(results).toEqual([
+      { validator: 'v1', decision: 'NACK', reason: 'validator crashed: Error: connection refused', appealable: false },
+    ]);
+  });
+
+  it('logs shared token counts for all validators in a batch', async () => {
+    const stdout = JSON.stringify({
+      type: 'result',
+      subtype: 'success',
+      result: JSON.stringify([{ id: 'v1', decision: 'ACK' }]),
+      usage: { input_tokens: 100, output_tokens: 20, cache_read_input_tokens: 50 },
+    });
+    const executor = vi.fn().mockReturnValue({ status: 0, stdout });
+    const logs: Array<{ event: string; name: string; detail?: string }> = [];
+    const onLog = (event: string, name: string, detail?: string) => {
+      logs.push({ event, name, detail });
+    };
+
+    const validators: Validator[] = [{ name: 'v1', description: 'd', enabled: true, content: 'c', path: '/v.md' }];
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+
+    await validateCommit(validators, context, executor, onLog);
+
+    expect(logs).toEqual([
+      { event: 'spawn', name: 'batch-0', detail: 'validators: v1' },
+      { event: 'complete', name: 'v1', detail: 'ACK (in:150 out:20)' },
+    ]);
+  });
 });
 
 describe('handleCommitValidation', () => {
   it('allows commit when all validators ACK', async () => {
-    const executor = vi.fn().mockReturnValue({ status: 0, stdout: claudeJson({ decision: 'ACK' }) });
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: claudeBatchJson([{ id: 'v1', decision: 'ACK' }]),
+    });
     const validators: Validator[] = [{ name: 'v1', description: 'd', enabled: true, content: 'c', path: '/v.md' }];
     const context = { diff: '+a', files: ['a.txt'], message: 'feat: add feature' };
 
@@ -610,7 +689,7 @@ describe('handleCommitValidation', () => {
   it('blocks commit when validator NACKs without appeal', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: claudeJson({ decision: 'NACK', reason: 'Missing tests' }),
+      stdout: claudeBatchJson([{ id: 'coverage-rules', decision: 'NACK', reason: 'Missing tests' }]),
     });
     const validators: Validator[] = [
       { name: 'coverage-rules', description: 'd', enabled: true, content: 'c', path: '/v.md' },
@@ -631,7 +710,7 @@ describe('handleCommitValidation', () => {
       .fn()
       .mockReturnValueOnce({
         status: 0,
-        stdout: claudeJson({ decision: 'NACK', reason: 'Missing tests' }),
+        stdout: claudeBatchJson([{ id: 'coverage-rules', decision: 'NACK', reason: 'Missing tests' }]),
       })
       .mockReturnValueOnce({
         status: 0,
@@ -667,7 +746,7 @@ describe('handleCommitValidation', () => {
       .fn()
       .mockReturnValueOnce({
         status: 0,
-        stdout: claudeJson({ decision: 'NACK', reason: 'Missing tests' }),
+        stdout: claudeBatchJson([{ id: 'coverage-rules', decision: 'NACK', reason: 'Missing tests' }]),
       })
       .mockReturnValueOnce({
         status: 0,
@@ -701,7 +780,7 @@ describe('handleCommitValidation', () => {
   it('blocks commit when no appeal validator provided and NACK with appeal', async () => {
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: claudeJson({ decision: 'NACK', reason: 'Missing tests' }),
+      stdout: claudeBatchJson([{ id: 'coverage-rules', decision: 'NACK', reason: 'Missing tests' }]),
     });
     const validators: Validator[] = [
       { name: 'coverage-rules', description: 'd', enabled: true, content: 'c', path: '/v.md' },

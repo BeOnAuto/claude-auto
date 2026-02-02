@@ -107,7 +107,7 @@ Validate this commit`,
       stdout: JSON.stringify({
         type: 'result',
         subtype: 'success',
-        result: '{"decision":"NACK","reason":"Missing tests"}',
+        result: JSON.stringify([{ id: 'test-validator', decision: 'NACK', reason: 'Missing tests' }]),
       }),
     });
 
@@ -138,7 +138,11 @@ Validate this commit`,
 
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: JSON.stringify({ type: 'result', subtype: 'success', result: '{"decision":"ACK"}' }),
+      stdout: JSON.stringify({
+        type: 'result',
+        subtype: 'success',
+        result: JSON.stringify([{ id: 'test-validator', decision: 'ACK' }]),
+      }),
     });
 
     const toolInput = {
@@ -174,7 +178,11 @@ You are the appeal system.`,
 
     const executor = vi.fn().mockReturnValue({
       status: 0,
-      stdout: JSON.stringify({ type: 'result', subtype: 'success', result: '{"decision":"ACK"}' }),
+      stdout: JSON.stringify({
+        type: 'result',
+        subtype: 'success',
+        result: JSON.stringify([{ id: 'test-validator', decision: 'ACK' }]),
+      }),
     });
 
     const toolInput = {
@@ -217,7 +225,7 @@ Validate this commit`,
       stdout: JSON.stringify({
         type: 'result',
         subtype: 'success',
-        result: '{"decision":"NACK","reason":"Missing tests"}',
+        result: JSON.stringify([{ id: 'test-validator', decision: 'NACK', reason: 'Missing tests' }]),
       }),
     });
 

@@ -280,35 +280,110 @@ export interface CommitValidationResult {
 
 export type ValidatorLogger = (event: 'spawn' | 'complete' | 'error', validatorName: string, detail?: string) => void;
 
+const BATCH_COUNT = 3;
+
+function stripValidatorBoilerplate(content: string): string {
+  return content
+    .replace(/^You are a commit validator\.[^\n]*\n*/m, '')
+    .replace(/\n*Valid responses:\n\{"decision":"ACK"\}\n\{"decision":"NACK","reason":"[^"]*"\}\n*/m, '')
+    .replace(/\n*RESPOND WITH JSON ONLY[^\n]*/m, '')
+    .trim();
+}
+
+function buildBatchedPrompt(validators: Validator[], context: CommitContext): string {
+  const rulesSection = validators
+    .map(
+      (v) => `<validator id="${v.name}">
+${stripValidatorBoilerplate(v.content)}
+</validator>`,
+    )
+    .join('\n\n');
+
+  return `You are a commit validator evaluating a commit against multiple rule sets. Respond with a JSON array — one entry per validator with its id, decision (ACK/NACK), and reason if NACK.
+
+<diff>
+${context.diff}
+</diff>
+
+<commit-message>
+${context.message}
+</commit-message>
+
+<files>
+${context.files.join('\n')}
+</files>
+
+${rulesSection}
+
+Respond with ONLY a JSON array:
+[{"id":"<validator-id>","decision":"ACK"},{"id":"<validator-id>","decision":"NACK","reason":"one sentence"}]`;
+}
+
+function chunkArray<T>(arr: T[], count: number): T[][] {
+  const chunks: T[][] = [];
+  const size = Math.ceil(arr.length / count);
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size));
+  }
+  return chunks;
+}
+
 export async function validateCommit(
   validators: Validator[],
   context: CommitContext,
   executor: Executor = spawnAsync,
   onLog?: ValidatorLogger,
 ): Promise<CommitValidationResult[]> {
-  const pending = validators.map(async (validator) => {
-    onLog?.('spawn', validator.name);
+  const chunks = chunkArray(validators, BATCH_COUNT);
+
+  const pending = chunks.map(async (chunk, chunkIndex) => {
+    const names = chunk.map((v) => v.name);
+    onLog?.('spawn', `batch-${chunkIndex}`, `validators: ${names.join(', ')}`);
+
     try {
-      const result = await runValidator(validator, context, executor);
-      const tokens = result.inputTokens != null ? ` (in:${result.inputTokens} out:${result.outputTokens})` : '';
-      onLog?.('complete', validator.name, `${result.decision}${result.reason ? `: ${result.reason}` : ''}${tokens}`);
-      return {
-        validator: validator.name,
-        decision: result.decision,
-        reason: result.reason,
-        appealable: !NON_APPEALABLE_VALIDATORS.includes(validator.name),
-      };
+      const prompt = buildBatchedPrompt(chunk, context);
+      const args = ['-p', '--no-session-persistence', prompt, '--output-format', 'json'];
+      const opts = { encoding: 'utf8' } as const;
+
+      const spawnResult = await executor('claude', args, opts);
+      const batchResults = parseBatchedOutput(spawnResult.stdout, names);
+
+      const outer = JSON.parse(spawnResult.stdout);
+      let inputTokens: number | undefined;
+      let outputTokens: number | undefined;
+      if (outer.usage) {
+        inputTokens =
+          (outer.usage.input_tokens ?? 0) +
+          (outer.usage.cache_read_input_tokens ?? 0) +
+          (outer.usage.cache_creation_input_tokens ?? 0);
+        outputTokens = outer.usage.output_tokens;
+      }
+      const tokens = inputTokens != null ? ` (in:${inputTokens} out:${outputTokens})` : '';
+
+      const commitResults: CommitValidationResult[] = batchResults.map((br) => {
+        onLog?.('complete', br.validator, `${br.decision}${br.reason ? `: ${br.reason}` : ''}${tokens}`);
+        return {
+          validator: br.validator,
+          decision: br.decision,
+          reason: br.reason,
+          appealable: !NON_APPEALABLE_VALIDATORS.includes(br.validator),
+        };
+      });
+
+      return commitResults;
     } catch (err) {
-      onLog?.('error', validator.name, String(err));
-      return {
-        validator: validator.name,
+      onLog?.('error', `batch-${chunkIndex}`, String(err));
+      return chunk.map((v) => ({
+        validator: v.name,
         decision: 'NACK' as const,
         reason: `validator crashed: ${String(err)}`,
         appealable: false,
-      };
+      }));
     }
   });
-  return Promise.all(pending);
+
+  const batchResults = await Promise.all(pending);
+  return batchResults.flat();
 }
 
 export interface HandleCommitValidationResult {
