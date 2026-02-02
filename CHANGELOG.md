@@ -1,5 +1,12 @@
 # claude-ketchup
 
+## 0.8.1
+
+### Patch Changes
+
+- a8c63b2: - Fixed package root resolution that could fail in published/installed contexts
+  - Added debug logging to the install process for easier diagnostics
+
 ## 0.8.0
 
 ### Minor Changes
