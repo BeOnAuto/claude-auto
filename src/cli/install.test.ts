@@ -51,12 +51,11 @@ describe('cli install', () => {
     expect(fs.lstatSync(path.join(scriptsDir, 'session-start.js')).isSymbolicLink()).toBe(false);
   });
 
-  it('copies commands to .claude/commands/', async () => {
+  it('skips .claude/commands/ when commands dir is empty', async () => {
     await install(tempDir);
 
     const commandsDir = path.join(tempDir, '.claude', 'commands');
-    expect(fs.existsSync(path.join(commandsDir, 'ketchup.md'))).toBe(true);
-    expect(fs.lstatSync(path.join(commandsDir, 'ketchup.md')).isSymbolicLink()).toBe(false);
+    expect(fs.existsSync(commandsDir)).toBe(false);
   });
 
   it('copies validators to .ketchup/validators/', async () => {
@@ -198,11 +197,11 @@ describe('local install', () => {
     expect(fs.existsSync(validatorsDir)).toBe(false);
   });
 
-  it('copies commands to .claude/commands/', async () => {
+  it('skips .claude/commands/ when commands dir is empty', async () => {
     await install(tempDir, { local: true });
 
     const commandsDir = path.join(tempDir, '.claude', 'commands');
-    expect(fs.existsSync(path.join(commandsDir, 'ketchup.md'))).toBe(true);
+    expect(fs.existsSync(commandsDir)).toBe(false);
   });
 
   it('initializes hook state at .ketchup/.claude.hooks.json', async () => {

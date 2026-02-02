@@ -30,13 +30,16 @@ function copyDir(sourceDir: string, targetDir: string): void {
     debug('  source does not exist, skipping');
     return;
   }
-  fs.mkdirSync(targetDir, { recursive: true });
   const entries = fs.readdirSync(sourceDir, { withFileTypes: true });
-  for (const entry of entries) {
-    if (entry.isFile()) {
-      debug('  copy:', entry.name);
-      fs.copyFileSync(path.join(sourceDir, entry.name), path.join(targetDir, entry.name));
-    }
+  const files = entries.filter((e) => e.isFile());
+  if (files.length === 0) {
+    debug('  source is empty, skipping');
+    return;
+  }
+  fs.mkdirSync(targetDir, { recursive: true });
+  for (const entry of files) {
+    debug('  copy:', entry.name);
+    fs.copyFileSync(path.join(sourceDir, entry.name), path.join(targetDir, entry.name));
   }
 }
 
