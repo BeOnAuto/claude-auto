@@ -1,5 +1,12 @@
 # claude-ketchup
 
+## 0.12.2
+
+### Patch Changes
+
+- 1fb7d02: - Fixed commit validation system that was completely blocking all commits due to an invalid CLI flag
+  - Improved error handling and messaging in the validation system to help diagnose issues faster
+
 ## 0.12.1
 
 ### Patch Changes
