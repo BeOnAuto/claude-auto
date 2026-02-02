@@ -1,5 +1,12 @@
 # claude-ketchup
 
+## 0.12.0
+
+### Minor Changes
+
+- 8c39d2e: - Moved hook scripts from `.claude/scripts/` to `.ketchup/scripts/`, consolidating all ketchup runtime files under a single directory
+  - Running `npx claude-ketchup install` now places scripts in the new location automatically
+
 ## 0.11.1
 
 ### Patch Changes
