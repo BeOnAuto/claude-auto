@@ -1,5 +1,13 @@
 # claude-ketchup
 
+## 0.8.0
+
+### Minor Changes
+
+- cd91632: - Added automatic devDependency installation so subsequent commands run faster without re-fetching from npm
+  - Fixed package name resolution in CI workflows
+  - Added daily automated testing workflow to verify npm package installation and commands
+
 ## 0.7.0
 
 ### Minor Changes
