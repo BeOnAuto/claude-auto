@@ -1,5 +1,12 @@
 # claude-ketchup
 
+## 0.8.2
+
+### Patch Changes
+
+- 16af449: - Fixed commit validation failing when the git hook runs from a parent directory that isn't a git repo
+  - Improved handling of commands that change directories before committing
+
 ## 0.8.1
 
 ### Patch Changes
