@@ -5,14 +5,17 @@ import * as path from 'node:path';
 import { parseHookInput } from '../src/hook-input.js';
 import { writeHookLog } from '../src/hook-logger.js';
 import { handlePreToolUse } from '../src/hooks/pre-tool-use.js';
+import { resolvePaths } from '../src/path-resolver.js';
 
 const input = parseHookInput(fs.readFileSync(0, 'utf-8'));
 const claudeDir = path.resolve(process.cwd(), '.claude');
 const startTime = Date.now();
 
-handlePreToolUse(claudeDir, input.session_id, input.tool_input || {})
-  .then((result) => {
-    writeHookLog(claudeDir, {
+(async () => {
+  const { ketchupDir } = await resolvePaths(claudeDir);
+  try {
+    const result = await handlePreToolUse(claudeDir, input.session_id, input.tool_input || {});
+    writeHookLog(ketchupDir, {
       hookName: 'pre-tool-use',
       timestamp: new Date().toISOString(),
       input,
@@ -20,9 +23,8 @@ handlePreToolUse(claudeDir, input.session_id, input.tool_input || {})
       durationMs: Date.now() - startTime,
     });
     console.log(JSON.stringify(result));
-  })
-  .catch((err) => {
-    writeHookLog(claudeDir, {
+  } catch (err) {
+    writeHookLog(ketchupDir, {
       hookName: 'pre-tool-use',
       timestamp: new Date().toISOString(),
       input,
@@ -32,4 +34,5 @@ handlePreToolUse(claudeDir, input.session_id, input.tool_input || {})
     });
     console.error('pre-tool-use hook failed:', err);
     process.exit(1);
-  });
+  }
+})();

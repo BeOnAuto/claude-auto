@@ -129,4 +129,27 @@ describe('cli install', () => {
     expect(result.claudeDir).toBe(path.join(tempDir, '.claude'));
     expect(result.settingsCreated).toBe(true);
   });
+
+  it('returns status "installed" on fresh install', async () => {
+    const result = await install(tempDir);
+
+    expect(result.status).toBe('installed');
+  });
+
+  it('returns status "updated" when scripts already exist', async () => {
+    const scriptsDir = path.join(tempDir, '.claude', 'scripts');
+    fs.mkdirSync(scriptsDir, { recursive: true });
+    fs.writeFileSync(path.join(scriptsDir, 'session-start.js'), '// old');
+
+    const result = await install(tempDir);
+
+    expect(result.status).toBe('updated');
+  });
+
+  it('returns status "updated" on second install', async () => {
+    await install(tempDir);
+    const result = await install(tempDir);
+
+    expect(result.status).toBe('updated');
+  });
 });

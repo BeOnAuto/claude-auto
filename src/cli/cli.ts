@@ -13,10 +13,14 @@ export function createCli(): Command {
     .argument('[path]', 'target project directory', '.')
     .action(async (targetPath: string) => {
       const result = await install(targetPath);
-      if (result.settingsCreated) {
-        console.log(`Created ${result.claudeDir}/settings.json`);
+      if (result.status === 'updated') {
+        console.log(`ketchup already installed, updating ${result.targetDir}`);
+      } else {
+        console.log(`Installing claude-ketchup into ${result.targetDir}`);
+        if (result.settingsCreated) {
+          console.log(`Created ${result.claudeDir}/settings.json`);
+        }
       }
-      console.log(`Installed claude-ketchup into ${result.targetDir}`);
     });
 
   program.command('status').description('Show symlink status');

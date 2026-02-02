@@ -20,7 +20,7 @@ describe('hook-logger', () => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
 
-  it('creates log file in .ketchup/logs/hooks/ with hook name and timestamp', () => {
+  it('creates log file in .ketchup/logs/hooks/ named after hook', () => {
     writeHookLog(ketchupDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
@@ -33,7 +33,7 @@ describe('hook-logger', () => {
 
     const files = fs.readdirSync(logsDir);
     expect(files).toHaveLength(1);
-    expect(files[0]).toMatch(/^session-start-.*\.log$/);
+    expect(files[0]).toBe('session-start.log');
   });
 
   it('log file contains input section with raw input', () => {
@@ -174,6 +174,30 @@ describe('hook-logger', () => {
 
     const logsDir = path.join(ketchupDir, 'logs', 'hooks');
     const files = fs.readdirSync(logsDir);
-    expect(files[0]).toMatch(/^pretooluse-/);
+    expect(files[0]).toBe('pretooluse.log');
+  });
+
+  it('appends to existing log file instead of creating new ones', () => {
+    writeHookLog(ketchupDir, {
+      hookName: 'session-start',
+      timestamp: '2026-01-28T12:00:00.000Z',
+      input: { session_id: 'first' },
+      output: {},
+    });
+    writeHookLog(ketchupDir, {
+      hookName: 'session-start',
+      timestamp: '2026-01-28T12:01:00.000Z',
+      input: { session_id: 'second' },
+      output: {},
+    });
+
+    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
+    const files = fs.readdirSync(logsDir);
+    expect(files).toHaveLength(1);
+    expect(files[0]).toBe('session-start.log');
+
+    const content = fs.readFileSync(path.join(logsDir, 'session-start.log'), 'utf8');
+    expect(content).toContain('"session_id": "first"');
+    expect(content).toContain('"session_id": "second"');
   });
 });

@@ -5,14 +5,17 @@ import * as path from 'node:path';
 import { parseHookInput } from '../src/hook-input.js';
 import { writeHookLog } from '../src/hook-logger.js';
 import { handleUserPromptSubmit } from '../src/hooks/user-prompt-submit.js';
+import { resolvePaths } from '../src/path-resolver.js';
 
 const input = parseHookInput(fs.readFileSync(0, 'utf-8'));
 const claudeDir = path.resolve(process.cwd(), '.claude');
 const startTime = Date.now();
 
-handleUserPromptSubmit(claudeDir, input.session_id, input.prompt || '')
-  .then(({ diagnostics, ...result }) => {
-    writeHookLog(claudeDir, {
+(async () => {
+  const { ketchupDir } = await resolvePaths(claudeDir);
+  try {
+    const { diagnostics, ...result } = await handleUserPromptSubmit(claudeDir, input.session_id, input.prompt || '');
+    writeHookLog(ketchupDir, {
       hookName: 'user-prompt-submit',
       timestamp: new Date().toISOString(),
       input: { ...input, prompt: input.prompt ? `[${input.prompt.length} chars]` : undefined },
@@ -23,9 +26,8 @@ handleUserPromptSubmit(claudeDir, input.session_id, input.prompt || '')
       durationMs: Date.now() - startTime,
     });
     console.log(JSON.stringify(result));
-  })
-  .catch((err) => {
-    writeHookLog(claudeDir, {
+  } catch (err) {
+    writeHookLog(ketchupDir, {
       hookName: 'user-prompt-submit',
       timestamp: new Date().toISOString(),
       input: { ...input, prompt: input.prompt ? `[${input.prompt.length} chars]` : undefined },
@@ -35,4 +37,5 @@ handleUserPromptSubmit(claudeDir, input.session_id, input.prompt || '')
     });
     console.error('user-prompt-submit hook failed:', err);
     process.exit(1);
-  });
+  }
+})();

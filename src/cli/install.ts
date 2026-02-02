@@ -7,6 +7,7 @@ export type InstallResult = {
   targetDir: string;
   claudeDir: string;
   settingsCreated: boolean;
+  status: 'installed' | 'updated';
 };
 
 const debug = process.env.DEBUG ? (...args: unknown[]) => console.error('[ketchup]', ...args) : () => {};
@@ -50,6 +51,9 @@ export async function install(targetPath?: string): Promise<InstallResult> {
 
   fs.mkdirSync(claudeDir, { recursive: true });
 
+  const scriptsDir = path.join(claudeDir, 'scripts');
+  const alreadyInstalled = fs.existsSync(scriptsDir) && fs.readdirSync(scriptsDir).length > 0;
+
   let settingsCreated = false;
   if (!fs.existsSync(settingsPath)) {
     const templatePath = path.join(pkgRoot, 'templates', 'settings.json');
@@ -73,5 +77,6 @@ export async function install(targetPath?: string): Promise<InstallResult> {
   const hookState = createHookState(ketchupDir);
   hookState.read();
 
-  return { targetDir: resolvedTarget, claudeDir, settingsCreated };
+  const status = alreadyInstalled ? 'updated' : 'installed';
+  return { targetDir: resolvedTarget, claudeDir, settingsCreated, status };
 }

@@ -24,8 +24,7 @@ export function writeHookLog(ketchupDir: string, entry: HookLogEntry): void {
   }
 
   const sanitizedName = sanitizeForFilename(entry.hookName);
-  const logFilename = `${sanitizedName}-${entry.timestamp}.log`;
-  const logPath = path.join(logsDir, logFilename);
+  const logPath = path.join(logsDir, `${sanitizedName}.log`);
 
   const lines: string[] = [];
   lines.push(`=== ${entry.hookName} hook log ===`);
@@ -73,5 +72,5 @@ export function writeHookLog(ketchupDir: string, entry: HookLogEntry): void {
   lines.push(JSON.stringify(entry.output, null, 2));
   lines.push('');
 
-  fs.writeFileSync(logPath, lines.join('\n'));
+  fs.appendFileSync(logPath, `${lines.join('\n')}\n`);
 }
