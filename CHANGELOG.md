@@ -1,5 +1,12 @@
 # claude-ketchup
 
+## 0.8.3
+
+### Patch Changes
+
+- 984c3e8: - Fixed commit validation failing when the git hook runs from a parent directory that isn't a git repo, such as when using "cd /path/to/repo && git commit"
+  - Version bump for released packages
+
 ## 0.8.2
 
 ### Patch Changes
