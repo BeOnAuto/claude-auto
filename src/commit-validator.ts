@@ -1,6 +1,30 @@
-import { execSync, type SpawnSyncReturns, spawnSync } from 'node:child_process';
+import { execSync, spawn } from 'node:child_process';
 
 import type { Validator } from './validator-loader.js';
+
+export interface SpawnResult {
+  stdout: string;
+  stderr: string;
+  status: number | null;
+}
+
+export function spawnAsync(cmd: string, args: string[], _options: { encoding: 'utf8' }): Promise<SpawnResult> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(cmd, args, { stdio: ['ignore', 'pipe', 'pipe'] });
+    let stdout = '';
+    let stderr = '';
+    child.stdout.on('data', (data: Buffer) => {
+      stdout += data.toString();
+    });
+    child.stderr.on('data', (data: Buffer) => {
+      stderr += data.toString();
+    });
+    child.on('error', reject);
+    child.on('close', (status) => {
+      resolve({ stdout, stderr, status });
+    });
+  });
+}
 
 export function isCommitCommand(command: string): boolean {
   return /\bgit\s+commit\b/.test(command);
@@ -44,7 +68,7 @@ export type Executor = (
   cmd: string,
   args: string[],
   options: { encoding: 'utf8' },
-) => SpawnSyncReturns<string> | Promise<SpawnSyncReturns<string>>;
+) => SpawnResult | Promise<SpawnResult>;
 
 export interface ValidatorResult {
   decision: 'ACK' | 'NACK';
@@ -54,7 +78,7 @@ export interface ValidatorResult {
 export async function runValidator(
   validator: Validator,
   context: CommitContext,
-  executor: Executor = spawnSync,
+  executor: Executor = spawnAsync,
 ): Promise<ValidatorResult> {
   const prompt = buildPrompt(validator, context);
   const result = await executor('claude', ['-p', '--no-session-persistence', prompt, '--output-format', 'json'], {
@@ -116,7 +140,7 @@ export async function runAppealValidator(
   context: CommitContext,
   results: CommitValidationResult[],
   appeal: string,
-  executor: Executor = spawnSync,
+  executor: Executor = spawnAsync,
 ): Promise<ValidatorResult> {
   const prompt = buildAppealPrompt(appealValidator, context, results, appeal);
   const result = await executor('claude', ['-p', '--no-session-persistence', prompt, '--output-format', 'json'], {
@@ -135,19 +159,34 @@ export interface CommitValidationResult {
   appealable: boolean;
 }
 
+export type ValidatorLogger = (event: 'spawn' | 'complete' | 'error', validatorName: string, detail?: string) => void;
+
 export async function validateCommit(
   validators: Validator[],
   context: CommitContext,
-  executor: Executor = spawnSync,
+  executor: Executor = spawnAsync,
+  onLog?: ValidatorLogger,
 ): Promise<CommitValidationResult[]> {
   const pending = validators.map(async (validator) => {
-    const result = await runValidator(validator, context, executor);
-    return {
-      validator: validator.name,
-      decision: result.decision,
-      reason: result.reason,
-      appealable: !NON_APPEALABLE_VALIDATORS.includes(validator.name),
-    };
+    onLog?.('spawn', validator.name);
+    try {
+      const result = await runValidator(validator, context, executor);
+      onLog?.('complete', validator.name, `${result.decision}${result.reason ? `: ${result.reason}` : ''}`);
+      return {
+        validator: validator.name,
+        decision: result.decision,
+        reason: result.reason,
+        appealable: !NON_APPEALABLE_VALIDATORS.includes(validator.name),
+      };
+    } catch (err) {
+      onLog?.('error', validator.name, String(err));
+      return {
+        validator: validator.name,
+        decision: 'NACK' as const,
+        reason: `validator crashed: ${String(err)}`,
+        appealable: false,
+      };
+    }
   });
   return Promise.all(pending);
 }
@@ -162,7 +201,7 @@ export interface HandleCommitValidationResult {
 export async function handleCommitValidation(
   validators: Validator[],
   context: CommitContext,
-  executor: Executor = spawnSync,
+  executor: Executor = spawnAsync,
   appealValidator?: Validator,
 ): Promise<HandleCommitValidationResult> {
   const results = await validateCommit(validators, context, executor);

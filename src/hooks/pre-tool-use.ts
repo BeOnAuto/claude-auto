@@ -1,5 +1,11 @@
 import { activityLog } from '../activity-logger.js';
-import { type Executor, getCommitContext, isCommitCommand, validateCommit } from '../commit-validator.js';
+import {
+  type Executor,
+  getCommitContext,
+  isCommitCommand,
+  type ValidatorLogger,
+  validateCommit,
+} from '../commit-validator.js';
 import { debugLog } from '../debug-logger.js';
 import { isDenied, loadDenyPatterns } from '../deny-list.js';
 import { resolvePaths } from '../path-resolver.js';
@@ -51,15 +57,6 @@ export async function handlePreToolUse(
 
   const reminderContent = reminders.map((r) => r.content).join('\n\n');
 
-  activityLog(
-    paths.ketchupDir,
-    sessionId,
-    'pre-tool-use',
-    `allowed: ${filePath ?? command}, ${reminders.length} reminder(s)`,
-  );
-
-  debugLog(paths.ketchupDir, 'pre-tool-use', `${filePath ?? command} allowed, ${reminders.length} reminder(s)`);
-
   if (reminderContent) {
     return { decision: 'allow', result: reminderContent };
   }
@@ -83,7 +80,10 @@ async function handleCommitValidation(
   }
 
   const context = getCommitContext(process.cwd(), command);
-  const results = await validateCommit(validators, context, options.executor);
+  const onLog: ValidatorLogger = (event, name, detail) => {
+    activityLog(ketchupDir, sessionId, 'pre-tool-use', `validator ${event}: ${name}${detail ? ` → ${detail}` : ''}`);
+  };
+  const results = await validateCommit(validators, context, options.executor, onLog);
 
   const nacks = results.filter((r) => r.decision === 'NACK');
 
