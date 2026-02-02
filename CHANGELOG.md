@@ -1,5 +1,11 @@
 # claude-ketchup
 
+## 0.8.5
+
+### Patch Changes
+
+- 3197890: - Fixed hook state file not being created during installation, ensuring it exists immediately after install rather than only after the first hook runs
+
 ## 0.8.4
 
 ### Patch Changes
