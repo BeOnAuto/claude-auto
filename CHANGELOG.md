@@ -1,5 +1,13 @@
 # claude-ketchup
 
+## 0.8.6
+
+### Patch Changes
+
+- cfffa16: - Fixed hook logs being written to the wrong directory, now correctly stored in .ketchup/logs
+  - Changed hook logging to append to a single file per hook instead of creating a new file each time
+  - Added clearer status messages during installation to distinguish between fresh installs and updates
+
 ## 0.8.5
 
 ### Patch Changes
