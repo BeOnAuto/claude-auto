@@ -151,17 +151,17 @@ describe('extractCdTarget', () => {
 });
 
 describe('parseClaudeJsonOutput', () => {
-  it('extracts inner result and token usage from claude json wrapper', () => {
+  it('extracts inner result and total token usage from claude json wrapper', () => {
     const stdout = JSON.stringify({
       type: 'result',
       subtype: 'success',
       result: '{"decision":"ACK"}',
-      usage: { input_tokens: 100, output_tokens: 9, cache_read_input_tokens: 500, cache_creation_input_tokens: 200 },
+      usage: { input_tokens: 3, output_tokens: 9, cache_read_input_tokens: 21684, cache_creation_input_tokens: 6728 },
     });
 
     const parsed = parseClaudeJsonOutput(stdout);
 
-    expect(parsed).toEqual({ decision: 'ACK', inputTokens: 100, outputTokens: 9 });
+    expect(parsed).toEqual({ decision: 'ACK', inputTokens: 28415, outputTokens: 9 });
   });
 
   it('extracts NACK with reason and tokens from wrapper', () => {

@@ -100,7 +100,10 @@ export function parseClaudeJsonOutput(stdout: string): ValidatorResult {
     result.reason = parsed.reason;
   }
   if (outer.usage) {
-    result.inputTokens = outer.usage.input_tokens;
+    result.inputTokens =
+      (outer.usage.input_tokens ?? 0) +
+      (outer.usage.cache_read_input_tokens ?? 0) +
+      (outer.usage.cache_creation_input_tokens ?? 0);
     result.outputTokens = outer.usage.output_tokens;
   }
   return result;
