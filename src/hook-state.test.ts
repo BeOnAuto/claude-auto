@@ -8,9 +8,12 @@ import { createHookState, DEFAULT_HOOK_STATE, type HookState } from './hook-stat
 
 describe('hook-state', () => {
   let tempDir: string;
+  let ketchupDir: string;
 
   beforeEach(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-hookstate-'));
+    ketchupDir = path.join(tempDir, '.ketchup');
+    fs.mkdirSync(ketchupDir, { recursive: true });
   });
 
   afterEach(() => {
@@ -19,7 +22,7 @@ describe('hook-state', () => {
 
   describe('createHookState', () => {
     it('creates state file with defaults when not exists', () => {
-      const hookState = createHookState(tempDir);
+      const hookState = createHookState(ketchupDir);
       const state = hookState.read();
 
       expect(state.autoContinue.mode).toBe('smart');
@@ -38,9 +41,9 @@ describe('hook-state', () => {
         updatedAt: '2026-01-01T00:00:00Z',
         updatedBy: 'test',
       };
-      fs.writeFileSync(path.join(tempDir, '.claude.hooks.json'), JSON.stringify(existingState));
+      fs.writeFileSync(path.join(ketchupDir, '.claude.hooks.json'), JSON.stringify(existingState));
 
-      const hookState = createHookState(tempDir);
+      const hookState = createHookState(ketchupDir);
       const state = hookState.read();
 
       expect(state.autoContinue.mode).toBe('non-stop');
@@ -50,9 +53,9 @@ describe('hook-state', () => {
 
     it('merges partial state with defaults', () => {
       const partialState = { autoContinue: { mode: 'off' } };
-      fs.writeFileSync(path.join(tempDir, '.claude.hooks.json'), JSON.stringify(partialState));
+      fs.writeFileSync(path.join(ketchupDir, '.claude.hooks.json'), JSON.stringify(partialState));
 
-      const hookState = createHookState(tempDir);
+      const hookState = createHookState(ketchupDir);
       const state = hookState.read();
 
       expect(state.autoContinue.mode).toBe('off');
@@ -62,8 +65,8 @@ describe('hook-state', () => {
   });
 
   describe('write', () => {
-    it('writes state to .claude.hooks.json', () => {
-      const hookState = createHookState(tempDir);
+    it('writes state to .ketchup/.claude.hooks.json', () => {
+      const hookState = createHookState(ketchupDir);
       const newState: HookState = {
         ...DEFAULT_HOOK_STATE,
         autoContinue: { ...DEFAULT_HOOK_STATE.autoContinue, mode: 'non-stop' },
@@ -71,24 +74,24 @@ describe('hook-state', () => {
 
       hookState.write(newState);
 
-      const content = JSON.parse(fs.readFileSync(path.join(tempDir, '.claude.hooks.json'), 'utf-8'));
+      const content = JSON.parse(fs.readFileSync(path.join(ketchupDir, '.claude.hooks.json'), 'utf-8'));
       expect(content.autoContinue.mode).toBe('non-stop');
     });
 
     it('updates timestamp on write', () => {
-      const hookState = createHookState(tempDir);
+      const hookState = createHookState(ketchupDir);
       const state = hookState.read();
 
       hookState.write(state);
 
-      const content = JSON.parse(fs.readFileSync(path.join(tempDir, '.claude.hooks.json'), 'utf-8'));
+      const content = JSON.parse(fs.readFileSync(path.join(ketchupDir, '.claude.hooks.json'), 'utf-8'));
       expect(content.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
     });
   });
 
   describe('update', () => {
     it('updates specific fields and preserves others', () => {
-      const hookState = createHookState(tempDir);
+      const hookState = createHookState(ketchupDir);
 
       hookState.update({ validateCommit: { mode: 'off' } }, 'test');
 
@@ -99,7 +102,7 @@ describe('hook-state', () => {
     });
 
     it('defaults updatedBy to unknown when not provided', () => {
-      const hookState = createHookState(tempDir);
+      const hookState = createHookState(ketchupDir);
 
       hookState.update({ validateCommit: { mode: 'warn' } });
 
@@ -110,7 +113,7 @@ describe('hook-state', () => {
 
   describe('incrementIteration', () => {
     it('increments iteration counter', () => {
-      const hookState = createHookState(tempDir);
+      const hookState = createHookState(ketchupDir);
 
       const count = hookState.incrementIteration();
 
@@ -122,9 +125,9 @@ describe('hook-state', () => {
       const existingState = {
         autoContinue: { mode: 'non-stop', iteration: 5 },
       };
-      fs.writeFileSync(path.join(tempDir, '.claude.hooks.json'), JSON.stringify(existingState));
+      fs.writeFileSync(path.join(ketchupDir, '.claude.hooks.json'), JSON.stringify(existingState));
 
-      const hookState = createHookState(tempDir);
+      const hookState = createHookState(ketchupDir);
       const count = hookState.incrementIteration();
 
       expect(count).toBe(6);
@@ -136,9 +139,9 @@ describe('hook-state', () => {
       const existingState = {
         autoContinue: { mode: 'non-stop', iteration: 10 },
       };
-      fs.writeFileSync(path.join(tempDir, '.claude.hooks.json'), JSON.stringify(existingState));
+      fs.writeFileSync(path.join(ketchupDir, '.claude.hooks.json'), JSON.stringify(existingState));
 
-      const hookState = createHookState(tempDir);
+      const hookState = createHookState(ketchupDir);
       hookState.resetIteration();
 
       expect(hookState.read().autoContinue.iteration).toBe(0);
@@ -172,9 +175,9 @@ describe('hook-state', () => {
           validateCommitOnUnknown: false,
         },
       };
-      fs.writeFileSync(path.join(tempDir, '.claude.hooks.json'), JSON.stringify(existingState));
+      fs.writeFileSync(path.join(ketchupDir, '.claude.hooks.json'), JSON.stringify(existingState));
 
-      const hookState = createHookState(tempDir);
+      const hookState = createHookState(ketchupDir);
       const state = hookState.read();
 
       expect(state.subagentHooks.validateCommitOnExplore).toBe(true);
@@ -183,7 +186,7 @@ describe('hook-state', () => {
     });
 
     it('updates subagentHooks with update method', () => {
-      const hookState = createHookState(tempDir);
+      const hookState = createHookState(ketchupDir);
 
       hookState.update(
         {

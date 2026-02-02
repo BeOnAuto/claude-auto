@@ -75,8 +75,8 @@ STOP if:
 Respond JSON only: {"decision":"CONTINUE","reason":"..."} or {"decision":"STOP","reason":"..."}`;
 }
 
-export function handleStop(projectDir: string, input: StopHookInput): StopHookResult {
-  const stateManager = createHookState(projectDir);
+export function handleStop(ketchupDir: string, input: StopHookInput): StopHookResult {
+  const stateManager = createHookState(ketchupDir);
   const state = stateManager.read();
   const { mode, skipModes } = state.autoContinue;
 

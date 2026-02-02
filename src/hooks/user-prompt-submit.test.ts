@@ -76,7 +76,7 @@ Remember to follow coding standards.`,
 
     await handleUserPromptSubmit(claudeDir, 'my-session-id', 'Help me fix this bug');
 
-    const logPath = path.join(claudeDir, 'logs', 'activity.log');
+    const logPath = path.join(ketchupDir, 'logs', 'activity.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[ssion-id]');
@@ -100,7 +100,7 @@ Remember to follow coding standards.`,
 
     await handleUserPromptSubmit(claudeDir, 'debug-session', 'Help me fix this bug');
 
-    const logPath = path.join(claudeDir, 'logs', 'ketchup', 'debug.log');
+    const logPath = path.join(ketchupDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[user-prompt-submit]');

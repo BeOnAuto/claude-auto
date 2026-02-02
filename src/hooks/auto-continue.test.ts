@@ -140,37 +140,40 @@ describe('auto-continue hook', () => {
 
   describe('handleStop', () => {
     it('returns allow when mode is off', () => {
-      const claudeDir = path.join(tempDir, '.claude');
-      fs.mkdirSync(claudeDir, { recursive: true });
-      fs.writeFileSync(path.join(tempDir, '.claude.hooks.json'), JSON.stringify({ autoContinue: { mode: 'off' } }));
+      const ketchupDir = path.join(tempDir, '.ketchup');
+      fs.mkdirSync(ketchupDir, { recursive: true });
+      fs.writeFileSync(path.join(ketchupDir, '.claude.hooks.json'), JSON.stringify({ autoContinue: { mode: 'off' } }));
 
       const input: StopHookInput = { session_id: 'test-session' };
-      const result = handleStop(tempDir, input);
+      const result = handleStop(ketchupDir, input);
 
       expect(result).toEqual({ decision: 'allow', reason: 'auto-continue disabled' });
     });
 
     it('returns allow when stop_hook_active is true', () => {
-      const claudeDir = path.join(tempDir, '.claude');
-      fs.mkdirSync(claudeDir, { recursive: true });
-      fs.writeFileSync(path.join(tempDir, '.claude.hooks.json'), JSON.stringify({ autoContinue: { mode: 'smart' } }));
+      const ketchupDir = path.join(tempDir, '.ketchup');
+      fs.mkdirSync(ketchupDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(ketchupDir, '.claude.hooks.json'),
+        JSON.stringify({ autoContinue: { mode: 'smart' } }),
+      );
 
       const input: StopHookInput = { session_id: 'test-session', stop_hook_active: true };
-      const result = handleStop(tempDir, input);
+      const result = handleStop(ketchupDir, input);
 
       expect(result).toEqual({ decision: 'allow', reason: 'stop hook already active' });
     });
 
     it('returns allow when permission_mode is in skipModes', () => {
-      const claudeDir = path.join(tempDir, '.claude');
-      fs.mkdirSync(claudeDir, { recursive: true });
+      const ketchupDir = path.join(tempDir, '.ketchup');
+      fs.mkdirSync(ketchupDir, { recursive: true });
       fs.writeFileSync(
-        path.join(tempDir, '.claude.hooks.json'),
+        path.join(ketchupDir, '.claude.hooks.json'),
         JSON.stringify({ autoContinue: { mode: 'smart', skipModes: ['plan'] } }),
       );
 
       const input: StopHookInput = { session_id: 'test-session', permission_mode: 'plan' };
-      const result = handleStop(tempDir, input);
+      const result = handleStop(ketchupDir, input);
 
       expect(result).toEqual({ decision: 'allow', reason: 'skipping mode: plan' });
     });

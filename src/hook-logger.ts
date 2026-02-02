@@ -17,8 +17,8 @@ function sanitizeForFilename(hookName: string): string {
   return hookName.replace(/[^a-zA-Z0-9-]/g, '-').toLowerCase();
 }
 
-export function writeHookLog(claudeDir: string, entry: HookLogEntry): void {
-  const logsDir = path.join(claudeDir, 'logs', 'hooks');
+export function writeHookLog(ketchupDir: string, entry: HookLogEntry): void {
+  const logsDir = path.join(ketchupDir, 'logs', 'hooks');
   if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir, { recursive: true });
   }

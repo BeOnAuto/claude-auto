@@ -72,7 +72,7 @@ Content.`,
 
     await handleSessionStart(claudeDir, 'abc12345-session');
 
-    const logPath = path.join(claudeDir, 'logs', 'activity.log');
+    const logPath = path.join(ketchupDir, 'logs', 'activity.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[-session]');
@@ -105,7 +105,7 @@ Reminder B content.`,
 
     await handleSessionStart(claudeDir, 'debug-session');
 
-    const logPath = path.join(claudeDir, 'logs', 'ketchup', 'debug.log');
+    const logPath = path.join(ketchupDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[session-start]');

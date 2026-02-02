@@ -58,7 +58,7 @@ describe('pre-tool-use hook', () => {
 
     await handlePreToolUse(claudeDir, 'my-session-id', toolInput);
 
-    const logPath = path.join(claudeDir, 'logs', 'activity.log');
+    const logPath = path.join(ketchupDir, 'logs', 'activity.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[ssion-id]');
@@ -72,7 +72,7 @@ describe('pre-tool-use hook', () => {
 
     await handlePreToolUse(claudeDir, 'debug-session', toolInput);
 
-    const logPath = path.join(claudeDir, 'logs', 'ketchup', 'debug.log');
+    const logPath = path.join(ketchupDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[pre-tool-use]');

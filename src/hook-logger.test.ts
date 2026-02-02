@@ -8,27 +8,27 @@ import { writeHookLog } from './hook-logger.js';
 
 describe('hook-logger', () => {
   let tempDir: string;
-  let claudeDir: string;
+  let ketchupDir: string;
 
   beforeEach(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-hook-logger-'));
-    claudeDir = path.join(tempDir, '.claude');
-    fs.mkdirSync(claudeDir, { recursive: true });
+    ketchupDir = path.join(tempDir, '.ketchup');
+    fs.mkdirSync(ketchupDir, { recursive: true });
   });
 
   afterEach(() => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
 
-  it('creates log file in .claude/logs/hooks/ with hook name and timestamp', () => {
-    writeHookLog(claudeDir, {
+  it('creates log file in .ketchup/logs/hooks/ with hook name and timestamp', () => {
+    writeHookLog(ketchupDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: { session_id: 'abc123' },
       output: { hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: 'hello' } },
     });
 
-    const logsDir = path.join(claudeDir, 'logs', 'hooks');
+    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
     expect(fs.existsSync(logsDir)).toBe(true);
 
     const files = fs.readdirSync(logsDir);
@@ -37,14 +37,14 @@ describe('hook-logger', () => {
   });
 
   it('log file contains input section with raw input', () => {
-    writeHookLog(claudeDir, {
+    writeHookLog(ketchupDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: { session_id: 'test-session', hook_event_name: 'SessionStart' },
       output: {},
     });
 
-    const logsDir = path.join(claudeDir, 'logs', 'hooks');
+    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
     const logFile = fs.readdirSync(logsDir)[0];
     const content = fs.readFileSync(path.join(logsDir, logFile), 'utf8');
 
@@ -54,7 +54,7 @@ describe('hook-logger', () => {
   });
 
   it('log file contains resolved paths when provided', () => {
-    writeHookLog(claudeDir, {
+    writeHookLog(ketchupDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: {},
@@ -65,7 +65,7 @@ describe('hook-logger', () => {
       output: {},
     });
 
-    const logsDir = path.join(claudeDir, 'logs', 'hooks');
+    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
     const logFile = fs.readdirSync(logsDir)[0];
     const content = fs.readFileSync(path.join(logsDir, logFile), 'utf8');
 
@@ -75,7 +75,7 @@ describe('hook-logger', () => {
   });
 
   it('log file contains reminder files found', () => {
-    writeHookLog(claudeDir, {
+    writeHookLog(ketchupDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: {},
@@ -83,7 +83,7 @@ describe('hook-logger', () => {
       output: {},
     });
 
-    const logsDir = path.join(claudeDir, 'logs', 'hooks');
+    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
     const logFile = fs.readdirSync(logsDir)[0];
     const content = fs.readFileSync(path.join(logsDir, logFile), 'utf8');
 
@@ -94,7 +94,7 @@ describe('hook-logger', () => {
   });
 
   it('log file contains matched reminders with names and priorities', () => {
-    writeHookLog(claudeDir, {
+    writeHookLog(ketchupDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: {},
@@ -105,7 +105,7 @@ describe('hook-logger', () => {
       output: {},
     });
 
-    const logsDir = path.join(claudeDir, 'logs', 'hooks');
+    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
     const logFile = fs.readdirSync(logsDir)[0];
     const content = fs.readFileSync(path.join(logsDir, logFile), 'utf8');
 
@@ -116,14 +116,14 @@ describe('hook-logger', () => {
 
   it('log file contains output section with JSON output', () => {
     const output = { hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: 'test' } };
-    writeHookLog(claudeDir, {
+    writeHookLog(ketchupDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: {},
       output,
     });
 
-    const logsDir = path.join(claudeDir, 'logs', 'hooks');
+    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
     const logFile = fs.readdirSync(logsDir)[0];
     const content = fs.readFileSync(path.join(logsDir, logFile), 'utf8');
 
@@ -132,7 +132,7 @@ describe('hook-logger', () => {
   });
 
   it('log file contains error section when error is provided', () => {
-    writeHookLog(claudeDir, {
+    writeHookLog(ketchupDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: {},
@@ -140,7 +140,7 @@ describe('hook-logger', () => {
       error: 'ENOENT: no such file or directory',
     });
 
-    const logsDir = path.join(claudeDir, 'logs', 'hooks');
+    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
     const logFile = fs.readdirSync(logsDir)[0];
     const content = fs.readFileSync(path.join(logsDir, logFile), 'utf8');
 
@@ -149,7 +149,7 @@ describe('hook-logger', () => {
   });
 
   it('log file contains duration when provided', () => {
-    writeHookLog(claudeDir, {
+    writeHookLog(ketchupDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: {},
@@ -157,7 +157,7 @@ describe('hook-logger', () => {
       durationMs: 42,
     });
 
-    const logsDir = path.join(claudeDir, 'logs', 'hooks');
+    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
     const logFile = fs.readdirSync(logsDir)[0];
     const content = fs.readFileSync(path.join(logsDir, logFile), 'utf8');
 
@@ -165,14 +165,14 @@ describe('hook-logger', () => {
   });
 
   it('sanitizes hook name for filename', () => {
-    writeHookLog(claudeDir, {
+    writeHookLog(ketchupDir, {
       hookName: 'PreToolUse',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: {},
       output: {},
     });
 
-    const logsDir = path.join(claudeDir, 'logs', 'hooks');
+    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
     const files = fs.readdirSync(logsDir);
     expect(files[0]).toMatch(/^pretooluse-/);
   });

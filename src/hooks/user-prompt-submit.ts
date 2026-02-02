@@ -25,14 +25,14 @@ export async function handleUserPromptSubmit(
   const reminderContent = reminders.map((r) => r.content).join('\n\n');
 
   activityLog(
-    claudeDir,
+    paths.ketchupDir,
     sessionId,
     'user-prompt-submit',
     `injected ${reminders.length} reminder${reminders.length === 1 ? '' : 's'}`,
   );
 
   debugLog(
-    claudeDir,
+    paths.ketchupDir,
     'user-prompt-submit',
     `injected ${reminders.length} reminder${reminders.length === 1 ? '' : 's'}`,
   );

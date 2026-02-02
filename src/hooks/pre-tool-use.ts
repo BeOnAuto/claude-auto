@@ -25,25 +25,25 @@ export async function handlePreToolUse(
   toolInput: ToolInput,
   options: PreToolUseOptions = {},
 ): Promise<HookResult> {
+  const paths = await resolvePaths(claudeDir);
   const command = toolInput.command as string | undefined;
 
   if (command && isCommitCommand(command)) {
-    return handleCommitValidation(claudeDir, sessionId, command, options);
+    return handleCommitValidation(claudeDir, sessionId, command, options, paths.ketchupDir);
   }
 
   const patterns = loadDenyPatterns(claudeDir);
   const filePath = toolInput.file_path as string;
 
   if (filePath && isDenied(filePath, patterns)) {
-    activityLog(claudeDir, sessionId, 'pre-tool-use', `blocked: ${filePath}`);
-    debugLog(claudeDir, 'pre-tool-use', `${filePath} blocked by deny-list`);
+    activityLog(paths.ketchupDir, sessionId, 'pre-tool-use', `blocked: ${filePath}`);
+    debugLog(paths.ketchupDir, 'pre-tool-use', `${filePath} blocked by deny-list`);
     return {
       decision: 'block',
       reason: `Path ${filePath} is denied by ketchup deny-list`,
     };
   }
 
-  const paths = await resolvePaths(claudeDir);
   const reminders = loadReminders(paths.remindersDir, {
     hook: 'PreToolUse',
     toolName: options.toolName,
@@ -51,9 +51,14 @@ export async function handlePreToolUse(
 
   const reminderContent = reminders.map((r) => r.content).join('\n\n');
 
-  activityLog(claudeDir, sessionId, 'pre-tool-use', `allowed: ${filePath ?? command}, ${reminders.length} reminder(s)`);
+  activityLog(
+    paths.ketchupDir,
+    sessionId,
+    'pre-tool-use',
+    `allowed: ${filePath ?? command}, ${reminders.length} reminder(s)`,
+  );
 
-  debugLog(claudeDir, 'pre-tool-use', `${filePath ?? command} allowed, ${reminders.length} reminder(s)`);
+  debugLog(paths.ketchupDir, 'pre-tool-use', `${filePath ?? command} allowed, ${reminders.length} reminder(s)`);
 
   if (reminderContent) {
     return { decision: 'allow', result: reminderContent };
@@ -67,12 +72,13 @@ async function handleCommitValidation(
   sessionId: string,
   command: string,
   options: PreToolUseOptions,
+  ketchupDir: string,
 ): Promise<HookResult> {
   const paths = await resolvePaths(claudeDir);
   const validators = loadValidators([paths.validatorsDir]);
 
   if (validators.length === 0) {
-    activityLog(claudeDir, sessionId, 'pre-tool-use', 'commit allowed (no validators)');
+    activityLog(ketchupDir, sessionId, 'pre-tool-use', 'commit allowed (no validators)');
     return { decision: 'allow' };
   }
 
@@ -83,15 +89,15 @@ async function handleCommitValidation(
 
   if (nacks.length > 0) {
     const reasons = nacks.map((n) => `${n.validator}: ${n.reason}`).join('\n');
-    activityLog(claudeDir, sessionId, 'pre-tool-use', `commit blocked: ${reasons}`);
-    debugLog(claudeDir, 'pre-tool-use', `commit blocked: ${reasons}`);
+    activityLog(ketchupDir, sessionId, 'pre-tool-use', `commit blocked: ${reasons}`);
+    debugLog(ketchupDir, 'pre-tool-use', `commit blocked: ${reasons}`);
     return {
       decision: 'block',
       reason: reasons,
     };
   }
 
-  activityLog(claudeDir, sessionId, 'pre-tool-use', 'commit allowed');
-  debugLog(claudeDir, 'pre-tool-use', 'commit allowed');
+  activityLog(ketchupDir, sessionId, 'pre-tool-use', 'commit allowed');
+  debugLog(ketchupDir, 'pre-tool-use', 'commit allowed');
   return { decision: 'allow' };
 }

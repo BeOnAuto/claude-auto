@@ -21,14 +21,14 @@ describe('debug-logger', () => {
     }
   });
 
-  it('writes to .claude/logs/ketchup/debug.log when DEBUG=ketchup', () => {
+  it('writes to .ketchup/logs/ketchup/debug.log when DEBUG=ketchup', () => {
     process.env.DEBUG = 'ketchup';
-    const claudeDir = path.join(tempDir, '.claude');
-    fs.mkdirSync(claudeDir, { recursive: true });
+    const ketchupDir = path.join(tempDir, '.ketchup');
+    fs.mkdirSync(ketchupDir, { recursive: true });
 
-    debugLog(claudeDir, 'test-hook', 'test message');
+    debugLog(ketchupDir, 'test-hook', 'test message');
 
-    const logPath = path.join(claudeDir, 'logs', 'ketchup', 'debug.log');
+    const logPath = path.join(ketchupDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('test-hook');
@@ -37,35 +37,35 @@ describe('debug-logger', () => {
 
   it('does not write when DEBUG is not set', () => {
     delete process.env.DEBUG;
-    const claudeDir = path.join(tempDir, '.claude');
-    fs.mkdirSync(claudeDir, { recursive: true });
+    const ketchupDir = path.join(tempDir, '.ketchup');
+    fs.mkdirSync(ketchupDir, { recursive: true });
 
-    debugLog(claudeDir, 'test-hook', 'test message');
+    debugLog(ketchupDir, 'test-hook', 'test message');
 
-    const logPath = path.join(claudeDir, 'logs', 'ketchup', 'debug.log');
+    const logPath = path.join(ketchupDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(false);
   });
 
   it('includes ISO timestamp in log entries', () => {
     process.env.DEBUG = 'ketchup';
-    const claudeDir = path.join(tempDir, '.claude');
-    fs.mkdirSync(claudeDir, { recursive: true });
+    const ketchupDir = path.join(tempDir, '.ketchup');
+    fs.mkdirSync(ketchupDir, { recursive: true });
 
-    debugLog(claudeDir, 'test-hook', 'test message');
+    debugLog(ketchupDir, 'test-hook', 'test message');
 
-    const logPath = path.join(claudeDir, 'logs', 'ketchup', 'debug.log');
+    const logPath = path.join(ketchupDir, 'logs', 'ketchup', 'debug.log');
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
   });
 
   it('does not write when DEBUG is set to something else', () => {
     process.env.DEBUG = 'other';
-    const claudeDir = path.join(tempDir, '.claude');
-    fs.mkdirSync(claudeDir, { recursive: true });
+    const ketchupDir = path.join(tempDir, '.ketchup');
+    fs.mkdirSync(ketchupDir, { recursive: true });
 
-    debugLog(claudeDir, 'test-hook', 'test message');
+    debugLog(ketchupDir, 'test-hook', 'test message');
 
-    const logPath = path.join(claudeDir, 'logs', 'ketchup', 'debug.log');
+    const logPath = path.join(ketchupDir, 'logs', 'ketchup', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(false);
   });
 });
