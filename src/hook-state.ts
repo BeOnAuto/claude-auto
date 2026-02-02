@@ -13,6 +13,7 @@ export interface AutoContinueState {
 
 export interface ValidateCommitState {
   mode: CommitMode;
+  batchCount?: number;
 }
 
 export interface DenyListState {
@@ -50,6 +51,7 @@ export const DEFAULT_HOOK_STATE: HookState = {
   },
   validateCommit: {
     mode: 'strict',
+    batchCount: 3,
   },
   denyList: {
     enabled: true,

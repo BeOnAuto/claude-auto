@@ -62,6 +62,16 @@ describe('hook-state', () => {
       expect(state.validateCommit.mode).toBe('strict');
       expect(state.denyList.enabled).toBe(true);
     });
+
+    it('merges batchCount from partial state file', () => {
+      const partialState = { validateCommit: { mode: 'strict', batchCount: 5 } };
+      fs.writeFileSync(path.join(ketchupDir, '.claude.hooks.json'), JSON.stringify(partialState));
+
+      const hookState = createHookState(ketchupDir);
+      const state = hookState.read();
+
+      expect(state.validateCommit).toEqual({ mode: 'strict', batchCount: 5 });
+    });
   });
 
   describe('write', () => {
@@ -150,11 +160,15 @@ describe('hook-state', () => {
 
   describe('DEFAULT_HOOK_STATE', () => {
     it('has expected default values', () => {
-      expect(DEFAULT_HOOK_STATE.autoContinue.mode).toBe('smart');
-      expect(DEFAULT_HOOK_STATE.autoContinue.skipModes).toEqual(['plan']);
-      expect(DEFAULT_HOOK_STATE.validateCommit.mode).toBe('strict');
-      expect(DEFAULT_HOOK_STATE.denyList.enabled).toBe(true);
-      expect(DEFAULT_HOOK_STATE.promptReminder.enabled).toBe(true);
+      expect(DEFAULT_HOOK_STATE).toEqual({
+        autoContinue: { mode: 'smart', maxIterations: 0, iteration: expect.any(Number), skipModes: ['plan'] },
+        validateCommit: { mode: 'strict', batchCount: 3 },
+        denyList: { enabled: true, extraPatterns: [] },
+        promptReminder: { enabled: true },
+        subagentHooks: { validateCommitOnExplore: false, validateCommitOnWork: true, validateCommitOnUnknown: true },
+        updatedAt: expect.any(String),
+        updatedBy: 'default',
+      });
     });
 
     it('has subagentHooks with default values', () => {
