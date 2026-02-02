@@ -1,5 +1,12 @@
 # claude-ketchup
 
+## 0.11.1
+
+### Patch Changes
+
+- 094494f: - Removed the `/ketchup` command which had no real functionality
+  - Fixed directory copying to gracefully skip empty source directories
+
 ## 0.11.0
 
 ### Minor Changes
