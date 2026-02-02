@@ -1,5 +1,13 @@
 # claude-ketchup
 
+## 0.9.0
+
+### Minor Changes
+
+- 0180ad8: - Added local installation support for easier development setup
+  - Enhanced the CLI installation process with improved directory structure
+  - Reorganized internal configuration files into a dedicated .ketchup directory
+
 ## 0.8.6
 
 ### Patch Changes
