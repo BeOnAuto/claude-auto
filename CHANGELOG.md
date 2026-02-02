@@ -1,5 +1,12 @@
 # claude-ketchup
 
+## 0.8.4
+
+### Patch Changes
+
+- 92ae830: - Moved log files to .ketchup/logs directory so all runtime data is consolidated under .ketchup
+  - Moved hook state file to .ketchup/.claude.hooks.json to keep the project root clean
+
 ## 0.8.3
 
 ### Patch Changes
