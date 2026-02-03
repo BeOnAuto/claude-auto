@@ -13,7 +13,7 @@ hero:
       text: Get Started
       link: /getting-started
     - theme: alt
-      text: The Quality Stack
+      text: The Ketchup Technique
       link: /ketchup-technique
     - theme: alt
       text: View on GitHub
@@ -50,12 +50,12 @@ features:
 
 You can only parallelize if you trust the execution. The Quality Stack creates that trust:
 
-| Component          | What It Does                               | Result                          |
-| ------------------ | ------------------------------------------ | ------------------------------- |
-| **Auto-Planner**   | Generates plan from your requirements      | No need to specify every detail |
-| **Supervisor AI**  | Validates every commit against your criteria | Automated review               |
-| **TCR Discipline** | Test && Commit \|\| Revert                 | Bad code auto-reverts           |
-| **Auto-Continue**  | Keeps going until the plan is done         | No nudging required             |
+| Component          | What It Does                                 | Result                          |
+| ------------------ | -------------------------------------------- | ------------------------------- |
+| **Auto-Planner**   | Generates plan from your requirements        | No need to specify every detail |
+| **Supervisor AI**  | Validates every commit against your criteria | Automated review                |
+| **TCR Discipline** | Test && Commit \|\| Revert                   | Bad code auto-reverts           |
+| **Auto-Continue**  | Keeps going until the plan is done           | No nudging required             |
 
 The system is trustworthy. That's what frees you.
 
@@ -67,19 +67,19 @@ Git worktrees let you have multiple working directories from the same repo. Each
 
 Combine with Claude Auto:
 
-| Worktree            | Feature               | Status               |
-| ------------------- | --------------------- | -------------------- |
+| Worktree            | Feature               | Status                   |
+| ------------------- | --------------------- | ------------------------ |
 | `feature-auth`      | Authentication system | Claude Auto executing... |
 | `feature-payments`  | Payment integration   | Claude Auto executing... |
 | `feature-dashboard` | Admin dashboard       | Claude Auto executing... |
 
 Three features running simultaneously. All quality-validated.
 
-| Approach                  | Features/Week |
-| ------------------------- | ------------- |
-| Manual coding             | 1             |
-| AI-assisted (babysitting) | 1-2           |
-| **Claude Auto + Worktrees**   | **5-10**      |
+| Approach                    | Features/Week |
+| --------------------------- | ------------- |
+| Manual coding               | 1             |
+| AI-assisted (babysitting)   | 1-2           |
+| **Claude Auto + Worktrees** | **5-10**      |
 
 The bottleneck becomes defining requirements, not executing them.
 
