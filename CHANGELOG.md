@@ -1,5 +1,11 @@
 # claude-ketchup
 
+## 0.12.5
+
+### Patch Changes
+
+- 8b06629: - Updated site URL and base path configuration for the production documentation site
+
 ## 0.12.4
 
 ### Patch Changes
