@@ -1,5 +1,12 @@
 # claude-ketchup
 
+## 0.12.4
+
+### Patch Changes
+
+- ca9e197: - Updated section titles and improved table formatting in documentation
+- 6f0ffe8: - Migrated internal tooling references to claude-auto
+
 ## 0.12.3
 
 ### Patch Changes
