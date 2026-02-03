@@ -1,8 +1,7 @@
 import { defineConfig } from 'vitepress';
 
-const env = process.env.NODE_ENV;
-const base = env === 'production' ? '/claude-auto/' : '/';
-const siteUrl = 'https://beonauto.github.io/claude-auto';
+const base = '/';
+const siteUrl = 'https://claude.on.auto';
 
 export default defineConfig({
   base,
