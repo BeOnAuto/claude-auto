@@ -307,7 +307,7 @@ describe('runValidator', () => {
 
     expect(executor).toHaveBeenCalledWith(
       'claude',
-      ['-p', expect.stringContaining('<diff>'), '--output-format', 'json'],
+      ['-p', '--no-session-persistence', expect.stringContaining('<diff>'), '--output-format', 'json'],
       expect.objectContaining({ encoding: 'utf8' }),
     );
   });
@@ -333,7 +333,7 @@ describe('runValidator', () => {
 
     await runValidator(validator, context, executor);
 
-    const prompt = executor.mock.calls[0][1][1];
+    const prompt = executor.mock.calls[0][1][2];
     expect(prompt).toContain('Check that tests pass');
     expect(prompt).toContain('<diff>');
     expect(prompt).toContain('+hello');
@@ -462,7 +462,7 @@ describe('runAppealValidator', () => {
 
     await runAppealValidator(appealValidator, context, results, appeal, executor);
 
-    const prompt = executor.mock.calls[0][1][1];
+    const prompt = executor.mock.calls[0][1][2];
     expect(prompt).toContain('<validator-results>');
     expect(prompt).toContain('coverage-rules: NACK - Missing tests');
     expect(prompt).toContain('<appeal>');
@@ -537,7 +537,7 @@ RESPOND WITH JSON ONLY - NO PROSE, NO MARKDOWN, NO EXPLANATION OUTSIDE THE JSON.
 
     await validateCommit(validators, context, executor);
 
-    const prompt = executor.mock.calls[0][1][1];
+    const prompt = executor.mock.calls[0][1][2];
     expect(prompt).toContain('<validator id="v1">');
     expect(prompt).toContain('Check for tests.');
     expect(prompt).not.toContain('You are a commit validator. You MUST');
@@ -550,7 +550,7 @@ RESPOND WITH JSON ONLY - NO PROSE, NO MARKDOWN, NO EXPLANATION OUTSIDE THE JSON.
     const callLog: string[] = [];
 
     const asyncExecutor = vi.fn().mockImplementation((_cmd: string, args: string[]) => {
-      const prompt = args[1];
+      const prompt = args[2];
       const batchName = prompt.includes('"v1"') ? 'batch-0' : prompt.includes('"v2"') ? 'batch-1' : 'batch-2';
       callLog.push(`start:${batchName}`);
       return new Promise((resolve) => {
@@ -673,7 +673,7 @@ RESPOND WITH JSON ONLY - NO PROSE, NO MARKDOWN, NO EXPLANATION OUTSIDE THE JSON.
 
   it('uses provided batchCount to control chunk size', async () => {
     const executor = vi.fn().mockImplementation((_cmd: string, args: string[]) => {
-      const prompt = args[1];
+      const prompt = args[2];
       if (prompt.includes('"v1"') && prompt.includes('"v2"')) {
         return {
           status: 0,

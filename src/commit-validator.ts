@@ -155,14 +155,8 @@ function findEntryByName(arr: unknown[], name: string): Record<string, unknown> 
 }
 
 export function parseBatchedOutput(stdout: string, validatorNames: string[]): BatchedValidatorResult[] {
-  let outer: unknown;
-  try {
-    outer = JSON.parse(stdout);
-  } catch {
-    throw new Error(`Failed to parse validator output as JSON. Preview: ${stdout?.substring(0, 300) || 'empty'}`);
-  }
-  const outerParsed = outer as Record<string, unknown>;
-  const innerRaw = typeof outerParsed.result === 'string' ? outerParsed.result : outerParsed;
+  const outer = JSON.parse(stdout);
+  const innerRaw = typeof outer.result === 'string' ? outer.result : outer;
 
   const parsed = typeof innerRaw === 'string' ? extractJsonArray(innerRaw) : Array.isArray(innerRaw) ? innerRaw : null;
 
@@ -200,7 +194,7 @@ export async function runValidator(
   executor: Executor = spawnAsync,
 ): Promise<ValidatorResult> {
   const prompt = buildPrompt(validator, context);
-  const args = ['-p', prompt, '--output-format', 'json'];
+  const args = ['-p', '--no-session-persistence', prompt, '--output-format', 'json'];
   const opts = { encoding: 'utf8' } as const;
 
   const first = await executor('claude', args, opts);
@@ -268,7 +262,7 @@ export async function runAppealValidator(
   executor: Executor = spawnAsync,
 ): Promise<ValidatorResult> {
   const prompt = buildAppealPrompt(appealValidator, context, results, appeal);
-  const result = await executor('claude', ['-p', prompt, '--output-format', 'json'], {
+  const result = await executor('claude', ['-p', '--no-session-persistence', prompt, '--output-format', 'json'], {
     encoding: 'utf8',
   });
 
@@ -287,79 +281,6 @@ export interface CommitValidationResult {
 export type ValidatorLogger = (event: 'spawn' | 'complete' | 'error', validatorName: string, detail?: string) => void;
 
 const BATCH_COUNT = 3;
-
-async function executeBatch(
-  chunk: Validator[],
-  chunkIndex: number,
-  context: CommitContext,
-  executor: Executor,
-  onLog?: ValidatorLogger,
-): Promise<CommitValidationResult[]> {
-  const names = chunk.map((v) => v.name);
-  onLog?.('spawn', `batch-${chunkIndex}`, `validators: ${names.join(', ')}`);
-
-  try {
-    const prompt = buildBatchedPrompt(chunk, context);
-    const args = ['-p', prompt, '--output-format', 'json'];
-    const opts = { encoding: 'utf8' } as const;
-
-    const spawnResult = await executor('claude', args, opts);
-
-    if (!spawnResult.stdout || spawnResult.stdout.length === 0) {
-      throw new Error(
-        `Claude CLI returned empty output. Exit code: ${spawnResult.status}. ` +
-          `Stderr: ${spawnResult.stderr?.substring(0, 200) || 'none'}`,
-      );
-    }
-
-    let outer: unknown;
-    try {
-      outer = JSON.parse(spawnResult.stdout);
-    } catch {
-      throw new Error(
-        `Failed to parse Claude CLI JSON output. ` +
-          `Stdout preview: ${spawnResult.stdout?.substring(0, 300) || 'empty'}`,
-      );
-    }
-
-    const batchResults = parseBatchedOutput(spawnResult.stdout, names);
-    const outerParsed = outer as Record<string, unknown>;
-    let inputTokens: number | undefined;
-    let outputTokens: number | undefined;
-    if (outerParsed.usage) {
-      const usage = outerParsed.usage as Record<string, unknown>;
-      inputTokens =
-        ((usage.input_tokens as number) ?? 0) +
-        ((usage.cache_read_input_tokens as number) ?? 0) +
-        ((usage.cache_creation_input_tokens as number) ?? 0);
-      outputTokens = usage.output_tokens as number;
-    }
-    const tokens = inputTokens != null ? ` (in:${inputTokens} out:${outputTokens})` : '';
-
-    const commitResults: CommitValidationResult[] = batchResults.map((br) => {
-      onLog?.('complete', br.validator, `${br.decision}${br.reason ? `: ${br.reason}` : ''}${tokens}`);
-      const result: CommitValidationResult = {
-        validator: br.validator,
-        decision: br.decision,
-        appealable: !NON_APPEALABLE_VALIDATORS.includes(br.validator),
-      };
-      if (br.reason) {
-        result.reason = br.reason;
-      }
-      return result;
-    });
-
-    return commitResults;
-  } catch (err) {
-    onLog?.('error', `batch-${chunkIndex}`, String(err));
-    return chunk.map((v) => ({
-      validator: v.name,
-      decision: 'NACK' as const,
-      reason: `validator crashed: ${String(err)}`,
-      appealable: false,
-    }));
-  }
-}
 
 function stripValidatorBoilerplate(content: string): string {
   return content
@@ -416,7 +337,51 @@ export async function validateCommit(
 ): Promise<CommitValidationResult[]> {
   const chunks = chunkArray(validators, batchCount);
 
-  const pending = chunks.map((chunk, chunkIndex) => executeBatch(chunk, chunkIndex, context, executor, onLog));
+  const pending = chunks.map(async (chunk, chunkIndex) => {
+    const names = chunk.map((v) => v.name);
+    onLog?.('spawn', `batch-${chunkIndex}`, `validators: ${names.join(', ')}`);
+
+    try {
+      const prompt = buildBatchedPrompt(chunk, context);
+      const args = ['-p', '--no-session-persistence', prompt, '--output-format', 'json'];
+      const opts = { encoding: 'utf8' } as const;
+
+      const spawnResult = await executor('claude', args, opts);
+      const batchResults = parseBatchedOutput(spawnResult.stdout, names);
+
+      const outer = JSON.parse(spawnResult.stdout);
+      let inputTokens: number | undefined;
+      let outputTokens: number | undefined;
+      if (outer.usage) {
+        inputTokens =
+          (outer.usage.input_tokens ?? 0) +
+          (outer.usage.cache_read_input_tokens ?? 0) +
+          (outer.usage.cache_creation_input_tokens ?? 0);
+        outputTokens = outer.usage.output_tokens;
+      }
+      const tokens = inputTokens != null ? ` (in:${inputTokens} out:${outputTokens})` : '';
+
+      const commitResults: CommitValidationResult[] = batchResults.map((br) => {
+        onLog?.('complete', br.validator, `${br.decision}${br.reason ? `: ${br.reason}` : ''}${tokens}`);
+        return {
+          validator: br.validator,
+          decision: br.decision,
+          reason: br.reason,
+          appealable: !NON_APPEALABLE_VALIDATORS.includes(br.validator),
+        };
+      });
+
+      return commitResults;
+    } catch (err) {
+      onLog?.('error', `batch-${chunkIndex}`, String(err));
+      return chunk.map((v) => ({
+        validator: v.name,
+        decision: 'NACK' as const,
+        reason: `validator crashed: ${String(err)}`,
+        appealable: false,
+      }));
+    }
+  });
 
   const batchResults = await Promise.all(pending);
   return batchResults.flat();
