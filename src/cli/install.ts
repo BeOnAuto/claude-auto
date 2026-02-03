@@ -10,7 +10,7 @@ export type InstallResult = {
   status: 'installed' | 'updated';
 };
 
-const debug = process.env.DEBUG ? (...args: unknown[]) => console.error('[ketchup]', ...args) : () => {};
+const debug = process.env.DEBUG ? (...args: unknown[]) => console.error('[claude-auto]', ...args) : () => {};
 
 function getPackageRoot(): string {
   let dir = __dirname;
@@ -47,7 +47,7 @@ export async function install(targetPath?: string, options?: { local?: boolean }
   const resolvedTarget = path.resolve(targetPath ?? '.');
   const claudeDir = path.join(resolvedTarget, '.claude');
   const settingsPath = path.join(claudeDir, 'settings.json');
-  const ketchupDir = path.join(resolvedTarget, '.ketchup');
+  const autoDir = path.join(resolvedTarget, '.claude-auto');
   const pkgRoot = getPackageRoot();
   const local = options?.local ?? false;
 
@@ -57,7 +57,14 @@ export async function install(targetPath?: string, options?: { local?: boolean }
 
   fs.mkdirSync(claudeDir, { recursive: true });
 
-  const hookStatePath = path.join(ketchupDir, '.claude.hooks.json');
+  // Migration: rename .ketchup/ → .claude-auto/ if needed
+  const legacyDir = path.join(resolvedTarget, '.ketchup');
+  if (fs.existsSync(legacyDir) && !fs.existsSync(autoDir)) {
+    fs.renameSync(legacyDir, autoDir);
+    console.log('Migrated .ketchup/ → .claude-auto/');
+  }
+
+  const hookStatePath = path.join(autoDir, '.claude.hooks.json');
   const alreadyInstalled = fs.existsSync(hookStatePath);
 
   let settingsCreated = false;
@@ -74,18 +81,18 @@ export async function install(targetPath?: string, options?: { local?: boolean }
   }
 
   if (!local) {
-    copyDir(path.join(pkgRoot, 'dist', 'bundle', 'scripts'), path.join(ketchupDir, 'scripts'));
+    copyDir(path.join(pkgRoot, 'dist', 'bundle', 'scripts'), path.join(autoDir, 'scripts'));
   }
 
   copyDir(path.join(pkgRoot, 'commands'), path.join(claudeDir, 'commands'));
 
   if (!local) {
-    copyDir(path.join(pkgRoot, '.ketchup', 'validators'), path.join(ketchupDir, 'validators'));
-    copyDir(path.join(pkgRoot, '.ketchup', 'reminders'), path.join(ketchupDir, 'reminders'));
+    copyDir(path.join(pkgRoot, '.claude-auto', 'validators'), path.join(autoDir, 'validators'));
+    copyDir(path.join(pkgRoot, '.claude-auto', 'reminders'), path.join(autoDir, 'reminders'));
   }
 
   // Initialize hook state with defaults if it doesn't exist
-  const hookState = createHookState(ketchupDir);
+  const hookState = createHookState(autoDir);
   hookState.read();
 
   const status = alreadyInstalled ? 'updated' : 'installed';

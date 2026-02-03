@@ -13,13 +13,13 @@ const claudeDir = path.resolve(process.cwd(), '.claude');
 const startTime = Date.now();
 
 (async () => {
-  const { ketchupDir } = await resolvePaths(claudeDir);
+  const { autoDir } = await resolvePaths(claudeDir);
   try {
     const toolInput = input.tool_input || {};
     const command = toolInput.command as string | undefined;
     const result = await handlePreToolUse(claudeDir, input.session_id, toolInput);
     if (command && isCommitCommand(command)) {
-      writeHookLog(ketchupDir, {
+      writeHookLog(autoDir, {
         hookName: 'pre-tool-use',
         timestamp: new Date().toISOString(),
         input,
@@ -30,7 +30,7 @@ const startTime = Date.now();
     console.log(JSON.stringify(result));
     process.exit(0);
   } catch (err) {
-    writeHookLog(ketchupDir, {
+    writeHookLog(autoDir, {
       hookName: 'pre-tool-use',
       timestamp: new Date().toISOString(),
       input,

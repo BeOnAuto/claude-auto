@@ -1,6 +1,6 @@
-# Claude Ketchup
+# Claude Auto
 
-**Stop Babysitting. Start Parallelizing.**
+**Put Claude on Auto.**
 
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE) [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=flat-square)]()
 
@@ -22,7 +22,7 @@ That's not multiplication. That's marginally faster serial work.
 
 ## The Solution: The Quality Stack
 
-Claude Ketchup creates trust. Trust enables parallelization.
+Claude Auto creates trust. Trust enables parallelization.
 
 | Component          | What It Does                                 | Result                          |
 | ------------------ | -------------------------------------------- | ------------------------------- |
@@ -46,13 +46,13 @@ git worktree add ../feature-payments feature/payments
 git worktree add ../feature-dashboard feature/dashboard
 ```
 
-Each runs a Ketchup instance. All quality-validated.
+Each runs a Claude Auto instance. All quality-validated.
 
-| Approach                  | Features/Week |
-| ------------------------- | ------------- |
-| Manual coding             | 1             |
-| AI-assisted (babysitting) | 1-2           |
-| **Ketchup + Worktrees**   | **5-10**      |
+| Approach                      | Features/Week |
+| ----------------------------- | ------------- |
+| Manual coding                 | 1             |
+| AI-assisted (babysitting)     | 1-2           |
+| **Claude Auto + Worktrees**   | **5-10**      |
 
 ---
 
@@ -61,10 +61,10 @@ Each runs a Ketchup instance. All quality-validated.
 ### 1. Install
 
 ```bash
-npx claude-ketchup install
+npx claude-auto install
 ```
 
-Feed your requirements. Ketchup auto-generates the plan with Bottles, Bursts, and Dependencies.
+Feed your requirements. Claude Auto auto-generates the plan with Bottles, Bursts, and Dependencies.
 
 ### 2. Release
 
@@ -93,16 +93,16 @@ From Babysitter to Bionic.
 ## Installation
 
 ```bash
-# Install Claude Ketchup
-npx claude-ketchup install
+# Install Claude Auto
+npx claude-auto install
 
 # Verify installation
-npx claude-ketchup doctor
+npx claude-auto doctor
 
 # You're ready to become Bionic
 ```
 
-After installation, claude-ketchup automatically:
+After installation, claude-auto automatically:
 
 - Injects hooks that validate every commit
 - Creates reminders that inject your guidelines
@@ -125,13 +125,13 @@ The on.auto team ships 5-10 features per week. Not 1-2.
 
 | Command                    | Description                                         |
 | ------------------------- | --------------------------------------------------- |
-| `claude-ketchup install`  | Install and configure claude-ketchup in your project |
-| `claude-ketchup init`     | Initialize ketchup configuration                    |
-| `claude-ketchup status`   | Show symlink status for hook scripts and reminders  |
-| `claude-ketchup doctor`   | Diagnose installation health                        |
-| `claude-ketchup repair`   | Recreate broken or missing symlinks                 |
-| `claude-ketchup reminders`| List active reminders with metadata                 |
-| `claude-ketchup clean-logs`| Remove old log files (use `--older-than=N` to keep N recent logs) |
+| `claude-auto install`     | Install and configure claude-auto in your project   |
+| `claude-auto init`        | Initialize configuration                            |
+| `claude-auto status`      | Show symlink status for hook scripts and reminders  |
+| `claude-auto doctor`      | Diagnose installation health                        |
+| `claude-auto repair`      | Recreate broken or missing symlinks                 |
+| `claude-auto reminders`   | List active reminders with metadata                 |
+| `claude-auto clean-logs`  | Remove old log files (use `--older-than=N` to keep N recent logs) |
 
 ---
 
@@ -154,8 +154,8 @@ The on.auto team ships 5-10 features per week. Not 1-2.
 ## Development
 
 ```bash
-git clone https://github.com/BeOnAuto/claude-ketchup.git
-cd claude-ketchup
+git clone https://github.com/BeOnAuto/claude-auto.git
+cd claude-auto
 pnpm install
 pnpm test
 pnpm build

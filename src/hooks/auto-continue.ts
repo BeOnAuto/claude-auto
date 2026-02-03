@@ -42,7 +42,7 @@ export function getIncompleteBursts(planPath: string): IncompleteBurstsResult {
   }
 }
 
-export function buildPrompt(clues: ClueCollectorResult, ketchupInfo: string): string {
+export function buildPrompt(clues: ClueCollectorResult, planInfo: string): string {
   const cluesList = clues.clues.map((c) => `[${c.timestamp}] [${c.type}] ${c.text}`).join('\n\n');
 
   const chatsList = clues.lastChats
@@ -58,7 +58,7 @@ ${cluesList || '(no clues found)'}
 ${chatsList || '(no chats found)'}
 
 ## Ketchup Plans Status:
-${ketchupInfo || '(no incomplete bursts found)'}
+${planInfo || '(no incomplete bursts found)'}
 
 ## Decision Criteria:
 CONTINUE if:
@@ -75,8 +75,8 @@ STOP if:
 Respond JSON only: {"decision":"CONTINUE","reason":"..."} or {"decision":"STOP","reason":"..."}`;
 }
 
-export function handleStop(ketchupDir: string, input: StopHookInput): StopHookResult {
-  const stateManager = createHookState(ketchupDir);
+export function handleStop(autoDir: string, input: StopHookInput): StopHookResult {
+  const stateManager = createHookState(autoDir);
   const state = stateManager.read();
   const { mode, skipModes } = state.autoContinue;
 

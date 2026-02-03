@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { DEFAULT_KETCHUP_DIR } from '../config-loader.js';
+import { DEFAULT_AUTO_DIR } from '../config-loader.js';
 import { getExpectedSymlinks, repair } from './repair.js';
 
 describe('cli repair', () => {
@@ -15,7 +15,7 @@ describe('cli repair', () => {
 
   beforeEach(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-repair-'));
-    packageDir = path.join(tempDir, 'node_modules', 'claude-ketchup');
+    packageDir = path.join(tempDir, 'node_modules', 'claude-auto');
     claudeDir = path.join(tempDir, '.claude');
     fs.mkdirSync(path.join(packageDir, 'commands'), { recursive: true });
     fs.mkdirSync(claudeDir, { recursive: true });
@@ -34,7 +34,7 @@ describe('cli repair', () => {
 
     const result = await repair(packageDir, claudeDir, {
       claudeFiles: ['commands/cmd.md'],
-      ketchupFiles: [],
+      autoFiles: [],
     });
 
     expect(result).toEqual({
@@ -43,31 +43,31 @@ describe('cli repair', () => {
     expect(fs.readlinkSync(path.join(claudeDir, 'commands', 'cmd.md'))).toBe(sourceFile);
   });
 
-  it('repairs ketchup files to ketchup directory', async () => {
-    fs.mkdirSync(path.join(packageDir, '.ketchup', 'validators'), { recursive: true });
-    const sourceFile = path.join(packageDir, '.ketchup', 'validators', 'rule.md');
+  it('repairs auto files to auto directory', async () => {
+    fs.mkdirSync(path.join(packageDir, '.claude-auto', 'validators'), { recursive: true });
+    const sourceFile = path.join(packageDir, '.claude-auto', 'validators', 'rule.md');
     fs.writeFileSync(sourceFile, '');
 
     const result = await repair(packageDir, claudeDir, {
       claudeFiles: [],
-      ketchupFiles: ['validators/rule.md'],
+      autoFiles: ['validators/rule.md'],
     });
 
-    expect(result.repaired).toContain(`${DEFAULT_KETCHUP_DIR}/validators/rule.md`);
-    const symlinkTarget = fs.readlinkSync(path.join(tempDir, DEFAULT_KETCHUP_DIR, 'validators', 'rule.md'));
+    expect(result.repaired).toContain(`${DEFAULT_AUTO_DIR}/validators/rule.md`);
+    const symlinkTarget = fs.readlinkSync(path.join(tempDir, DEFAULT_AUTO_DIR, 'validators', 'rule.md'));
     expect(symlinkTarget).toBe(sourceFile);
   });
 
-  it('getExpectedSymlinks separates claude and ketchup files', () => {
+  it('getExpectedSymlinks separates claude and auto files', () => {
     fs.writeFileSync(path.join(packageDir, 'commands', 'cmd.md'), '');
-    fs.mkdirSync(path.join(packageDir, '.ketchup', 'validators'), { recursive: true });
-    fs.writeFileSync(path.join(packageDir, '.ketchup', 'validators', 'rule.md'), '');
-    fs.mkdirSync(path.join(packageDir, '.ketchup', 'reminders'), { recursive: true });
-    fs.writeFileSync(path.join(packageDir, '.ketchup', 'reminders', 'reminder.md'), '');
+    fs.mkdirSync(path.join(packageDir, '.claude-auto', 'validators'), { recursive: true });
+    fs.writeFileSync(path.join(packageDir, '.claude-auto', 'validators', 'rule.md'), '');
+    fs.mkdirSync(path.join(packageDir, '.claude-auto', 'reminders'), { recursive: true });
+    fs.writeFileSync(path.join(packageDir, '.claude-auto', 'reminders', 'reminder.md'), '');
 
     const result = getExpectedSymlinks(packageDir);
 
     expect(result.claudeFiles).toEqual(['commands/cmd.md']);
-    expect(result.ketchupFiles).toEqual(['validators/rule.md', 'reminders/reminder.md']);
+    expect(result.autoFiles).toEqual(['validators/rule.md', 'reminders/reminder.md']);
   });
 });

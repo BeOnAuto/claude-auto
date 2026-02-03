@@ -29,7 +29,7 @@ Claude attempts commit
            ▼
 ┌─────────────────────────┐
 │  Load validators from:  │
-│  - .ketchup/validators/ │
+│  - .claude-auto/validators/ │
 └──────────┬──────────────┘
            │
            ▼
@@ -105,7 +105,7 @@ This comprehensive view allows validators to enforce context-aware quality stand
 
 ## Built-in Validators
 
-Claude Ketchup includes 17 pre-configured validators:
+Claude Auto includes 17 pre-configured validators:
 
 ### Commit Quality
 
@@ -161,7 +161,7 @@ enabled: true
 
 ## Validation Modes
 
-Control validation strictness in `.ketchup/.claude.hooks.json`:
+Control validation strictness in `.claude-auto/.claude.hooks.json`:
 
 ```json
 {
@@ -185,7 +185,7 @@ Control validation strictness in `.ketchup/.claude.hooks.json`:
 
 ### Basic Validator
 
-Create `.ketchup/validators/no-console-logs.md`:
+Create `.claude-auto/validators/no-console-logs.md`:
 
 ```markdown
 ---
@@ -365,7 +365,7 @@ Consider NACK only if performance is critical for this change.
 ### List Active Validators
 
 ```bash
-npx claude-ketchup validators
+npx claude-auto validators
 ```
 
 Output:
@@ -379,7 +379,7 @@ Active Validators:
 
 ### Temporarily Disable
 
-In `.ketchup/.claude.hooks.json`:
+In `.claude-auto/.claude.hooks.json`:
 
 ```json
 {
@@ -574,13 +574,13 @@ git add test.js
 git commit -m "test: checking validator"
 
 # Check validator output in logs
-cat .ketchup/logs/activity.log
+cat .claude-auto/logs/activity.log
 ```
 
 ### Validator Not Triggering
 
 Check:
-1. Validator file exists in `.ketchup/validators/`
+1. Validator file exists in `.claude-auto/validators/`
 2. Frontmatter `enabled: true`
 3. Validation mode isn't `off`
 4. Hook configuration includes Bash tool for commits
@@ -706,7 +706,7 @@ If team pushes back on validators:
 
 ## Next Steps
 
-- [View built-in validators](https://github.com/BeOnAuto/claude-ketchup/tree/main/validators)
+- [View built-in validators](https://github.com/BeOnAuto/claude-auto/tree/main/.claude-auto/validators)
 - [Create your first validator](#creating-custom-validators)
 - [Configure validation modes](/configuration#validatecommit)
 - [Learn about reminders](/reminders-guide)

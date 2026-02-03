@@ -10,7 +10,7 @@ describe('scanReminders', () => {
   let tempDir: string;
 
   beforeEach(() => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-reminder-'));
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'claude-auto-reminder-'));
   });
 
   afterEach(() => {
@@ -111,7 +111,7 @@ describe('loadReminders', () => {
   let tempDir: string;
 
   beforeEach(() => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-reminder-'));
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'claude-auto-reminder-'));
   });
 
   afterEach(() => {

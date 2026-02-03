@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { DEFAULT_KETCHUP_DIR } from '../config-loader.js';
+import { DEFAULT_AUTO_DIR } from '../config-loader.js';
 import { getStatus } from './status.js';
 
 describe('cli status', () => {
@@ -15,7 +15,7 @@ describe('cli status', () => {
 
   beforeEach(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-status-'));
-    packageDir = path.join(tempDir, 'claude-ketchup');
+    packageDir = path.join(tempDir, 'claude-auto');
     claudeDir = path.join(tempDir, '.claude');
     fs.mkdirSync(packageDir, { recursive: true });
     fs.mkdirSync(claudeDir, { recursive: true });
@@ -37,16 +37,16 @@ describe('cli status', () => {
     expect(result.symlinks).toContainEqual({ path: 'commands/cmd.md', status: 'ok' });
   });
 
-  it('lists ketchup files with ketchup prefix', async () => {
-    fs.mkdirSync(path.join(packageDir, '.ketchup', 'validators'), { recursive: true });
-    fs.mkdirSync(path.join(packageDir, '.ketchup', 'reminders'), { recursive: true });
-    fs.writeFileSync(path.join(packageDir, '.ketchup', 'validators', 'rule.md'), '');
-    fs.writeFileSync(path.join(packageDir, '.ketchup', 'reminders', 'reminder.md'), '');
+  it('lists auto files with auto prefix', async () => {
+    fs.mkdirSync(path.join(packageDir, '.claude-auto', 'validators'), { recursive: true });
+    fs.mkdirSync(path.join(packageDir, '.claude-auto', 'reminders'), { recursive: true });
+    fs.writeFileSync(path.join(packageDir, '.claude-auto', 'validators', 'rule.md'), '');
+    fs.writeFileSync(path.join(packageDir, '.claude-auto', 'reminders', 'reminder.md'), '');
 
     const result = await getStatus(packageDir, claudeDir);
 
-    expect(result.symlinks).toContainEqual({ path: `${DEFAULT_KETCHUP_DIR}/validators/rule.md`, status: 'ok' });
-    expect(result.symlinks).toContainEqual({ path: `${DEFAULT_KETCHUP_DIR}/reminders/reminder.md`, status: 'ok' });
+    expect(result.symlinks).toContainEqual({ path: `${DEFAULT_AUTO_DIR}/validators/rule.md`, status: 'ok' });
+    expect(result.symlinks).toContainEqual({ path: `${DEFAULT_AUTO_DIR}/reminders/reminder.md`, status: 'ok' });
   });
 
   it('returns empty symlinks when no directories exist', async () => {

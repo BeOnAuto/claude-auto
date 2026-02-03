@@ -1,10 +1,10 @@
 import { cosmiconfig } from 'cosmiconfig';
 
-export const DEFAULT_KETCHUP_DIR = '.ketchup';
+export const DEFAULT_AUTO_DIR = '.claude-auto';
 
-export interface KetchupConfig {
-  /** Directory for ketchup data (reminders, validators). Default: '.ketchup' */
-  ketchupDir?: string;
+export interface AutoConfig {
+  /** Directory for claude-auto data (reminders, validators). Default: '.claude-auto' */
+  autoDir?: string;
   validators?: {
     dirs?: string[];
     enabled?: boolean;
@@ -15,8 +15,8 @@ export interface KetchupConfig {
   };
 }
 
-export async function loadConfig(searchFrom: string): Promise<KetchupConfig> {
-  const explorer = cosmiconfig('ketchup');
+export async function loadConfig(searchFrom: string): Promise<AutoConfig> {
+  const explorer = cosmiconfig('claude-auto');
   const result = await explorer.search(searchFrom);
   return result?.config ?? {};
 }

@@ -12,7 +12,7 @@ describe('e2e', () => {
     let projectDir: string;
 
     beforeEach(() => {
-      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-e2e-'));
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'auto-e2e-'));
       projectDir = path.join(tempDir, 'my-project');
       fs.mkdirSync(projectDir, { recursive: true });
     });
@@ -29,19 +29,19 @@ describe('e2e', () => {
       expect(result.settingsCreated).toBe(true);
 
       expect(fs.existsSync(path.join(projectDir, '.claude'))).toBe(true);
-      expect(fs.existsSync(path.join(projectDir, '.ketchup'))).toBe(true);
+      expect(fs.existsSync(path.join(projectDir, '.claude-auto'))).toBe(true);
       expect(fs.existsSync(path.join(projectDir, '.claude', 'settings.json'))).toBe(true);
 
-      // Scripts are regular files in .ketchup/scripts, not symlinks
-      const scriptPath = path.join(projectDir, '.ketchup', 'scripts', 'session-start.js');
+      // Scripts are regular files in .claude-auto/scripts, not symlinks
+      const scriptPath = path.join(projectDir, '.claude-auto', 'scripts', 'session-start.js');
       expect(fs.existsSync(scriptPath)).toBe(true);
       expect(fs.lstatSync(scriptPath).isSymbolicLink()).toBe(false);
 
       // Reminders are regular files, not symlinks
-      const reminderFiles = fs.readdirSync(path.join(projectDir, '.ketchup', 'reminders'));
+      const reminderFiles = fs.readdirSync(path.join(projectDir, '.claude-auto', 'reminders'));
       expect(reminderFiles.length).toBeGreaterThan(0);
       for (const file of reminderFiles) {
-        expect(fs.lstatSync(path.join(projectDir, '.ketchup', 'reminders', file)).isSymbolicLink()).toBe(false);
+        expect(fs.lstatSync(path.join(projectDir, '.claude-auto', 'reminders', file)).isSymbolicLink()).toBe(false);
       }
     });
 

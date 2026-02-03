@@ -1,16 +1,16 @@
 # Configuration Reference
 
-Complete reference for all Ketchup configuration options, files, and environment variables.
+Complete reference for all Claude Auto configuration options, files, and environment variables.
 
 ---
 
 ## Configuration Files Overview
 
-Ketchup uses a layered configuration system with multiple files:
+Claude Auto uses a layered configuration system with multiple files:
 
 | File | Purpose | Committed? | Auto-Created? |
 |------|---------|------------|---------------|
-| `.ketchup/.claude.hooks.json` | Primary runtime hook state | No | Yes |
+| `.claude-auto/.claude.hooks.json` | Primary runtime hook state | No | Yes |
 | `.claude/settings.json` | Merged hook configuration | No | Yes |
 | `.claude/settings.project.json` | Project-level overrides | Yes | No |
 | `.claude/settings.local.json` | Local/personal overrides | No | No |
@@ -18,18 +18,18 @@ Ketchup uses a layered configuration system with multiple files:
 | `.claude/deny-list.project.txt` | Project file protection | Yes | No |
 | `.claude/deny-list.local.txt` | Local file protection | No | No |
 | `.claude/state.json` | Project state for conditionals | No | No |
-| `.ketchuprc.json` (or variants) | Cosmiconfig options | Yes | No |
-| `.ketchup/scripts/*.js` | Hook scripts | No | Yes (copied) |
-| `.ketchup/reminders/*.md` | Context injection reminders | Yes/No | Yes (copied) |
-| `.ketchup/validators/*.md` | Commit validation rules | Yes/No | Yes (copied) |
+| `.claude-autorc.json` (or variants) | Cosmiconfig options | Yes | No |
+| `.claude-auto/scripts/*.js` | Hook scripts | No | Yes (copied) |
+| `.claude-auto/reminders/*.md` | Context injection reminders | Yes/No | Yes (copied) |
+| `.claude-auto/validators/*.md` | Commit validation rules | Yes/No | Yes (copied) |
 
 ---
 
-## Hook State (`.ketchup/.claude.hooks.json`)
+## Hook State (`.claude-auto/.claude.hooks.json`)
 
 The primary runtime configuration file. Controls auto-continue, commit validation, and other behaviors.
 
-**Location:** `.ketchup/.claude.hooks.json` (inside the ketchup directory)
+**Location:** `.claude-auto/.claude.hooks.json` (inside the claude-auto directory)
 
 ### Full Schema
 
@@ -129,9 +129,9 @@ Controls which subagent types trigger validation hooks.
 
 ## Settings Layering
 
-Ketchup merges settings from three sources in priority order:
+Claude Auto merges settings from three sources in priority order:
 
-1. **Package defaults** (`node_modules/claude-ketchup/templates/settings.json`)
+1. **Package defaults** (`node_modules/claude-auto/templates/settings.json`)
 2. **Project overrides** (`.claude/settings.project.json`)
 3. **Local overrides** (`.claude/settings.local.json`)
 
@@ -147,7 +147,7 @@ See [Architecture Guide](/architecture#settings-merge-strategy) for detailed mer
 {
   "hooks": {
     "PreToolUse": {
-      "_disabled": ["node .ketchup/scripts/pre-tool-use.js"]
+      "_disabled": ["node .claude-auto/scripts/pre-tool-use.js"]
     }
   }
 }
@@ -196,7 +196,7 @@ The package provides these default hooks:
       {
         "matcher": "",
         "hooks": [
-          { "type": "command", "command": "node .ketchup/scripts/session-start.js" }
+          { "type": "command", "command": "node .claude-auto/scripts/session-start.js" }
         ]
       }
     ],
@@ -204,7 +204,7 @@ The package provides these default hooks:
       {
         "matcher": "Edit|Write|NotebookEdit|Bash",
         "hooks": [
-          { "type": "command", "command": "node .ketchup/scripts/pre-tool-use.js" }
+          { "type": "command", "command": "node .claude-auto/scripts/pre-tool-use.js" }
         ]
       }
     ],
@@ -212,7 +212,7 @@ The package provides these default hooks:
       {
         "matcher": "",
         "hooks": [
-          { "type": "command", "command": "node .ketchup/scripts/user-prompt-submit.js" }
+          { "type": "command", "command": "node .claude-auto/scripts/user-prompt-submit.js" }
         ]
       }
     ],
@@ -220,7 +220,7 @@ The package provides these default hooks:
       {
         "matcher": "",
         "hooks": [
-          { "type": "command", "command": "node .ketchup/scripts/auto-continue.js" }
+          { "type": "command", "command": "node .claude-auto/scripts/auto-continue.js" }
         ]
       }
     ]
@@ -247,22 +247,22 @@ Patterns use [micromatch](https://github.com/micromatch/micromatch) glob syntax.
 
 ## Cosmiconfig Support
 
-For advanced configuration, Ketchup supports cosmiconfig.
+For advanced configuration, Claude Auto supports cosmiconfig.
 
 ### Supported Files
 
-- `.ketchuprc.json`
-- `.ketchuprc.yaml` / `.ketchuprc.yml`
-- `.ketchuprc.js`
-- `ketchup.config.js`
-- `ketchup` key in `package.json`
+- `.claude-autorc.json`
+- `.claude-autorc.yaml` / `.claude-autorc.yml`
+- `.claude-autorc.js`
+- `claude-auto.config.js`
+- `claude-auto` key in `package.json`
 
 ### Configuration Schema
 
 ```typescript
-interface KetchupConfig {
-  /** Directory for ketchup data (reminders, validators). Default: '.ketchup' */
-  ketchupDir?: string;
+interface AutoConfig {
+  /** Directory for claude-auto data (reminders, validators). Default: '.claude-auto' */
+  autoDir?: string;
 
   /** Validator configuration */
   validators?: {
@@ -285,11 +285,11 @@ interface KetchupConfig {
 }
 ```
 
-### Example `.ketchuprc.json`
+### Example `.claude-autorc.json`
 
 ```json
 {
-  "ketchupDir": ".ketchup",
+  "autoDir": ".claude-auto",
   "validators": {
     "dirs": ["./custom-validators", "./team-validators"],
     "mode": "strict"
@@ -309,7 +309,7 @@ interface KetchupConfig {
 ```json
 {
   "name": "my-project",
-  "ketchup": {
+  "claude-auto": {
     "validators": {
       "enabled": true,
       "mode": "warn"
@@ -321,11 +321,11 @@ interface KetchupConfig {
 }
 ```
 
-### Example `.ketchuprc.js`
+### Example `.claude-autorc.js`
 
 ```javascript
 module.exports = {
-  ketchupDir: process.env.CI ? '.ketchup-ci' : '.ketchup',
+  autoDir: process.env.CI ? '.claude-auto-ci' : '.claude-auto',
   validators: {
     enabled: process.env.NODE_ENV !== 'development',
     mode: process.env.STRICT_MODE ? 'strict' : 'warn'
@@ -343,11 +343,11 @@ module.exports = {
 
 Cosmiconfig searches for configuration in this order:
 
-1. `ketchup` property in `package.json`
-2. `.ketchuprc.json`
-3. `.ketchuprc.yaml` / `.ketchuprc.yml`
-4. `.ketchuprc.js`
-5. `ketchup.config.js`
+1. `claude-auto` property in `package.json`
+2. `.claude-autorc.json`
+3. `.claude-autorc.yaml` / `.claude-autorc.yml`
+4. `.claude-autorc.js`
+5. `claude-auto.config.js`
 
 The first configuration found is used (no merging between different config files).
 
@@ -357,22 +357,22 @@ The first configuration found is used (no merging between different config files
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `KETCHUP_ROOT` | Force project root path | Auto-detected |
+| `AUTO_ROOT` | Force project root path | Auto-detected |
 | `INIT_CWD` | Starting directory for root search | `process.cwd()` |
 | `DEBUG` | Enable debug logging | - |
-| `KETCHUP_LOG` | Filter activity logging | Log everything |
-| `KETCHUP_SKIP_POSTINSTALL` | Skip postinstall in CI | `false` |
+| `AUTO_LOG` | Filter activity logging | Log everything |
+| `AUTO_SKIP_POSTINSTALL` | Skip postinstall in CI | `false` |
 | `CI` | Detect CI environment | - |
 | `NODE_ENV` | Node environment | `development` |
-| `KETCHUP_VALIDATOR_MODE` | Override validator mode | From config |
-| `KETCHUP_AUTO_CONTINUE` | Override auto-continue mode | From config |
+| `AUTO_VALIDATOR_MODE` | Override validator mode | From config |
+| `AUTO_AUTO_CONTINUE` | Override auto-continue mode | From config |
 
-### `KETCHUP_ROOT`
+### `AUTO_ROOT`
 
 Override automatic project root detection:
 
 ```bash
-KETCHUP_ROOT=/path/to/project claude
+AUTO_ROOT=/path/to/project claude
 ```
 
 ### `DEBUG`
@@ -380,69 +380,69 @@ KETCHUP_ROOT=/path/to/project claude
 Enable debug logging:
 
 ```bash
-DEBUG=ketchup* claude
+DEBUG=claude-auto* claude
 ```
 
-Logs written to `.ketchup/logs/debug.log`.
+Logs written to `.claude-auto/logs/debug.log`.
 
-### `KETCHUP_LOG`
+### `AUTO_LOG`
 
 Filter activity logging by hook name or pattern:
 
 ```bash
 # Only log session-start hook
-KETCHUP_LOG="session-start" claude
+AUTO_LOG="session-start" claude
 
 # Log everything except 'allowed' messages
-KETCHUP_LOG="*,-allowed" claude
+AUTO_LOG="*,-allowed" claude
 
 # Log multiple specific patterns
-KETCHUP_LOG="session-start,block" claude
+AUTO_LOG="session-start,block" claude
 ```
 
-Activity logs written to `.ketchup/logs/activity.log`.
+Activity logs written to `.claude-auto/logs/activity.log`.
 
-### `KETCHUP_SKIP_POSTINSTALL`
+### `AUTO_SKIP_POSTINSTALL`
 
 Skip postinstall script (useful for CI):
 
 ```bash
-KETCHUP_SKIP_POSTINSTALL=true npm install
+AUTO_SKIP_POSTINSTALL=true npm install
 ```
 
-### `KETCHUP_VALIDATOR_MODE`
+### `AUTO_VALIDATOR_MODE`
 
 Override the commit validation mode at runtime:
 
 ```bash
 # Temporarily disable validation
-KETCHUP_VALIDATOR_MODE=off claude
+AUTO_VALIDATOR_MODE=off claude
 
 # Force strict validation
-KETCHUP_VALIDATOR_MODE=strict claude
+AUTO_VALIDATOR_MODE=strict claude
 
 # Use warning mode
-KETCHUP_VALIDATOR_MODE=warn claude
+AUTO_VALIDATOR_MODE=warn claude
 ```
 
-Overrides the `validateCommit.mode` setting in `.ketchup/.claude.hooks.json`.
+Overrides the `validateCommit.mode` setting in `.claude-auto/.claude.hooks.json`.
 
-### `KETCHUP_AUTO_CONTINUE`
+### `AUTO_AUTO_CONTINUE`
 
 Override the auto-continue mode at runtime:
 
 ```bash
 # Enable non-stop mode
-KETCHUP_AUTO_CONTINUE=non-stop claude
+AUTO_AUTO_CONTINUE=non-stop claude
 
 # Use smart mode
-KETCHUP_AUTO_CONTINUE=smart claude
+AUTO_AUTO_CONTINUE=smart claude
 
 # Disable auto-continue
-KETCHUP_AUTO_CONTINUE=off claude
+AUTO_AUTO_CONTINUE=off claude
 ```
 
-Overrides the `autoContinue.mode` setting in `.ketchup/.claude.hooks.json`.
+Overrides the `autoContinue.mode` setting in `.claude-auto/.claude.hooks.json`.
 
 ---
 
@@ -488,8 +488,8 @@ Reminders are Markdown files with YAML frontmatter that inject context into Clau
 
 ### Location
 
-- Default reminders: `.ketchup/reminders/` (copied from package during install)
-- Custom reminders: `.ketchup/reminders/` (add your own `.md` files)
+- Default reminders: `.claude-auto/reminders/` (copied from package during install)
+- Custom reminders: `.claude-auto/reminders/` (add your own `.md` files)
 
 ### Frontmatter Schema
 
@@ -516,8 +516,8 @@ Validators are Markdown files with YAML frontmatter.
 
 ### Location
 
-- Default validators: `.ketchup/validators/` (copied from package during install)
-- Custom validators: `.ketchup/validators/` (add your own `.md` files)
+- Default validators: `.claude-auto/validators/` (copied from package during install)
+- Custom validators: `.claude-auto/validators/` (add your own `.md` files)
 
 ### Frontmatter Schema
 
@@ -533,9 +533,9 @@ enabled: true              # Set to false to disable
 
 ## Project Root Detection
 
-Ketchup finds the project root in this order:
+Claude Auto finds the project root in this order:
 
-1. `KETCHUP_ROOT` environment variable (if set and path exists)
+1. `AUTO_ROOT` environment variable (if set and path exists)
 2. Walk up from `INIT_CWD` or `process.cwd()` to find `package.json`
 3. Walk up to find `.git` directory
 4. Fall back to `process.cwd()`
@@ -546,17 +546,17 @@ Ketchup finds the project root in this order:
 
 ### Debug Logs
 
-**Location:** `.ketchup/logs/debug.log`
+**Location:** `.claude-auto/logs/debug.log`
 
-**Enable:** `DEBUG=ketchup*`
+**Enable:** `DEBUG=claude-auto*`
 
 **Format:** Timestamp, hook name, debug message
 
 ### Activity Logs
 
-**Location:** `.ketchup/logs/activity.log`
+**Location:** `.claude-auto/logs/activity.log`
 
-**Filter:** `KETCHUP_LOG` environment variable
+**Filter:** `AUTO_LOG` environment variable
 
 **Format:** `MM-DD HH:MM:SS [session-id] hook-name: message`
 
@@ -581,13 +581,13 @@ Ketchup finds the project root in this order:
 ```
 
 ::: tip Script Location
-Hook scripts are located at `.ketchup/scripts/`, not `.claude/scripts/`. The `settings.json` commands reference `.ketchup/scripts/*.js`.
+Hook scripts are located at `.claude-auto/scripts/`, not `.claude/scripts/`. The `settings.json` commands reference `.claude-auto/scripts/*.js`.
 :::
 
 ### Enable non-stop mode
 
 ```json
-// .ketchup/.claude.hooks.json
+// .claude-auto/.claude.hooks.json
 {
   "autoContinue": {
     "mode": "non-stop",
@@ -599,7 +599,7 @@ Hook scripts are located at `.ketchup/scripts/`, not `.claude/scripts/`. The `se
 ### Disable commit validation
 
 ```json
-// .ketchup/.claude.hooks.json
+// .claude-auto/.claude.hooks.json
 {
   "validateCommit": {
     "mode": "off"
@@ -610,7 +610,7 @@ Hook scripts are located at `.ketchup/scripts/`, not `.claude/scripts/`. The `se
 ### Add custom file protection
 
 ```json
-// .ketchup/.claude.hooks.json
+// .claude-auto/.claude.hooks.json
 {
   "denyList": {
     "enabled": true,
@@ -622,7 +622,7 @@ Hook scripts are located at `.ketchup/scripts/`, not `.claude/scripts/`. The `se
 ### Skip validation for explore agents
 
 ```json
-// .ketchup/.claude.hooks.json
+// .claude-auto/.claude.hooks.json
 {
   "subagentHooks": {
     "validateCommitOnExplore": false,

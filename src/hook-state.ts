@@ -77,11 +77,11 @@ export interface HookStateManager {
   resetIteration: () => void;
 }
 
-export function createHookState(ketchupDir: string): HookStateManager {
-  if (!fs.existsSync(ketchupDir)) {
-    fs.mkdirSync(ketchupDir, { recursive: true });
+export function createHookState(autoDir: string): HookStateManager {
+  if (!fs.existsSync(autoDir)) {
+    fs.mkdirSync(autoDir, { recursive: true });
   }
-  const stateFile = path.join(ketchupDir, '.claude.hooks.json');
+  const stateFile = path.join(autoDir, '.claude.hooks.json');
 
   function read(): HookState {
     if (!fs.existsSync(stateFile)) {

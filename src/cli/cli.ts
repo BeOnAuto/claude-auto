@@ -5,19 +5,19 @@ import { install } from './install.js';
 export function createCli(): Command {
   const program = new Command();
 
-  program.name('claude-ketchup').description('Husky-style hooks and skills management for Claude Code');
+  program.name('claude-auto').description('Husky-style hooks and skills management for Claude Code');
 
   program
     .command('install')
-    .description('Install claude-ketchup hooks configuration into a project')
+    .description('Install claude-auto hooks configuration into a project')
     .argument('[path]', 'target project directory', '.')
     .option('--local', 'install from source using tsx (for local dev)')
     .action(async (targetPath: string, options: { local?: boolean }) => {
       const result = await install(targetPath, { local: options.local });
       if (result.status === 'updated') {
-        console.log(`ketchup already installed, updating ${result.targetDir}`);
+        console.log(`claude-auto already installed, updating ${result.targetDir}`);
       } else {
-        console.log(`Installing claude-ketchup into ${result.targetDir}`);
+        console.log(`Installing claude-auto into ${result.targetDir}`);
         if (result.settingsCreated) {
           console.log(`Created ${result.claudeDir}/settings.json`);
         }

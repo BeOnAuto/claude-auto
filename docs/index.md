@@ -2,12 +2,12 @@
 layout: home
 
 hero:
-  name: Claude Ketchup
+  name: Claude Auto
   text: Stop Babysitting. Start Parallelizing.
-  tagline: True automation with quality guarantees. Parallel productivity through trust.
+  tagline: Put Claude on Auto
   image:
     src: /hero.png
-    alt: Claude Ketchup - From Babysitter to Bionic
+    alt: Claude Auto - From Babysitter to Bionic
   actions:
     - theme: brand
       text: Get Started
@@ -17,7 +17,7 @@ hero:
       link: /ketchup-technique
     - theme: alt
       text: View on GitHub
-      link: https://github.com/BeOnAuto/claude-ketchup
+      link: https://github.com/BeOnAuto/claude-auto
 
 features:
   - icon:
@@ -65,13 +65,13 @@ The system is trustworthy. That's what frees you.
 
 Git worktrees let you have multiple working directories from the same repo. Each on a different branch. Each isolated.
 
-Combine with Ketchup:
+Combine with Claude Auto:
 
 | Worktree            | Feature               | Status               |
 | ------------------- | --------------------- | -------------------- |
-| `feature-auth`      | Authentication system | Ketchup executing... |
-| `feature-payments`  | Payment integration   | Ketchup executing... |
-| `feature-dashboard` | Admin dashboard       | Ketchup executing... |
+| `feature-auth`      | Authentication system | Claude Auto executing... |
+| `feature-payments`  | Payment integration   | Claude Auto executing... |
+| `feature-dashboard` | Admin dashboard       | Claude Auto executing... |
 
 Three features running simultaneously. All quality-validated.
 
@@ -79,7 +79,7 @@ Three features running simultaneously. All quality-validated.
 | ------------------------- | ------------- |
 | Manual coding             | 1             |
 | AI-assisted (babysitting) | 1-2           |
-| **Ketchup + Worktrees**   | **5-10**      |
+| **Claude Auto + Worktrees**   | **5-10**      |
 
 The bottleneck becomes defining requirements, not executing them.
 
@@ -90,14 +90,14 @@ The bottleneck becomes defining requirements, not executing them.
 ### 1. Install
 
 ```bash
-npx claude-ketchup install
+npx claude-auto install
 ```
 
 That's it! This single command sets up everything you need.
 
 ### 2. Define
 
-Feed your PRD, Architecture.md, or requirements. Ketchup auto-generates the plan with Bottles, Bursts, and Dependencies. Review and approve.
+Feed your PRD, Architecture.md, or requirements. Claude Auto auto-generates the plan with Bottles, Bursts, and Dependencies. Review and approve.
 
 ### 3. Release
 
@@ -105,6 +105,6 @@ Start execution and walk away. The Supervisor validates every commit. Auto-conti
 
 ### 4. Multiply
 
-Open another git worktree. Start another Ketchup instance. Three features. Five features. All in parallel.
+Open another git worktree. Start another Claude Auto instance. Three features. Five features. All in parallel.
 
 **[Get Started →](/getting-started)**

@@ -24,9 +24,9 @@ export async function handleSessionStart(
   const reminderFiles = scanReminders(paths.remindersDir);
   const reminders = loadReminders(paths.remindersDir, { hook: 'SessionStart' });
 
-  activityLog(paths.ketchupDir, sessionId, 'session-start', `loaded ${reminders.length} reminders`);
+  activityLog(paths.autoDir, sessionId, 'session-start', `loaded ${reminders.length} reminders`);
 
-  debugLog(paths.ketchupDir, 'session-start', `loaded ${reminders.length} reminders for SessionStart`);
+  debugLog(paths.autoDir, 'session-start', `loaded ${reminders.length} reminders for SessionStart`);
 
   const content = reminders.map((r) => r.content).join('\n\n');
 

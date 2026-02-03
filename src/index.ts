@@ -5,6 +5,8 @@ export { install } from './cli/install.js';
 export { listReminders } from './cli/reminders.js';
 export { getExpectedSymlinks, repair } from './cli/repair.js';
 export { getStatus } from './cli/status.js';
+export type { AutoConfig } from './config-loader.js';
+export { DEFAULT_AUTO_DIR, loadConfig } from './config-loader.js';
 export { isDenied, loadDenyPatterns } from './deny-list.js';
 export { generateGitignore } from './gitignore-manager.js';
 export { createSymlink, removeSymlink, verifySymlink } from './linker.js';

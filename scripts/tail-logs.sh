@@ -1,5 +1,5 @@
 #!/bin/bash
-# Tail all ketchup log files in real-time
+# Tail all claude-auto log files in real-time
 # Usage: ./tail-logs.sh [logs-dir]
 
 LOGS_DIR="${1:-.claude/logs}"

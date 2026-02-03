@@ -36,18 +36,18 @@ export async function handlePreToolUse(
   const command = toolInput.command as string | undefined;
 
   if (command && isCommitCommand(command)) {
-    return handleCommitValidation(claudeDir, sessionId, command, options, paths.ketchupDir);
+    return handleCommitValidation(claudeDir, sessionId, command, options, paths.autoDir);
   }
 
   const patterns = loadDenyPatterns(claudeDir);
   const filePath = toolInput.file_path as string;
 
   if (filePath && isDenied(filePath, patterns)) {
-    activityLog(paths.ketchupDir, sessionId, 'pre-tool-use', `blocked: ${filePath}`);
-    debugLog(paths.ketchupDir, 'pre-tool-use', `${filePath} blocked by deny-list`);
+    activityLog(paths.autoDir, sessionId, 'pre-tool-use', `blocked: ${filePath}`);
+    debugLog(paths.autoDir, 'pre-tool-use', `${filePath} blocked by deny-list`);
     return {
       decision: 'block',
-      reason: `Path ${filePath} is denied by ketchup deny-list`,
+      reason: `Path ${filePath} is denied by claude-auto deny-list`,
     };
   }
 
@@ -70,21 +70,21 @@ async function handleCommitValidation(
   sessionId: string,
   command: string,
   options: PreToolUseOptions,
-  ketchupDir: string,
+  autoDir: string,
 ): Promise<HookResult> {
   const paths = await resolvePaths(claudeDir);
   const allValidators = loadValidators([paths.validatorsDir]);
   const validators = allValidators.filter((v) => v.name !== 'appeal-system');
 
   if (validators.length === 0) {
-    activityLog(ketchupDir, sessionId, 'pre-tool-use', 'commit allowed (no validators)');
+    activityLog(autoDir, sessionId, 'pre-tool-use', 'commit allowed (no validators)');
     return { decision: 'allow' };
   }
 
   const context = getCommitContext(process.cwd(), command);
-  const state = createHookState(ketchupDir).read();
+  const state = createHookState(autoDir).read();
   const onLog: ValidatorLogger = (event, name, detail) => {
-    activityLog(ketchupDir, sessionId, 'pre-tool-use', `validator ${event}: ${name}${detail ? ` → ${detail}` : ''}`);
+    activityLog(autoDir, sessionId, 'pre-tool-use', `validator ${event}: ${name}${detail ? ` → ${detail}` : ''}`);
   };
   const results = await validateCommit(validators, context, options.executor, onLog, state.validateCommit.batchCount);
 
@@ -92,15 +92,15 @@ async function handleCommitValidation(
 
   if (nacks.length > 0) {
     const reasons = nacks.map((n) => `${n.validator}: ${n.reason}`).join('\n');
-    activityLog(ketchupDir, sessionId, 'pre-tool-use', `commit blocked: ${reasons}`);
-    debugLog(ketchupDir, 'pre-tool-use', `commit blocked: ${reasons}`);
+    activityLog(autoDir, sessionId, 'pre-tool-use', `commit blocked: ${reasons}`);
+    debugLog(autoDir, 'pre-tool-use', `commit blocked: ${reasons}`);
     return {
       decision: 'block',
       reason: reasons,
     };
   }
 
-  activityLog(ketchupDir, sessionId, 'pre-tool-use', 'commit allowed');
-  debugLog(ketchupDir, 'pre-tool-use', 'commit allowed');
+  activityLog(autoDir, sessionId, 'pre-tool-use', 'commit allowed');
+  debugLog(autoDir, 'pre-tool-use', 'commit allowed');
   return { decision: 'allow' };
 }

@@ -32,13 +32,13 @@ jobs:
         run: |
           VERSION="${{ inputs.version || 'latest' }}"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Testing claude-ketchup@$VERSION"
+          echo "Testing claude-auto@$VERSION"
 
-      - name: Install claude-ketchup via npx
+      - name: Install claude-auto via npx
         working-directory: test-project
         run: |
-          echo "Installing claude-ketchup@${{ steps.version.outputs.version }}..."
-          npx claude-ketchup@${{ steps.version.outputs.version }} install
+          echo "Installing claude-auto@${{ steps.version.outputs.version }}..."
+          npx claude-auto@${{ steps.version.outputs.version }} install
 
       - name: Verify installation structure
         working-directory: test-project
@@ -46,14 +46,14 @@ jobs:
           echo "=== .claude directory ==="
           ls -la .claude/ || echo "No .claude directory"
           echo ""
-          echo "=== .ketchup/scripts ==="
-          ls -la .ketchup/scripts/ || echo "No scripts directory"
+          echo "=== .claude-auto/scripts ==="
+          ls -la .claude-auto/scripts/ || echo "No scripts directory"
           echo ""
           echo "=== .claude/settings.json ==="
           cat .claude/settings.json || echo "No settings.json"
           echo ""
-          echo "=== .ketchup directory ==="
-          ls -la .ketchup/ || echo "No .ketchup directory"
+          echo "=== .claude-auto directory ==="
+          ls -la .claude-auto/ || echo "No .claude-auto directory"
 
       - name: Verify settings.json has hooks
         working-directory: test-project
@@ -71,11 +71,11 @@ jobs:
         working-directory: test-project
         run: |
           for script in session-start.js pre-tool-use.js user-prompt-submit.js auto-continue.js; do
-            if [ ! -f ".ketchup/scripts/$script" ]; then
+            if [ ! -f ".claude-auto/scripts/$script" ]; then
               echo "FAIL: Missing script $script"
               exit 1
             fi
-            if [ -L ".ketchup/scripts/$script" ]; then
+            if [ -L ".claude-auto/scripts/$script" ]; then
               echo "FAIL: $script is a symlink, should be a regular file"
               exit 1
             fi

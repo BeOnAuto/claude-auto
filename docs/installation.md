@@ -1,13 +1,13 @@
 # Installation Guide
 
-Complete guide for installing and configuring Claude Ketchup in your project.
+Complete guide for installing and configuring Claude Auto in your project.
 
 ---
 
 ## Quick Install
 
 ```bash
-npx claude-ketchup install
+npx claude-auto install
 ```
 
 That's it! This single command sets up everything you need.
@@ -16,13 +16,13 @@ That's it! This single command sets up everything you need.
 
 ## What Gets Installed
 
-When you run `npx claude-ketchup install`:
+When you run `npx claude-auto install`:
 
-1. Creates `.claude/` and `.ketchup/` directories
-2. Copies hook scripts to `.ketchup/scripts/`
+1. Creates `.claude/` and `.claude-auto/` directories
+2. Copies hook scripts to `.claude-auto/scripts/`
 3. Creates `settings.json` from package template
 4. Copies built-in reminders and validators
-5. Initializes hook state at `.ketchup/.claude.hooks.json`
+5. Initializes hook state at `.claude-auto/.claude.hooks.json`
 
 See the [Architecture Guide](/architecture#directory-structure) for complete directory structure details.
 
@@ -35,7 +35,7 @@ See the [Reminders Guide](/reminders-guide) and [Validators Guide](/validators-g
 After installation, verify everything is set up correctly:
 
 ```bash
-npx claude-ketchup doctor
+npx claude-auto doctor
 ```
 
 You should see green checkmarks for all components:
@@ -43,7 +43,7 @@ You should see green checkmarks for all components:
 ```
 ✓ Project root found
 ✓ .claude directory exists
-✓ .ketchup directory exists
+✓ .claude-auto directory exists
 ✓ All symlinks valid
 ✓ Settings merged successfully
 ✓ Hook scripts executable
@@ -60,10 +60,10 @@ If you prefer to install manually or need custom control:
 ```bash
 # Create directories
 mkdir -p .claude/commands
-mkdir -p .ketchup/scripts .ketchup/reminders .ketchup/validators
+mkdir -p .claude-auto/scripts .claude-auto/reminders .claude-auto/validators
 
 # Create initial hook state
-cat > .ketchup/.claude.hooks.json << 'EOF'
+cat > .claude-auto/.claude.hooks.json << 'EOF'
 {
   "autoContinue": {
     "mode": "smart",
@@ -90,7 +90,7 @@ Create `.claude/settings.json`:
       {
         "matcher": "",
         "hooks": [
-          { "type": "command", "command": "node .ketchup/scripts/session-start.js" }
+          { "type": "command", "command": "node .claude-auto/scripts/session-start.js" }
         ]
       }
     ],
@@ -98,7 +98,7 @@ Create `.claude/settings.json`:
       {
         "matcher": "Edit|Write|NotebookEdit|Bash",
         "hooks": [
-          { "type": "command", "command": "node .ketchup/scripts/pre-tool-use.js" }
+          { "type": "command", "command": "node .claude-auto/scripts/pre-tool-use.js" }
         ]
       }
     ]
@@ -108,7 +108,7 @@ Create `.claude/settings.json`:
 
 ### Step 3: Add custom reminders
 
-Create `.ketchup/reminders/my-project.md`:
+Create `.claude-auto/reminders/my-project.md`:
 
 ```markdown
 ---
@@ -128,14 +128,14 @@ Your project-specific rules here...
 
 ### Command not found
 
-If `npx claude-ketchup` doesn't work:
+If `npx claude-auto` doesn't work:
 
 ```bash
 # Install globally
-npm install -g claude-ketchup
+npm install -g claude-auto
 
 # Then run
-claude-ketchup install
+claude-auto install
 ```
 
 ### Permission denied
@@ -143,7 +143,7 @@ claude-ketchup install
 On Unix systems, you might need to fix permissions:
 
 ```bash
-chmod +x .ketchup/scripts/*.js
+chmod +x .claude-auto/scripts/*.js
 ```
 
 ### Scripts not created
@@ -152,10 +152,10 @@ If scripts are missing:
 
 ```bash
 # Run repair command
-npx claude-ketchup repair
+npx claude-auto repair
 
 # Or re-run install
-npx claude-ketchup install
+npx claude-auto install
 ```
 
 ### Hooks not firing
@@ -164,20 +164,20 @@ Verify Claude Code can find your settings:
 
 1. Check `.claude/settings.json` exists
 2. Ensure you're in the project root when starting Claude
-3. Check logs in `.ketchup/logs/` for errors
+3. Check logs in `.claude-auto/logs/` for errors
 
 ---
 
 ## Uninstall
 
-To remove Claude Ketchup from your project:
+To remove Claude Auto from your project:
 
 ```bash
 # Remove directories
-rm -rf .claude .ketchup
+rm -rf .claude .claude-auto
 
 # Remove from package.json if installed
-npm uninstall claude-ketchup
+npm uninstall claude-auto
 ```
 
 ---
@@ -188,18 +188,18 @@ Control installation behavior with these environment variables:
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `KETCHUP_ROOT` | Force project root path | Auto-detected |
-| `KETCHUP_SKIP_POSTINSTALL` | Skip automatic setup | `false` |
+| `AUTO_ROOT` | Force project root path | Auto-detected |
+| `AUTO_SKIP_POSTINSTALL` | Skip automatic setup | `false` |
 | `DEBUG` | Enable debug logging | - |
 
 Example:
 
 ```bash
 # Install with debug logging
-DEBUG=ketchup* npx claude-ketchup install
+DEBUG=claude-auto* npx claude-auto install
 
 # Install in specific directory
-KETCHUP_ROOT=/path/to/project npx claude-ketchup install
+AUTO_ROOT=/path/to/project npx claude-auto install
 ```
 
 ---
@@ -213,7 +213,7 @@ Set environment variable to skip postinstall:
 ```yaml
 # GitHub Actions
 env:
-  KETCHUP_SKIP_POSTINSTALL: true
+  AUTO_SKIP_POSTINSTALL: true
 ```
 
 ### Docker
@@ -222,11 +222,11 @@ Add to Dockerfile:
 
 ```dockerfile
 # Install without postinstall
-ENV KETCHUP_SKIP_POSTINSTALL=true
+ENV AUTO_SKIP_POSTINSTALL=true
 RUN npm install
 
 # Manually run install when needed
-RUN npx claude-ketchup install
+RUN npx claude-auto install
 ```
 
 ---
@@ -249,7 +249,7 @@ After installation:
 The `doctor` command runs a comprehensive health check on your installation:
 
 ```bash
-npx claude-ketchup doctor
+npx claude-auto doctor
 ```
 
 **What it checks:**
@@ -275,7 +275,7 @@ npx claude-ketchup doctor
 The `repair` command fixes common installation issues:
 
 ```bash
-npx claude-ketchup repair
+npx claude-auto repair
 ```
 
 **What it fixes:**
@@ -294,10 +294,10 @@ npx claude-ketchup repair
 **Options:**
 ```bash
 # Force repair (overwrites existing files)
-npx claude-ketchup repair --force
+npx claude-auto repair --force
 
 # Repair with verbose output
-npx claude-ketchup repair --verbose
+npx claude-auto repair --verbose
 ```
 
 ---
@@ -306,7 +306,7 @@ npx claude-ketchup repair --verbose
 
 If diagnostic commands don't resolve your issue:
 
-1. Run `npx claude-ketchup doctor` first for diagnostics
-2. Try `npx claude-ketchup repair` to fix common issues
-3. Check `.ketchup/logs/` for detailed error messages
-4. Report persistent issues at [GitHub Issues](https://github.com/BeOnAuto/claude-ketchup/issues)
+1. Run `npx claude-auto doctor` first for diagnostics
+2. Try `npx claude-auto repair` to fix common issues
+3. Check `.claude-auto/logs/` for detailed error messages
+4. Report persistent issues at [GitHub Issues](https://github.com/BeOnAuto/claude-auto/issues)

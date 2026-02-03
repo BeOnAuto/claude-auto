@@ -171,7 +171,7 @@ Uncovered code = code nobody asked for = deleted by next revert.
 
 Sub-agents follow identical rules to the parent. When spawning a Task agent:
 
-1. **Include ketchup context** - Sub-agents receive the same reminders and rules automatically
+1. **Include Claude Auto context** - Sub-agents receive the same reminders and rules automatically
 2. **Include ketchup-plan.md** - Sub-agents work from the same plan
 3. **No orphan work** - Sub-agent output must be committed by parent or sub-agent
 
@@ -216,13 +216,13 @@ git worktree add ../feature-payments feature/payments
 git worktree add ../feature-dashboard feature/dashboard
 ```
 
-Three isolated workspaces. Each running a Ketchup instance.
+Three isolated workspaces. Each running a Claude Auto instance.
 
 | Worktree            | Feature               | Status               |
 | ------------------- | --------------------- | -------------------- |
-| `feature-auth`      | Authentication system | Ketchup executing... |
-| `feature-payments`  | Payment integration   | Ketchup executing... |
-| `feature-dashboard` | Admin dashboard       | Ketchup executing... |
+| `feature-auth`      | Authentication system | Claude Auto executing... |
+| `feature-payments`  | Payment integration   | Claude Auto executing... |
+| `feature-dashboard` | Admin dashboard       | Claude Auto executing... |
 
 The bottleneck becomes defining requirements, not executing them.
 

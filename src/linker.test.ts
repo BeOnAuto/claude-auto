@@ -18,7 +18,7 @@ describe('linker', () => {
     let tempDir: string;
 
     beforeEach(() => {
-      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-test-'));
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'claude-auto-test-'));
     });
 
     afterEach(() => {
@@ -28,7 +28,7 @@ describe('linker', () => {
     it('returns true when package is a symlink in node_modules', () => {
       const projectDir = path.join(tempDir, 'my-project');
       const nodeModules = path.join(projectDir, 'node_modules');
-      const packagePath = path.join(nodeModules, 'claude-ketchup');
+      const packagePath = path.join(nodeModules, 'claude-auto');
       const realPackage = path.join(tempDir, 'real-package');
 
       fs.mkdirSync(realPackage, { recursive: true });
@@ -42,7 +42,7 @@ describe('linker', () => {
     it('returns false when package is a regular directory', () => {
       const projectDir = path.join(tempDir, 'my-project');
       const nodeModules = path.join(projectDir, 'node_modules');
-      const packagePath = path.join(nodeModules, 'claude-ketchup');
+      const packagePath = path.join(nodeModules, 'claude-auto');
 
       fs.mkdirSync(packagePath, { recursive: true });
 
@@ -55,7 +55,7 @@ describe('linker', () => {
     let tempDir: string;
 
     beforeEach(() => {
-      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-test-'));
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'claude-auto-test-'));
     });
 
     afterEach(() => {
@@ -120,7 +120,7 @@ describe('linker', () => {
     let tempDir: string;
 
     beforeEach(() => {
-      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-test-'));
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'claude-auto-test-'));
     });
 
     afterEach(() => {
@@ -153,7 +153,7 @@ describe('linker', () => {
     let tempDir: string;
 
     beforeEach(() => {
-      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-test-'));
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'claude-auto-test-'));
     });
 
     afterEach(() => {

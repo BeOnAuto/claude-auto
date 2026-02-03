@@ -4,21 +4,21 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { DEFAULT_KETCHUP_DIR } from '../config-loader.js';
+import { DEFAULT_AUTO_DIR } from '../config-loader.js';
 import { handlePreToolUse } from './pre-tool-use.js';
 
 describe('pre-tool-use hook', () => {
   let tempDir: string;
   let claudeDir: string;
-  let ketchupDir: string;
+  let autoDir: string;
   const originalEnv = process.env.DEBUG;
 
   beforeEach(() => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-pretool-'));
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'auto-pretool-'));
     claudeDir = path.join(tempDir, '.claude');
-    ketchupDir = path.join(tempDir, DEFAULT_KETCHUP_DIR);
+    autoDir = path.join(tempDir, DEFAULT_AUTO_DIR);
     fs.mkdirSync(claudeDir, { recursive: true });
-    fs.mkdirSync(ketchupDir, { recursive: true });
+    fs.mkdirSync(autoDir, { recursive: true });
     fs.writeFileSync(path.join(tempDir, 'package.json'), '{}');
   });
 
@@ -39,7 +39,7 @@ describe('pre-tool-use hook', () => {
 
     expect(result).toEqual({
       decision: 'block',
-      reason: 'Path /project/config.secret is denied by ketchup deny-list',
+      reason: 'Path /project/config.secret is denied by claude-auto deny-list',
     });
   });
 
@@ -57,7 +57,7 @@ describe('pre-tool-use hook', () => {
 
     await handlePreToolUse(claudeDir, 'session-silent', toolInput);
 
-    const logPath = path.join(ketchupDir, 'logs', 'activity.log');
+    const logPath = path.join(autoDir, 'logs', 'activity.log');
     expect(fs.existsSync(logPath)).toBe(false);
   });
 
@@ -67,21 +67,21 @@ describe('pre-tool-use hook', () => {
 
     await handlePreToolUse(claudeDir, 'my-session-id', toolInput);
 
-    const logPath = path.join(ketchupDir, 'logs', 'activity.log');
+    const logPath = path.join(autoDir, 'logs', 'activity.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[ssion-id]');
     expect(content).toContain('pre-tool-use:');
   });
 
-  it('logs deny-list check when DEBUG=ketchup', async () => {
-    process.env.DEBUG = 'ketchup';
+  it('logs deny-list check when DEBUG=claude-auto', async () => {
+    process.env.DEBUG = 'claude-auto';
     fs.writeFileSync(path.join(claudeDir, 'deny-list.project.txt'), '*.secret\n');
     const toolInput = { file_path: '/project/config.secret' };
 
     await handlePreToolUse(claudeDir, 'debug-session', toolInput);
 
-    const logPath = path.join(ketchupDir, 'logs', 'ketchup', 'debug.log');
+    const logPath = path.join(autoDir, 'logs', 'claude-auto', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[pre-tool-use]');
@@ -90,7 +90,7 @@ describe('pre-tool-use hook', () => {
   });
 
   it('routes Bash git commit to validator and blocks on NACK', async () => {
-    const validatorsDir = path.join(ketchupDir, 'validators');
+    const validatorsDir = path.join(autoDir, 'validators');
     fs.mkdirSync(validatorsDir);
     fs.writeFileSync(
       path.join(validatorsDir, 'test.md'),
@@ -124,7 +124,7 @@ Validate this commit`,
   });
 
   it('allows git commit when all validators ACK', async () => {
-    const validatorsDir = path.join(ketchupDir, 'validators');
+    const validatorsDir = path.join(autoDir, 'validators');
     fs.mkdirSync(validatorsDir);
     fs.writeFileSync(
       path.join(validatorsDir, 'test.md'),
@@ -155,7 +155,7 @@ Validate this commit`,
   });
 
   it('excludes appeal-system from regular validator run', async () => {
-    const validatorsDir = path.join(ketchupDir, 'validators');
+    const validatorsDir = path.join(autoDir, 'validators');
     fs.mkdirSync(validatorsDir);
     fs.writeFileSync(
       path.join(validatorsDir, 'test.md'),
@@ -208,7 +208,7 @@ You are the appeal system.`,
     fs.writeFileSync(path.join(repoDir, 'file.ts'), 'const x = 1;');
     execSync('git add file.ts', { cwd: repoDir, stdio: 'pipe' });
 
-    const validatorsDir = path.join(ketchupDir, 'validators');
+    const validatorsDir = path.join(autoDir, 'validators');
     fs.mkdirSync(validatorsDir);
     fs.writeFileSync(
       path.join(validatorsDir, 'test.md'),
@@ -248,7 +248,7 @@ Validate this commit`,
   });
 
   it('injects reminders matching PreToolUse hook and toolName', async () => {
-    const remindersDir = path.join(ketchupDir, 'reminders');
+    const remindersDir = path.join(autoDir, 'reminders');
     fs.mkdirSync(remindersDir, { recursive: true });
     fs.writeFileSync(
       path.join(remindersDir, 'bash-reminder.md'),

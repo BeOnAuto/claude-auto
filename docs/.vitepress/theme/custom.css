@@ -1,82 +1,98 @@
+/* ============================================================
+   Auto Brand Theme — matches on.auto aesthetic
+   Deep purple-black dark mode · clean white light mode
+   Brand stripes: #EC3F4A #FF8A1D #5EC72D #42C3F7
+   ============================================================ */
+
+/* Display font — TT Supermolot Neue Expanded Bold (from on.auto) */
+@font-face {
+  font-family: 'TT Supermolot Neue';
+  src: url('https://framerusercontent.com/assets/18dTfI9lbU8AJLdoZYyzkgn7vw.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Light mode */
 :root {
-  /* Brand */
-  --vp-c-brand-1: #ff2a2a; /* ketchup red */
-  --vp-c-brand-2: #ff4d1a; /* hover/active */
-  --vp-c-brand-3: #d81f1f; /* pressed/deeper */
-  --vp-c-brand-soft: rgba(255, 42, 42, 0.14);
+  /* Brand — Auto primary blue */
+  --vp-c-brand-1: #0057dd;
+  --vp-c-brand-2: #0048b8;
+  --vp-c-brand-3: #003d9e;
+  --vp-c-brand-soft: rgba(0, 87, 221, 0.14);
 
-  /* Optional secondary accent (for badges, callouts, code highlights) */
-  --vp-c-green-1: #66ff33;
-  --vp-c-green-soft: rgba(102, 255, 51, 0.14);
+  /* Secondary accent — brand green */
+  --vp-c-green-1: #5ec72d;
+  --vp-c-green-soft: rgba(94, 199, 45, 0.14);
 
-  /* Backgrounds */
-  --vp-c-bg: #f7f8fa;
-  --vp-c-bg-alt: #f1f3f6;
+  /* Backgrounds — brand guide */
+  --vp-c-bg: #ffffff;
+  --vp-c-bg-alt: #fafafa;
   --vp-c-bg-soft: #ffffff;
   --vp-c-bg-elv: #ffffff;
 
-  /* Text */
-  --vp-c-text-1: #151b22;
-  --vp-c-text-2: #2b3440;
-  --vp-c-text-3: #5b6675;
+  /* Text — brand guide */
+  --vp-c-text-1: #18181b;
+  --vp-c-text-2: #52525b;
+  --vp-c-text-3: #71717a;
 
   /* Borders / dividers */
-  --vp-c-divider: #d9dee6;
-  --vp-c-gutter: #e7ebf0;
+  --vp-c-divider: #e4e4e7;
+  --vp-c-gutter: #f4f4f5;
 
   /* Code */
-  --vp-code-bg: #0a0d10;
-  --vp-code-color: #e7ecf2;
-
-  /* Shadows (subtle, "silver frame" vibe) */
-  --vp-shadow-1: 0 10px 30px rgba(10, 13, 16, 0.08);
-}
-
-/* Dark mode */
-.dark {
-  /* Brand */
-  --vp-c-brand-1: #ff2a2a;
-  --vp-c-brand-2: #ff4d1a;
-  --vp-c-brand-3: #ff6a2a;
-  --vp-c-brand-soft: rgba(255, 42, 42, 0.16);
-
-  /* Secondary accent */
-  --vp-c-green-1: #66ff33;
-  --vp-c-green-soft: rgba(102, 255, 51, 0.16);
-
-  /* Backgrounds (CRT/panel) */
-  --vp-c-bg: #0a0d10;
-  --vp-c-bg-alt: #11151a;
-  --vp-c-bg-soft: #151b22;
-  --vp-c-bg-elv: #11151a;
-
-  /* Text */
-  --vp-c-text-1: #e7ecf2;
-  --vp-c-text-2: #c6ced8;
-  --vp-c-text-3: #a7b0bc;
-
-  /* Borders / dividers */
-  --vp-c-divider: #27313b;
-  --vp-c-gutter: #1d2630;
-
-  /* Code */
-  --vp-code-bg: #070a0d;
-  --vp-code-color: #e7ecf2;
+  --vp-code-bg: #0e051b;
+  --vp-code-color: #f3ecfe;
 
   /* Shadows */
-  --vp-shadow-1: 0 14px 40px rgba(0, 0, 0, 0.45);
+  --vp-shadow-1: 0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
-/* Optional: give links a slight "CRT glow" without looking cheesy */
+/* Dark mode — on.auto deep purple-black aesthetic */
+.dark {
+  /* Brand — lighter blue for dark bg contrast */
+  --vp-c-brand-1: #4d8ae8;
+  --vp-c-brand-2: #3a7be0;
+  --vp-c-brand-3: #6ba0f0;
+  --vp-c-brand-soft: rgba(0, 87, 221, 0.16);
+
+  /* Secondary accent */
+  --vp-c-green-1: #5ec72d;
+  --vp-c-green-soft: rgba(94, 199, 45, 0.16);
+
+  /* Backgrounds — deep purple-black from on.auto */
+  --vp-c-bg: #0e051b;
+  --vp-c-bg-alt: #130c1e;
+  --vp-c-bg-soft: #1a1329;
+  --vp-c-bg-elv: #160f22;
+
+  /* Text — lavender-white from on.auto */
+  --vp-c-text-1: #f3ecfe;
+  --vp-c-text-2: #b8aed0;
+  --vp-c-text-3: #8a7da0;
+
+  /* Borders / dividers — subtle purple glow */
+  --vp-c-divider: rgba(243, 236, 254, 0.08);
+  --vp-c-gutter: rgba(243, 236, 254, 0.04);
+
+  /* Code */
+  --vp-code-bg: #0a0414;
+  --vp-code-color: #f3ecfe;
+
+  /* Shadows */
+  --vp-shadow-1: 0 14px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Link hover */
 :root a:hover,
 .dark a:hover {
   text-decoration-color: currentColor;
 }
 
-/* Hero section customization */
+/* Hero section — retro rainbow stripe gradient matching on.auto aurora */
 .VPHero .name {
-  background: linear-gradient(135deg, #ff2a2a 0%, #ff4d1a 50%, #66ff33 100%);
+  font-family: 'TT Supermolot Neue', sans-serif;
+  background: linear-gradient(135deg, #ec3f4a 0%, #ff8a1d 30%, #5ec72d 60%, #42c3f7 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -122,96 +138,112 @@
 
 /* Feature cards - light mode */
 .VPFeature:hover {
-  border-color: rgba(255, 42, 42, 0.5);
+  border-color: rgba(0, 87, 221, 0.4);
 }
 
-/* Feature cards - dark mode */
+/* Feature cards - dark mode — on.auto card style */
 .dark .VPFeature {
-  background-color: #151b22;
-  border-color: #27313b;
+  background-color: #160f22;
+  border-color: rgba(243, 236, 254, 0.06);
 }
 
 .dark .VPFeature:hover {
-  border-color: rgba(255, 42, 42, 0.5);
+  border-color: rgba(243, 236, 254, 0.15);
 }
 
-/* Button styling - consistent red across light/dark */
+/* Button styling — primary blue, pill-shaped like on.auto */
 .VPButton.brand {
-  background-color: #ff2a2a;
-  border-color: #ff2a2a;
+  background-color: #0057dd;
+  border-color: #0057dd;
   color: #ffffff;
+  border-radius: 100px;
 }
 
 .VPButton.brand:hover {
-  background-color: #d81f1f;
-  border-color: #d81f1f;
+  background-color: #0048b8;
+  border-color: #0048b8;
+}
+
+.VPButton.alt {
+  border-radius: 100px;
 }
 
 .dark .VPButton.brand {
-  background-color: #ff2a2a;
-  border-color: #ff2a2a;
-  color: #ffffff;
+  background-color: #f3ecfe;
+  border-color: #f3ecfe;
+  color: #0e051b;
 }
 
 .dark .VPButton.brand:hover {
-  background-color: #d81f1f;
-  border-color: #d81f1f;
+  background-color: #ddd4f0;
+  border-color: #ddd4f0;
+}
+
+.dark .VPButton.alt {
+  background-color: rgba(243, 236, 254, 0.08);
+  border-color: rgba(243, 236, 254, 0.12);
+  color: #f3ecfe;
+}
+
+.dark .VPButton.alt:hover {
+  background-color: rgba(243, 236, 254, 0.14);
+  border-color: rgba(243, 236, 254, 0.2);
 }
 
 /* Nav bar in dark mode */
 .dark .VPNavBar {
-  background-color: rgba(10, 13, 16, 0.8);
-  border-bottom-color: #27313b;
+  background-color: rgba(14, 5, 27, 0.85);
+  border-bottom-color: rgba(243, 236, 254, 0.08);
 }
 
 /* Sidebar in dark mode */
 .dark .VPSidebar {
-  background-color: #0a0d10;
+  background-color: #0e051b;
 }
 
 /* Local search modal */
 .dark .VPLocalSearchBox .shell {
-  background-color: #11151a;
-  border-color: #27313b;
+  background-color: #160f22;
+  border-color: rgba(243, 236, 254, 0.1);
 }
 
 /* Footer */
 .dark .VPFooter {
-  background-color: #0a0d10;
-  border-top-color: #27313b;
+  background-color: #0e051b;
+  border-top-color: rgba(243, 236, 254, 0.08);
 }
 
-/* Slack-style inline code - Light mode */
+/* Inline code - Light mode */
 :not(pre) > code {
-  background-color: #f8e8e8;
-  color: #c73a3a;
+  background-color: #eff6ff;
+  color: #0050c8;
   padding: 0.15em 0.4em;
   border-radius: 4px;
   font-size: 0.9em;
   font-weight: 500;
-  border: 1px solid rgba(199, 58, 58, 0.2);
+  border: 1px solid rgba(0, 87, 221, 0.15);
 }
 
-/* Slack-style inline code - Dark mode */
+/* Inline code - Dark mode — purple-tinted to match on.auto */
 .dark :not(pre) > code {
-  background-color: #2d1f1f;
-  color: #ff8c42;
-  border: 1px solid rgba(255, 140, 66, 0.3);
+  background-color: rgba(243, 236, 254, 0.08);
+  color: #c4b8f0;
+  border: 1px solid rgba(243, 236, 254, 0.1);
 }
 
 /* Feature card inline code styling */
 .VPFeature code {
-  background-color: rgba(199, 58, 58, 0.1);
-  color: #c73a3a;
+  background-color: rgba(0, 87, 221, 0.08);
+  color: #0050c8;
   padding: 0.15em 0.4em;
   border-radius: 4px;
   font-size: 0.85em;
   font-weight: 500;
-  border: 1px solid rgba(199, 58, 58, 0.2);
+  border: 1px solid rgba(0, 87, 221, 0.15);
 }
 
 .dark .VPFeature code {
-  background-color: rgba(255, 140, 66, 0.15);
-  color: #ff8c42;
-  border: 1px solid rgba(255, 140, 66, 0.3);
+  background-color: rgba(243, 236, 254, 0.08);
+  color: #c4b8f0;
+  border: 1px solid rgba(243, 236, 254, 0.1);
 }

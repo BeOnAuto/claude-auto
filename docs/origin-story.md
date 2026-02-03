@@ -48,19 +48,21 @@ The revert isn't a problem. It's a tool.
 
 ## The Birth of the Quality Stack
 
-### Why "Ketchup"?
+### Three Layers: Auto, Claude Auto, and The Ketchup Technique
 
-The name has two meanings:
+The internet is polluted with PM vocabulary. Epics, sprints, stories, SAFe — the LLM training data is saturated with these terms. When you tell an AI to plan work using established agile terminology, it hallucinates toward Jira tickets, estimation theater, and ceremony-heavy processes it's seen a billion times.
 
-**Controlled dispensing.** Pour ketchup from a glass bottle: bang and bang and nothing comes out, then suddenly the whole bottle empties onto your plate. AI overachievement is the same. You need the right amount. The technique is like those special bottles with controlled dispensers.
+I needed fresh vocabulary. Unpolluted terms that wouldn't trigger pattern-matching toward someone else's methodology.
 
-**Fresh nomenclature.** When you tell an LLM to create a "user story" or "epic" or "sprint," you invoke terms trained on billions of articles. The model hallucinates toward patterns it's seen before: Jira tickets, agile ceremonies, estimation theater.
+That's how **The Ketchup Technique** was born — a play on "catch up." Like the Pomodoro Technique gave fresh vocabulary for time management (a tomato timer instead of "timeboxing"), the Ketchup Technique gives fresh vocabulary for AI-assisted planning.
 
-I needed vocabulary that was unpolluted.
+But a technique is just theory until it runs. Enter **Claude Auto** — the open-source engine that drives the Ketchup Technique. It's the hooks, the validators, the auto-continue system, the reminders. The machinery that turns methodology into execution.
+
+Claude Auto is the first step to putting your entire development workflow **on.Auto**.
 
 ### Bottles and Bursts
 
-Hence: **Bottles** and **Bursts**.
+The Ketchup Technique introduces: **Bottles** and **Bursts**.
 
 A **Burst** is one test, one behavior, one commit. Atomic, independent, valuable. The constraint is scope, not time.
 
@@ -115,9 +117,9 @@ Then I discovered the real leverage.
 
 Git worktrees let you have multiple working directories from the same repo. Each on a different branch. Each isolated.
 
-Set Ketchup off on Feature A in worktree-1.
-Open worktree-2. Set Ketchup off on Feature B.
-Open worktree-3. Set Ketchup off on Feature C.
+Set Claude Auto off on Feature A in worktree-1.
+Open worktree-2. Set Claude Auto off on Feature B.
+Open worktree-3. Set Claude Auto off on Feature C.
 
 Three features running simultaneously. All quality-validated.
 

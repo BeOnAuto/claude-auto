@@ -1,6 +1,6 @@
 import * as path from 'node:path';
 
-import { DEFAULT_KETCHUP_DIR, loadConfig } from '../config-loader.js';
+import { DEFAULT_AUTO_DIR, loadConfig } from '../config-loader.js';
 
 import { getExpectedSymlinks } from './repair.js';
 
@@ -16,7 +16,7 @@ type StatusResult = {
 export async function getStatus(packageDir: string, claudeDir: string): Promise<StatusResult> {
   const projectRoot = path.dirname(claudeDir);
   const config = await loadConfig(projectRoot);
-  const ketchupDirName = config.ketchupDir ?? DEFAULT_KETCHUP_DIR;
+  const autoDirName = config.autoDir ?? DEFAULT_AUTO_DIR;
 
   const expectedFiles = getExpectedSymlinks(packageDir);
 
@@ -25,10 +25,10 @@ export async function getStatus(packageDir: string, claudeDir: string): Promise<
     status: 'ok',
   }));
 
-  const ketchupSymlinks: SymlinkStatus[] = expectedFiles.ketchupFiles.map((file) => ({
-    path: `${ketchupDirName}/${file}`,
+  const autoSymlinks: SymlinkStatus[] = expectedFiles.autoFiles.map((file) => ({
+    path: `${autoDirName}/${file}`,
     status: 'ok',
   }));
 
-  return { symlinks: [...claudeSymlinks, ...ketchupSymlinks] };
+  return { symlinks: [...claudeSymlinks, ...autoSymlinks] };
 }

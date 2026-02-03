@@ -38,10 +38,10 @@ describe('cli install', () => {
     expect(settings.hooks.Stop).toBeDefined();
   });
 
-  it('copies bundled scripts to .ketchup/scripts/', async () => {
+  it('copies bundled scripts to .claude-auto/scripts/', async () => {
     await install(tempDir);
 
-    const scriptsDir = path.join(tempDir, '.ketchup', 'scripts');
+    const scriptsDir = path.join(tempDir, '.claude-auto', 'scripts');
     expect(fs.existsSync(path.join(scriptsDir, 'session-start.js'))).toBe(true);
     expect(fs.existsSync(path.join(scriptsDir, 'pre-tool-use.js'))).toBe(true);
     expect(fs.existsSync(path.join(scriptsDir, 'user-prompt-submit.js'))).toBe(true);
@@ -58,10 +58,10 @@ describe('cli install', () => {
     expect(fs.existsSync(commandsDir)).toBe(false);
   });
 
-  it('copies validators to .ketchup/validators/', async () => {
+  it('copies validators to .claude-auto/validators/', async () => {
     await install(tempDir);
 
-    const validatorsDir = path.join(tempDir, '.ketchup', 'validators');
+    const validatorsDir = path.join(tempDir, '.claude-auto', 'validators');
     expect(fs.existsSync(validatorsDir)).toBe(true);
     const files = fs.readdirSync(validatorsDir);
     expect(files.length).toBeGreaterThan(0);
@@ -70,10 +70,10 @@ describe('cli install', () => {
     }
   });
 
-  it('copies reminders to .ketchup/reminders/', async () => {
+  it('copies reminders to .claude-auto/reminders/', async () => {
     await install(tempDir);
 
-    const remindersDir = path.join(tempDir, '.ketchup', 'reminders');
+    const remindersDir = path.join(tempDir, '.claude-auto', 'reminders');
     expect(fs.existsSync(remindersDir)).toBe(true);
     const files = fs.readdirSync(remindersDir);
     expect(files.length).toBeGreaterThan(0);
@@ -82,10 +82,10 @@ describe('cli install', () => {
     }
   });
 
-  it('creates .ketchup/.claude.hooks.json with defaults', async () => {
+  it('creates .claude-auto/.claude.hooks.json with defaults', async () => {
     await install(tempDir);
 
-    const hookStatePath = path.join(tempDir, '.ketchup', '.claude.hooks.json');
+    const hookStatePath = path.join(tempDir, '.claude-auto', '.claude.hooks.json');
     expect(fs.existsSync(hookStatePath)).toBe(true);
 
     const state = JSON.parse(fs.readFileSync(hookStatePath, 'utf-8'));
@@ -135,10 +135,10 @@ describe('cli install', () => {
     expect(result.status).toBe('installed');
   });
 
-  it('returns status "updated" when .ketchup/.claude.hooks.json already exists', async () => {
-    const ketchupDir = path.join(tempDir, '.ketchup');
-    fs.mkdirSync(ketchupDir, { recursive: true });
-    fs.writeFileSync(path.join(ketchupDir, '.claude.hooks.json'), '{}');
+  it('returns status "updated" when .claude-auto/.claude.hooks.json already exists', async () => {
+    const autoDir = path.join(tempDir, '.claude-auto');
+    fs.mkdirSync(autoDir, { recursive: true });
+    fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), '{}');
 
     const result = await install(tempDir);
 
@@ -176,24 +176,24 @@ describe('local install', () => {
     expect(settings.hooks.Stop[0].hooks[0].command).toBe('pnpm tsx scripts/auto-continue.ts');
   });
 
-  it('does NOT copy bundled scripts to .ketchup/scripts/', async () => {
+  it('does NOT copy bundled scripts to .claude-auto/scripts/', async () => {
     await install(tempDir, { local: true });
 
-    const scriptsDir = path.join(tempDir, '.ketchup', 'scripts');
+    const scriptsDir = path.join(tempDir, '.claude-auto', 'scripts');
     expect(fs.existsSync(scriptsDir)).toBe(false);
   });
 
   it('does NOT copy reminders', async () => {
     await install(tempDir, { local: true });
 
-    const remindersDir = path.join(tempDir, '.ketchup', 'reminders');
+    const remindersDir = path.join(tempDir, '.claude-auto', 'reminders');
     expect(fs.existsSync(remindersDir)).toBe(false);
   });
 
   it('does NOT copy validators', async () => {
     await install(tempDir, { local: true });
 
-    const validatorsDir = path.join(tempDir, '.ketchup', 'validators');
+    const validatorsDir = path.join(tempDir, '.claude-auto', 'validators');
     expect(fs.existsSync(validatorsDir)).toBe(false);
   });
 
@@ -204,10 +204,10 @@ describe('local install', () => {
     expect(fs.existsSync(commandsDir)).toBe(false);
   });
 
-  it('initializes hook state at .ketchup/.claude.hooks.json', async () => {
+  it('initializes hook state at .claude-auto/.claude.hooks.json', async () => {
     await install(tempDir, { local: true });
 
-    const hookStatePath = path.join(tempDir, '.ketchup', '.claude.hooks.json');
+    const hookStatePath = path.join(tempDir, '.claude-auto', '.claude.hooks.json');
     expect(fs.existsSync(hookStatePath)).toBe(true);
 
     const state = JSON.parse(fs.readFileSync(hookStatePath, 'utf-8'));
@@ -222,10 +222,10 @@ describe('local install', () => {
     expect(result.status).toBe('installed');
   });
 
-  it('returns status "updated" when .ketchup/.claude.hooks.json exists', async () => {
-    const ketchupDir = path.join(tempDir, '.ketchup');
-    fs.mkdirSync(ketchupDir, { recursive: true });
-    fs.writeFileSync(path.join(ketchupDir, '.claude.hooks.json'), '{}');
+  it('returns status "updated" when .claude-auto/.claude.hooks.json exists', async () => {
+    const autoDir = path.join(tempDir, '.claude-auto');
+    fs.mkdirSync(autoDir, { recursive: true });
+    fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), '{}');
 
     const result = await install(tempDir, { local: true });
 

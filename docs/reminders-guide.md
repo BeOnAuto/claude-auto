@@ -28,7 +28,7 @@ User starts Claude session
            ▼
 ┌─────────────────────────┐
 │  Load reminders from:   │
-│  - .ketchup/reminders/  │
+│  - .claude-auto/reminders/  │
 └──────────┬──────────────┘
            │
            ▼
@@ -52,7 +52,7 @@ User starts Claude session
 
 ### Basic Reminder
 
-Create `.ketchup/reminders/my-project.md`:
+Create `.claude-auto/reminders/my-project.md`:
 
 ```markdown
 ---
@@ -236,7 +236,7 @@ All conditions must match (AND logic) for the reminder to load.
 
 ## Built-in Reminders
 
-Claude Ketchup comes with several built-in reminders:
+Claude Auto comes with several built-in reminders:
 
 ### Core Methodology
 
@@ -375,11 +375,11 @@ Commit project reminders (not personal preferences):
 
 ```bash
 # Project reminders (commit these)
-.ketchup/reminders/architecture.md
-.ketchup/reminders/testing.md
+.claude-auto/reminders/architecture.md
+.claude-auto/reminders/testing.md
 
 # Personal reminders (gitignore these)
-.ketchup/reminders/my-shortcuts.local.md
+.claude-auto/reminders/my-shortcuts.local.md
 ```
 
 ---
@@ -391,7 +391,7 @@ Commit project reminders (not personal preferences):
 See which reminders are active:
 
 ```bash
-npx claude-ketchup reminders
+npx claude-auto reminders
 ```
 
 ### Test Reminder Loading
@@ -400,10 +400,10 @@ Manually test a reminder:
 
 ```bash
 npx tsx -e "
-import { parseReminder } from 'claude-ketchup';
+import { parseReminder } from 'claude-auto';
 import { readFileSync } from 'fs';
 
-const content = readFileSync('.ketchup/reminders/my-reminder.md', 'utf-8');
+const content = readFileSync('.claude-auto/reminders/my-reminder.md', 'utf-8');
 const parsed = parseReminder(content, 'my-reminder.md');
 console.log(JSON.stringify(parsed, null, 2));
 "
@@ -414,7 +414,7 @@ console.log(JSON.stringify(parsed, null, 2));
 Check what was injected:
 
 ```bash
-tail -f .ketchup/logs/activity.log
+tail -f .claude-auto/logs/activity.log
 ```
 
 ---
@@ -517,7 +517,7 @@ priority: 50
 
 Key changes:
 1. Most fields move under `when:`
-2. Directory changes from `.claude/skills/` to `.ketchup/reminders/`
+2. Directory changes from `.claude/skills/` to `.claude-auto/reminders/`
 3. Function names in API change from `*Skill*` to `*Reminder*`
 
 ---
@@ -551,6 +551,6 @@ If reminders conflict:
 ## Next Steps
 
 - [Create your first reminder](#creating-your-first-reminder)
-- [View built-in reminders](https://github.com/BeOnAuto/claude-ketchup/tree/main/reminders)
+- [View built-in reminders](https://github.com/BeOnAuto/claude-auto/tree/main/.claude-auto/reminders)
 - [Configure validators](/validators-guide)
 - [Manage hook state](./configuration.md#hook-state)

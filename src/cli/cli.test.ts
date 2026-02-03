@@ -12,7 +12,7 @@ describe('createCli', () => {
       description: program.description(),
       commands,
     }).toEqual({
-      name: 'claude-ketchup',
+      name: 'claude-auto',
       description: 'Husky-style hooks and skills management for Claude Code',
       commands: ['install', 'status', 'doctor', 'repair', 'reminders'],
     });

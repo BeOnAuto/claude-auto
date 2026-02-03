@@ -1,13 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-export function debugLog(ketchupDir: string, hookName: string, message: string): void {
+export function debugLog(autoDir: string, hookName: string, message: string): void {
   const debug = process.env.DEBUG;
-  if (!debug || !debug.includes('ketchup')) {
+  if (!debug || !debug.includes('claude-auto')) {
     return;
   }
 
-  const logsDir = path.join(ketchupDir, 'logs', 'ketchup');
+  const logsDir = path.join(autoDir, 'logs', 'claude-auto');
   if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir, { recursive: true });
   }

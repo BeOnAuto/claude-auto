@@ -49,10 +49,10 @@ Understanding how the Quality Stack works under the hood.
 
 ## Design Philosophy
 
-claude-ketchup follows several key principles:
+claude-auto follows several key principles:
 
 1. **Convention over Configuration**: Sensible defaults that just work
-2. **Copied Scripts, Layered Settings**: Hook scripts are copied to `.ketchup/scripts/` for reliability; settings use a layered merge strategy
+2. **Copied Scripts, Layered Settings**: Hook scripts are copied to `.claude-auto/scripts/` for reliability; settings use a layered merge strategy
 3. **Layered Settings**: Package → Project → Local override chain
 4. **Transparent Operation**: All files are human-readable
 5. **Minimal Dependencies**: Only three runtime dependencies
@@ -74,7 +74,7 @@ claude-ketchup follows several key principles:
 │  ├── deny-list.local.txt ──────► Local protection patterns  │
 │  └── state.json ───────────────► Runtime state              │
 │                                                              │
-│  .ketchup/                                                   │
+│  .claude-auto/                                                   │
 │  ├── scripts/ ─────────────────► Hook scripts (copied)      │
 │  ├── reminders/ ───────────────► Context injection files    │
 │  ├── validators/ ──────────────► Commit validation rules    │
@@ -88,7 +88,7 @@ claude-ketchup follows several key principles:
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│           node_modules/claude-ketchup/                       │
+│           node_modules/claude-auto/                       │
 ├─────────────────────────────────────────────────────────────┤
 │  scripts/                   Source hook scripts              │
 │  reminders/                 Default reminders                │
@@ -106,7 +106,7 @@ claude-ketchup follows several key principles:
 
 ### Postinstall
 
-When you run `npx claude-ketchup install`, the installation script:
+When you run `npx claude-auto install`, the installation script:
 
 ```
 install()
@@ -118,25 +118,25 @@ install()
     ├─► Create settings.json from template
     │   └─► Skip if settings.json already exists
     │
-    ├─► Copy bundled scripts to .ketchup/scripts/
+    ├─► Copy bundled scripts to .claude-auto/scripts/
     │   └─► session-start.js, pre-tool-use.js,
     │       user-prompt-submit.js, auto-continue.js
     │
     ├─► Copy commands to .claude/commands/
     │
-    ├─► Copy validators to .ketchup/validators/
+    ├─► Copy validators to .claude-auto/validators/
     │
-    ├─► Copy reminders to .ketchup/reminders/
+    ├─► Copy reminders to .claude-auto/reminders/
     │
     └─► Initialize hook state
-        └─► .ketchup/.claude.hooks.json with defaults
+        └─► .claude-auto/.claude.hooks.json with defaults
             (autoContinue: smart, validateCommit: strict,
              denyList: enabled)
 ```
 
 ### Preuninstall
 
-When you run `npm uninstall claude-ketchup`:
+When you run `npm uninstall claude-auto`:
 
 ```
 preuninstall.ts
@@ -305,7 +305,7 @@ Claude Attempts git commit
 ┌─────────────────────────────┐
 │  handleValidateCommit()     │
 │  ├─► loadValidators()       │
-│  │   └─► .ketchup/validators│
+│  │   └─► .claude-auto/validators│
 │  ├─► parseValidator() each  │
 │  ├─► filterEnabled()        │
 │  └─► sendToSupervisor()     │
@@ -505,7 +505,7 @@ transcript.jsonl
 ### Package Structure
 
 ```
-claude-ketchup/
+claude-auto/
 ├── bin/
 │   ├── cli.ts              CLI entry point
 │   ├── postinstall.ts      npm postinstall script
@@ -550,10 +550,10 @@ claude-ketchup/
 │   ├── user-prompt-submit.ts
 │   └── test-hooks.sh
 │
-├── reminders/               Symlink targets (copied to .ketchup/reminders/)
+├── reminders/               Symlink targets (copied to .claude-auto/reminders/)
 │   └── *.md                 Context injection reminders
 │
-├── validators/              Symlink targets (copied to .ketchup/validators/)
+├── validators/              Symlink targets (copied to .claude-auto/validators/)
 │   └── *.md                 Commit validation rules
 │
 ├── commands/                Symlink targets (copied to .claude/commands/)
@@ -576,7 +576,7 @@ your-project/
 │   ├── deny-list.project.txt     Project deny patterns
 │   └── deny-list.local.txt       Local deny patterns
 │
-├── .ketchup/
+├── .claude-auto/
 │   ├── scripts/
 │   │   ├── session-start.js      Copied from package bundle
 │   │   ├── pre-tool-use.js       Copied from package bundle
@@ -597,7 +597,7 @@ your-project/
 
 | Package | Purpose |
 |---------|---------|
-| **commander** | CLI argument parsing for `claude-ketchup` commands |
+| **commander** | CLI argument parsing for `claude-auto` commands |
 | **micromatch** | Glob pattern matching for deny-list file filtering |
 | **gray-matter** | YAML frontmatter parsing for reminders and validators |
 

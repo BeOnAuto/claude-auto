@@ -12,10 +12,10 @@ const claudeDir = path.resolve(process.cwd(), '.claude');
 const startTime = Date.now();
 
 (async () => {
-  const { ketchupDir } = await resolvePaths(claudeDir);
+  const { autoDir } = await resolvePaths(claudeDir);
   try {
     const { diagnostics, ...result } = await handleUserPromptSubmit(claudeDir, input.session_id, input.prompt || '');
-    writeHookLog(ketchupDir, {
+    writeHookLog(autoDir, {
       hookName: 'user-prompt-submit',
       timestamp: new Date().toISOString(),
       input: { ...input, prompt: input.prompt ? `[${input.prompt.length} chars]` : undefined },
@@ -28,7 +28,7 @@ const startTime = Date.now();
     console.log(JSON.stringify(result));
     process.exit(0);
   } catch (err) {
-    writeHookLog(ketchupDir, {
+    writeHookLog(autoDir, {
       hookName: 'user-prompt-submit',
       timestamp: new Date().toISOString(),
       input: { ...input, prompt: input.prompt ? `[${input.prompt.length} chars]` : undefined },

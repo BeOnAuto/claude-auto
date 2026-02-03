@@ -10,7 +10,7 @@ describe('loadConfig', () => {
   let tempDir: string;
 
   beforeEach(() => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-config-'));
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'claude-auto-config-'));
   });
 
   afterEach(() => {
@@ -23,19 +23,19 @@ describe('loadConfig', () => {
     expect(result).toEqual({});
   });
 
-  it('reads config from .ketchuprc.json', async () => {
+  it('reads config from .claude-autorc.json', async () => {
     const config = { validators: { enabled: true, mode: 'warn' } };
-    fs.writeFileSync(path.join(tempDir, '.ketchuprc.json'), JSON.stringify(config));
+    fs.writeFileSync(path.join(tempDir, '.claude-autorc.json'), JSON.stringify(config));
 
     const result = await loadConfig(tempDir);
 
     expect(result).toEqual({ validators: { enabled: true, mode: 'warn' } });
   });
 
-  it('reads config from package.json ketchup key', async () => {
+  it('reads config from package.json claude-auto key', async () => {
     const packageJson = {
       name: 'test-project',
-      ketchup: { validators: { dirs: ['custom-validators'] } },
+      'claude-auto': { validators: { dirs: ['custom-validators'] } },
     };
     fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify(packageJson));
 

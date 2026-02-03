@@ -22,14 +22,14 @@ Install the Quality Stack in 5 minutes.
 ## Step 1: Install the Quality Stack
 
 ```bash
-npx claude-ketchup install
+npx claude-auto install
 ```
 
 This single command sets up everything you need - no package installation or configuration required.
 
-Behind the scenes, claude-ketchup:
+Behind the scenes, claude-auto:
 
-- Copies hook scripts to `.ketchup/scripts/`
+- Copies hook scripts to `.claude-auto/scripts/`
 - Creates reminders that inject your guidelines
 - Sets up the supervisor that ACKs or NACKs changes
 - Initializes hook state with sensible defaults
@@ -39,7 +39,7 @@ Behind the scenes, claude-ketchup:
 ## Step 2: Verify Your Transformation
 
 ```bash
-npx claude-ketchup doctor
+npx claude-auto doctor
 ```
 
 All green? The Quality Stack is active. You can now walk away.
@@ -49,7 +49,7 @@ All green? The Quality Stack is active. You can now walk away.
 ## Step 3: Explore What Was Created
 
 ```bash
-ls -la .claude/ .ketchup/
+ls -la .claude/ .claude-auto/
 ```
 
 See the [Architecture Guide](/architecture#directory-structure) for complete directory structure details.
@@ -61,7 +61,7 @@ See the [Architecture Guide](/architecture#directory-structure) for complete dir
 Create your first reminder to inject YOUR rules into every session:
 
 ```bash
-cat > .ketchup/reminders/my-project.md << 'EOF'
+cat > .claude-auto/reminders/my-project.md << 'EOF'
 ---
 when:
   hook: SessionStart
@@ -108,23 +108,23 @@ git worktree add ../feature-payments feature/payments
 git worktree add ../feature-dashboard feature/dashboard
 ```
 
-Run a Ketchup instance in each worktree:
+Run a Claude Auto instance in each worktree:
 
 ```bash
 # Terminal 1 (feature-auth)
 cd ../feature-auth
 # Feed requirements, approve plan, start execution
-# Ketchup running...
+# Claude Auto running...
 
 # Terminal 2 (feature-payments)
 cd ../feature-payments
 # Feed requirements, approve plan, start execution
-# Ketchup running...
+# Claude Auto running...
 
 # Terminal 3 (feature-dashboard)
 cd ../feature-dashboard
 # Feed requirements, approve plan, start execution
-# Ketchup running...
+# Claude Auto running...
 ```
 
 Three features running simultaneously. All quality-validated.
@@ -165,5 +165,5 @@ See the [transformation story](/origin-story#the-transformation) for the complet
 Having issues? See the [Configuration Guide](/configuration#troubleshooting) for common problems and solutions, or run:
 
 ```bash
-npx claude-ketchup doctor
+npx claude-auto doctor
 ```

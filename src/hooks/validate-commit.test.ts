@@ -16,7 +16,7 @@ describe('validate-commit hook', () => {
   let tempDir: string;
 
   beforeEach(() => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-validate-'));
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'auto-validate-'));
   });
 
   afterEach(() => {

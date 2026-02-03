@@ -17,13 +17,13 @@ const input: StopHookInput = JSON.parse(stdin);
 const startTime = Date.now();
 
 (async () => {
-  const { ketchupDir } = await resolvePaths(claudeDir);
-  const result = handleStop(ketchupDir, input);
+  const { autoDir } = await resolvePaths(claudeDir);
+  const result = handleStop(autoDir, input);
 
   const output =
     result.decision === 'block' ? { stopReason: result.reason, forceResult: { behaviour: 'block' } } : null;
 
-  writeHookLog(ketchupDir, {
+  writeHookLog(autoDir, {
     hookName: 'auto-continue',
     timestamp: new Date().toISOString(),
     input,

@@ -24,12 +24,12 @@ function matchesFilter(hookName: string, message: string): boolean {
   return includes.some((pattern) => searchText.includes(pattern));
 }
 
-export function activityLog(ketchupDir: string, sessionId: string, hookName: string, message: string): void {
+export function activityLog(autoDir: string, sessionId: string, hookName: string, message: string): void {
   if (!matchesFilter(hookName, message)) {
     return;
   }
 
-  const logsDir = path.join(ketchupDir, 'logs');
+  const logsDir = path.join(autoDir, 'logs');
   if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir, { recursive: true });
   }

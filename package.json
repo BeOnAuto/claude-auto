@@ -1,5 +1,5 @@
 {
-  "name": "claude-ketchup",
+  "name": "claude-auto",
   "version": "0.12.3",
   "authors": [
     {
@@ -9,7 +9,7 @@
   "description": "Husky-style hooks and skills management for Claude Code",
   "repository": {
     "type": "git",
-    "url": "https://github.com/BeOnAuto/claude-ketchup.git"
+    "url": "https://github.com/BeOnAuto/claude-auto.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -18,7 +18,7 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
-    "claude-ketchup": "dist/bin/cli.js"
+    "claude-auto": "dist/bin/cli.js"
   },
   "scripts": {
     "build": "tsc && pnpm build:bundle",
@@ -84,7 +84,7 @@
     "templates/",
     "scripts/",
     "commands/",
-    ".ketchup/"
+    ".claude-auto/"
   ],
   "engines": {
     "node": ">=18.0.0"

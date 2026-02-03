@@ -8,27 +8,27 @@ import { writeHookLog } from './hook-logger.js';
 
 describe('hook-logger', () => {
   let tempDir: string;
-  let ketchupDir: string;
+  let autoDir: string;
 
   beforeEach(() => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-hook-logger-'));
-    ketchupDir = path.join(tempDir, '.ketchup');
-    fs.mkdirSync(ketchupDir, { recursive: true });
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'claude-auto-hook-logger-'));
+    autoDir = path.join(tempDir, '.claude-auto');
+    fs.mkdirSync(autoDir, { recursive: true });
   });
 
   afterEach(() => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
 
-  it('creates log file in .ketchup/logs/hooks/ named after hook', () => {
-    writeHookLog(ketchupDir, {
+  it('creates log file in .claude-auto/logs/hooks/ named after hook', () => {
+    writeHookLog(autoDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: { session_id: 'abc123' },
       output: { hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: 'hello' } },
     });
 
-    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
+    const logsDir = path.join(autoDir, 'logs', 'hooks');
     expect(fs.existsSync(logsDir)).toBe(true);
 
     const files = fs.readdirSync(logsDir);
@@ -37,14 +37,14 @@ describe('hook-logger', () => {
   });
 
   it('log file contains input section with raw input', () => {
-    writeHookLog(ketchupDir, {
+    writeHookLog(autoDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: { session_id: 'test-session', hook_event_name: 'SessionStart' },
       output: {},
     });
 
-    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
+    const logsDir = path.join(autoDir, 'logs', 'hooks');
     const logFile = fs.readdirSync(logsDir)[0];
     const content = fs.readFileSync(path.join(logsDir, logFile), 'utf8');
 
@@ -54,28 +54,28 @@ describe('hook-logger', () => {
   });
 
   it('log file contains resolved paths when provided', () => {
-    writeHookLog(ketchupDir, {
+    writeHookLog(autoDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: {},
       resolvedPaths: {
         projectRoot: '/tmp/my-project',
-        remindersDir: '/tmp/my-project/.ketchup/reminders',
+        remindersDir: '/tmp/my-project/.claude-auto/reminders',
       },
       output: {},
     });
 
-    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
+    const logsDir = path.join(autoDir, 'logs', 'hooks');
     const logFile = fs.readdirSync(logsDir)[0];
     const content = fs.readFileSync(path.join(logsDir, logFile), 'utf8');
 
     expect(content).toContain('--- Resolved Paths ---');
     expect(content).toContain('projectRoot: /tmp/my-project');
-    expect(content).toContain('remindersDir: /tmp/my-project/.ketchup/reminders');
+    expect(content).toContain('remindersDir: /tmp/my-project/.claude-auto/reminders');
   });
 
   it('log file contains reminder files found', () => {
-    writeHookLog(ketchupDir, {
+    writeHookLog(autoDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: {},
@@ -83,7 +83,7 @@ describe('hook-logger', () => {
       output: {},
     });
 
-    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
+    const logsDir = path.join(autoDir, 'logs', 'hooks');
     const logFile = fs.readdirSync(logsDir)[0];
     const content = fs.readFileSync(path.join(logsDir, logFile), 'utf8');
 
@@ -94,7 +94,7 @@ describe('hook-logger', () => {
   });
 
   it('log file contains matched reminders with names and priorities', () => {
-    writeHookLog(ketchupDir, {
+    writeHookLog(autoDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: {},
@@ -105,7 +105,7 @@ describe('hook-logger', () => {
       output: {},
     });
 
-    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
+    const logsDir = path.join(autoDir, 'logs', 'hooks');
     const logFile = fs.readdirSync(logsDir)[0];
     const content = fs.readFileSync(path.join(logsDir, logFile), 'utf8');
 
@@ -116,14 +116,14 @@ describe('hook-logger', () => {
 
   it('log file contains output section with JSON output', () => {
     const output = { hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: 'test' } };
-    writeHookLog(ketchupDir, {
+    writeHookLog(autoDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: {},
       output,
     });
 
-    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
+    const logsDir = path.join(autoDir, 'logs', 'hooks');
     const logFile = fs.readdirSync(logsDir)[0];
     const content = fs.readFileSync(path.join(logsDir, logFile), 'utf8');
 
@@ -132,7 +132,7 @@ describe('hook-logger', () => {
   });
 
   it('log file contains error section when error is provided', () => {
-    writeHookLog(ketchupDir, {
+    writeHookLog(autoDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: {},
@@ -140,7 +140,7 @@ describe('hook-logger', () => {
       error: 'ENOENT: no such file or directory',
     });
 
-    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
+    const logsDir = path.join(autoDir, 'logs', 'hooks');
     const logFile = fs.readdirSync(logsDir)[0];
     const content = fs.readFileSync(path.join(logsDir, logFile), 'utf8');
 
@@ -149,7 +149,7 @@ describe('hook-logger', () => {
   });
 
   it('log file contains duration when provided', () => {
-    writeHookLog(ketchupDir, {
+    writeHookLog(autoDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: {},
@@ -157,7 +157,7 @@ describe('hook-logger', () => {
       durationMs: 42,
     });
 
-    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
+    const logsDir = path.join(autoDir, 'logs', 'hooks');
     const logFile = fs.readdirSync(logsDir)[0];
     const content = fs.readFileSync(path.join(logsDir, logFile), 'utf8');
 
@@ -165,33 +165,33 @@ describe('hook-logger', () => {
   });
 
   it('sanitizes hook name for filename', () => {
-    writeHookLog(ketchupDir, {
+    writeHookLog(autoDir, {
       hookName: 'PreToolUse',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: {},
       output: {},
     });
 
-    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
+    const logsDir = path.join(autoDir, 'logs', 'hooks');
     const files = fs.readdirSync(logsDir);
     expect(files[0]).toBe('pretooluse.log');
   });
 
   it('appends to existing log file instead of creating new ones', () => {
-    writeHookLog(ketchupDir, {
+    writeHookLog(autoDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:00:00.000Z',
       input: { session_id: 'first' },
       output: {},
     });
-    writeHookLog(ketchupDir, {
+    writeHookLog(autoDir, {
       hookName: 'session-start',
       timestamp: '2026-01-28T12:01:00.000Z',
       input: { session_id: 'second' },
       output: {},
     });
 
-    const logsDir = path.join(ketchupDir, 'logs', 'hooks');
+    const logsDir = path.join(autoDir, 'logs', 'hooks');
     const files = fs.readdirSync(logsDir);
     expect(files).toHaveLength(1);
     expect(files[0]).toBe('session-start.log');
