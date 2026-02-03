@@ -1,5 +1,11 @@
 # claude-ketchup
 
+## 0.12.3
+
+### Patch Changes
+
+- 4173e92: Restore --no-session-persistence flag to Claude CLI calls in commit validator and changeset generator
+
 ## 0.12.2
 
 ### Patch Changes
