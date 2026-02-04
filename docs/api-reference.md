@@ -1,6 +1,6 @@
 # API Reference
 
-Programmatic access to the Quality Stack components.
+Programmatic access to the Quality Loop components.
 
 Use these functions to build custom hooks, integrate with CI/CD, or extend the supervisor system.
 

@@ -98,41 +98,223 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Hero image sizing - mobile first */
+/* Nav bar title — same colorful gradient as hero */
+.VPNavBarTitle .title {
+  font-family: 'TT Supermolot Neue', sans-serif;
+  background: linear-gradient(135deg, #ec3f4a 0%, #ff8a1d 30%, #5ec72d 60%, #42c3f7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  font-size: 1.1em;
+}
+
+/* -------------------------------------------------------
+   HERO — base (mobile-first, < 640px)
+   ------------------------------------------------------- */
+.VPHero {
+  padding-bottom: 36px !important;
+}
+
+.VPHero .main {
+  max-width: 1152px;
+  margin: 0 auto;
+}
+
+.VPHero .name {
+  font-size: 32px !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.02em;
+}
+
+.VPHero .text {
+  font-size: 32px !important;
+  line-height: 1.15 !important;
+}
+
+.VPHero .tagline {
+  font-size: 16px !important;
+  line-height: 1.4 !important;
+  padding-top: 10px !important;
+}
+
+.VPHero .actions {
+  padding-top: 20px !important;
+  gap: 10px !important;
+}
+
 .VPHero .image-container,
 .VPHero .image-container .image-bg,
 .VPHero .image-container img {
-  max-width: 280px;
-  max-height: 280px;
+  max-width: 240px;
+  max-height: 240px;
 }
 
-/* Tablet breakpoint */
+/* -------------------------------------------------------
+   FEATURES — base (mobile-first, < 640px)
+   ------------------------------------------------------- */
+.VPFeatures {
+  padding: 4px 0 36px !important;
+}
+
+.VPFeatures .VPFeature {
+  min-height: auto !important;
+}
+
+.VPFeature {
+  padding: 20px 16px !important;
+}
+
+.VPFeature .box {
+  align-items: center;
+  text-align: center;
+  gap: 0;
+  justify-content: flex-start;
+  padding: 0 !important;
+}
+
+.VPFeature .box .title {
+  font-size: 14px !important;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.VPFeature .box .details {
+  font-size: 12.5px !important;
+  line-height: 1.5;
+  padding-top: 4px;
+}
+
+.VPFeature .VPImage,
+.VPFeature .box > .VPImage {
+  margin-bottom: 8px !important;
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+
+.VPFeature img,
+.VPFeature .VPImage img {
+  width: 40px !important;
+  height: 40px !important;
+  object-fit: contain !important;
+  image-rendering: pixelated;
+  display: block !important;
+  margin: 0 auto !important;
+}
+
+/* -------------------------------------------------------
+   TABLET — 640px – 959px
+   ------------------------------------------------------- */
 @media (min-width: 640px) and (max-width: 959px) {
+  .VPHero {
+    padding-bottom: 40px !important;
+  }
+
+  .VPHero .name {
+    font-size: 36px !important;
+  }
+
+  .VPHero .text {
+    font-size: 36px !important;
+  }
+
+  .VPHero .tagline {
+    font-size: 18px !important;
+  }
+
   .VPHero .image-container,
   .VPHero .image-container .image-bg,
   .VPHero .image-container img {
-    max-width: 300px;
-    max-height: 300px;
+    max-width: 260px;
+    max-height: 260px;
+  }
+
+  .VPFeature {
+    padding: 20px 18px !important;
+  }
+
+  .VPFeature img,
+  .VPFeature .VPImage img {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .VPFeature .box .title {
+    font-size: 13.5px !important;
+  }
+
+  .VPFeature .box .details {
+    font-size: 12px !important;
   }
 }
 
-/* Desktop breakpoint */
+/* -------------------------------------------------------
+   DESKTOP — 960px+
+   ------------------------------------------------------- */
 @media (min-width: 960px) {
+  .VPHero {
+    padding-bottom: 48px !important;
+  }
+
+  .VPHero .name {
+    font-size: 44px !important;
+  }
+
+  .VPHero .text {
+    font-size: 44px !important;
+  }
+
+  .VPHero .tagline {
+    font-size: 20px !important;
+  }
+
+  .VPHero .actions {
+    padding-top: 24px !important;
+    gap: 12px !important;
+  }
+
   .VPHero .image-container,
   .VPHero .image-container .image-bg,
   .VPHero .image-container img {
-    max-width: 380px;
-    max-height: 380px;
+    max-width: 320px;
+    max-height: 320px;
+  }
+
+  .VPFeature {
+    padding: 24px 20px !important;
+  }
+
+  .VPFeature img,
+  .VPFeature .VPImage img {
+    width:64px !important;
+    height: 64px !important;
+  }
+
+  .VPFeature .VPImage,
+  .VPFeature .box > .VPImage {
+    margin-bottom: 10px !important;
+  }
+
+  .VPFeature .box .title {
+    font-size: 14px !important;
+  }
+
+  .VPFeature .box .details {
+    font-size: 13px !important;
+    padding-top: 6px;
   }
 }
 
-/* Large desktop */
+/* -------------------------------------------------------
+   LARGE DESKTOP — 1280px+
+   ------------------------------------------------------- */
 @media (min-width: 1280px) {
   .VPHero .image-container,
   .VPHero .image-container .image-bg,
   .VPHero .image-container img {
-    max-width: 420px;
-    max-height: 420px;
+    max-width: 360px;
+    max-height: 360px;
   }
 }
 
@@ -153,15 +335,15 @@
 
 /* Button styling — primary blue, pill-shaped like on.auto */
 .VPButton.brand {
-  background-color: #0057dd;
-  border-color: #0057dd;
-  color: #ffffff;
+  background-color: #18181b !important;
+  border-color: #18181b !important;
+  color: #ffffff !important;
   border-radius: 100px;
 }
 
 .VPButton.brand:hover {
-  background-color: #0048b8;
-  border-color: #0048b8;
+  background-color: #27272a !important;
+  border-color: #27272a !important;
 }
 
 .VPButton.alt {
@@ -169,14 +351,14 @@
 }
 
 .dark .VPButton.brand {
-  background-color: #f3ecfe;
-  border-color: #f3ecfe;
-  color: #0e051b;
+  background-color: #f3ecfe !important;
+  border-color: #f3ecfe !important;
+  color: #0e051b !important;
 }
 
 .dark .VPButton.brand:hover {
-  background-color: #ddd4f0;
-  border-color: #ddd4f0;
+  background-color: #ddd4f0 !important;
+  border-color: #ddd4f0 !important;
 }
 
 .dark .VPButton.alt {
