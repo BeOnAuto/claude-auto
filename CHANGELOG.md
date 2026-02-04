@@ -1,5 +1,14 @@
 # claude-ketchup
 
+## 0.13.1
+
+### Patch Changes
+
+- 7398da3: - Moved changeset generation from pre-push to post-commit hook to prevent double CI runs and ensure changesets are included in push history
+- 7398da3: - Updated documentation terminology from "Quality Loop" to revised naming and added supporting imagery
+- 7398da3: - Fixed changeset generation timing to prevent double CI runs when pushing changes
+  - Moved automatic changeset creation to run immediately after commits instead of during push, ensuring changesets are properly included in git history
+
 ## 0.13.0
 
 ### Minor Changes
