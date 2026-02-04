@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# Skip if this commit was already a changeset commit (prevent infinite loop)
+COMMIT_MSG=$(git log -1 --pretty=%s)
+if echo "$COMMIT_MSG" | grep -q "^chore(global): add changeset$"; then
+  exit 0
+fi
+
+# Skip if this is a version/release commit
+if echo "$COMMIT_MSG" | grep -q "^chore(release):"; then
+  exit 0
+fi
+
+# Check if auto-changeset is enabled
+if [ "${AUTO_CHANGESET_ENABLED:-true}" = "false" ]; then
+  exit 0
+fi
+
+# Auto-generate changesets
+echo "🔄 Auto-generating changesets..."
+pnpm tsx scripts/generate-changeset.ts || EXIT_CODE=$?
+
+# Check exit code
+EXIT_CODE=${EXIT_CODE:-0}
+
+# Exit code 11 means no commits to process (success state)
+# Exit code 12 means no conventional commits (warning but continue)
+if [ $EXIT_CODE -ne 0 ] && [ $EXIT_CODE -ne 11 ] && [ $EXIT_CODE -ne 12 ]; then
+  echo "❌ Failed to generate changeset (exit code: $EXIT_CODE)"
+  exit 0  # Don't fail post-commit, the commit already happened
+fi
+
+# Check if any changesets were created - create a new commit (never amend)
+if [ -n "$(git status --porcelain .changeset/*.md 2>/dev/null)" ]; then
+  echo "📦 Staging new changesets..."
+  git add .changeset/*.md
+
+  echo "📝 Creating changeset commit..."
+  git commit -m "chore(global): add changeset" --no-verify
+
+  echo "✅ Changeset commit created!"
+fi
+
+exit 0

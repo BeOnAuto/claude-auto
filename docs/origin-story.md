@@ -46,17 +46,19 @@ The revert isn't a problem. It's a tool.
 
 ---
 
-## The Birth of the Quality Stack
+## The Birth of the Quality Loop
 
-### Three Layers: Auto, Claude Auto, and The Ketchup Technique
+### Three Layers: Methodology, System, and Tool
 
 The internet is polluted with PM vocabulary. Epics, sprints, stories, SAFe — the LLM training data is saturated with these terms. When you tell an AI to plan work using established agile terminology, it hallucinates toward Jira tickets, estimation theater, and ceremony-heavy processes it's seen a billion times.
 
 I needed fresh vocabulary. Unpolluted terms that wouldn't trigger pattern-matching toward someone else's methodology.
 
-That's how **The Ketchup Technique** was born — a play on "catch up." Like the Pomodoro Technique gave fresh vocabulary for time management (a tomato timer instead of "timeboxing"), the Ketchup Technique gives fresh vocabulary for AI-assisted planning.
+That's how **The Ketchup Technique** was born — a play on "catch up." Like the Pomodoro Technique gave fresh vocabulary for time management (a tomato timer instead of "timeboxing"), the Ketchup Technique gives fresh vocabulary for AI-assisted planning. It is the *methodology*: Bottles, Bursts, dependencies, and `ketchup-plan.md`.
 
-But a technique is just theory until it runs. Enter **Claude Auto** — the open-source engine that drives the Ketchup Technique. It's the hooks, the validators, the auto-continue system, the reminders. The machinery that turns methodology into execution.
+But a methodology is just theory until it runs. Through refinement, the methodology crystallized into **the Quality Loop** — a four-component validation *system*: Auto-Planner, Supervisor AI, TCR Discipline, and Auto-Continue. The Quality Loop is what creates the trust that lets you walk away.
+
+Enter **Claude Auto** — the open-source *tool* that implements both. It's the hooks, the validators, the auto-continue system, the reminders. The machinery that turns methodology into execution.
 
 Claude Auto is the first step to putting your entire development workflow **on.Auto**.
 
@@ -80,13 +82,13 @@ Developers do this too. It's human nature to protect sunk costs.
 
 But I recognized the pattern from TDD practice: when code isn't flowing smoothly into place, the design is usually wrong. You're not debugging a mistake. You're polishing a flawed foundation.
 
-The Quality Stack enforces reversion. When tests fail, don't patch. Revert. The code disappears.
+The Quality Loop enforces reversion. When tests fail, don't patch. Revert. The code disappears.
 
 But the learning stays in the context window.
 
 The LLM still has all the context of why it failed. It's not forgetting the lesson. It has a clean slate to apply that lesson differently. It has space to think.
 
-The result is **emergent design**. Individual ants follow simple rules but colonies exhibit complex behavior. The Quality Stack produces architecture through simple, repeated cycles.
+The result is **emergent design**. Individual ants follow simple rules but colonies exhibit complex behavior. The Quality Loop produces architecture through simple, repeated cycles.
 
 Each burst is an ant. The system that emerges is something none of the individual bursts planned.
 
@@ -129,7 +131,7 @@ The on.auto team ships 5-10 features per week. Not 1-2.
 
 ---
 
-## The Quality Stack
+## The Quality Loop
 
 Through refinement, four components emerged:
 

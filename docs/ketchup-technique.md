@@ -1,6 +1,12 @@
-# The Quality Stack
+# The Ketchup Technique
 
-> Why You Can Walk Away
+> The planning methodology behind Claude Auto
+
+The Ketchup Technique is the methodology. The Quality Loop is the system. Claude Auto is the tool.
+
+- **The Ketchup Technique** gives fresh vocabulary for AI-assisted planning: Bottles, Bursts, dependencies, and the `ketchup-plan.md` format. It is the *what you write*.
+- **The Quality Loop** is the four-component validation system that executes those plans: Auto-Planner, Supervisor AI, TCR Discipline, and Auto-Continue. It is the *what runs*.
+- **Claude Auto** is the open-source engine that implements both.
 
 ---
 
@@ -16,11 +22,11 @@ You're faster at producing, but you can't walk away. You can't parallelize.
 
 True multiplication requires trust. Trust that the system will execute correctly without you watching.
 
-The Quality Stack creates that trust.
+The Quality Loop creates that trust.
 
 ---
 
-## The Four Components
+## The Quality Loop: Four Components
 
 ### 1. Auto-Planner
 
@@ -135,7 +141,7 @@ Each **Burst** is atomic:
 
 Individual ants follow simple rules. Colonies exhibit complex behavior.
 
-The Quality Stack works the same way:
+The Quality Loop works the same way:
 
 - Each burst follows simple rules (red/green/TCR)
 - Architecture emerges from passing tests
@@ -207,7 +213,7 @@ Every burst ends with `[depends: ...]`:
 
 ## Git Worktrees: The Multiplier
 
-The Quality Stack creates trust. Trust enables walking away. Walking away enables parallelization.
+The Quality Loop creates trust. Trust enables walking away. Walking away enables parallelization.
 
 ```bash
 # Create worktrees for parallel features

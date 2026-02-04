@@ -20,7 +20,7 @@ That's not multiplication. That's marginally faster serial work.
 
 ---
 
-## The Solution: The Quality Stack
+## The Solution: The Quality Loop
 
 Claude Auto creates trust. Trust enables parallelization.
 
@@ -141,7 +141,7 @@ The on.auto team ships 5-10 features per week. Not 1-2.
 | ------------------------------------------------ | ------------------------------- |
 | [Getting Started](./docs/getting-started.md)     | 5-minute transformation         |
 | [Installation](./docs/installation.md)           | Detailed installation guide     |
-| [The Quality Stack](./docs/ketchup-technique.md) | Why you can walk away           |
+| [The Ketchup Technique](./docs/ketchup-technique.md) | The planning methodology |
 | [Configuration](./docs/configuration.md)         | All configuration options       |
 | [Hooks Guide](./docs/hooks-guide.md)             | Configure your supervision      |
 | [Reminders Guide](./docs/reminders-guide.md)     | Context injection system        |

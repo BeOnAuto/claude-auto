@@ -1,10 +1,10 @@
 # Architecture
 
-Understanding how the Quality Stack works under the hood.
+Understanding how the Quality Loop works under the hood.
 
 ---
 
-## The Quality Stack Implementation
+## The Quality Loop Implementation
 
 ```
 ┌─────────────────────────────────────────────────────────────┐

@@ -29,7 +29,7 @@ export default defineConfig({
           { text: 'Architecture', link: '/architecture' },
         ],
       },
-      { text: 'The Quality Stack', link: '/ketchup-technique' },
+      { text: 'The Ketchup Technique', link: '/ketchup-technique' },
       { text: 'Origin Story', link: '/origin-story' },
       {
         text: 'GitHub',
@@ -47,9 +47,9 @@ export default defineConfig({
         ],
       },
       {
-        text: 'The Quality Stack',
+        text: 'Methodology',
         items: [
-          { text: 'Methodology', link: '/ketchup-technique' },
+          { text: 'The Ketchup Technique', link: '/ketchup-technique' },
           { text: 'Origin Story', link: '/origin-story' },
         ],
       },

@@ -46,9 +46,11 @@ features:
     details: Enforced by construction. Quality is guaranteed.
 ---
 
-## The Quality Stack: Why You Can Walk Away
+## The Quality Loop: Why You Can Walk Away
 
-You can only parallelize if you trust the execution. The Quality Stack creates that trust:
+The [Ketchup Technique](/ketchup-technique) provides the planning methodology. The Quality Loop is the system that executes it.
+
+You can only parallelize if you trust the execution. The Quality Loop creates that trust:
 
 | Component          | What It Does                                 | Result                          |
 | ------------------ | -------------------------------------------- | ------------------------------- |

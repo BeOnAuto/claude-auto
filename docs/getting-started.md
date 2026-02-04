@@ -1,10 +1,10 @@
 # Getting Started
 
-Install the Quality Stack in 5 minutes.
+Install Claude Auto in 5 minutes.
 
 **What you'll accomplish:**
 
-- Install the Quality Stack
+- Install Claude Auto
 - See the supervisor system in action
 - Create your first skill (context injection)
 - Set up file protection
@@ -19,7 +19,7 @@ Install the Quality Stack in 5 minutes.
 
 ---
 
-## Step 1: Install the Quality Stack
+## Step 1: Install Claude Auto
 
 ```bash
 npx claude-auto install
@@ -42,7 +42,7 @@ Behind the scenes, claude-auto:
 npx claude-auto doctor
 ```
 
-All green? The Quality Stack is active. You can now walk away.
+All green? Claude Auto is active. The Quality Loop is running. You can now walk away.
 
 ---
 
@@ -133,7 +133,7 @@ Three features running simultaneously. All quality-validated.
 
 ## What Just Happened?
 
-You installed the Quality Stack:
+You installed Claude Auto:
 
 | Component         | What It Does                  | You Just Enabled        |
 | ----------------- | ----------------------------- | ----------------------- |
@@ -154,7 +154,7 @@ See the [transformation story](/origin-story#the-transformation) for the complet
 ## Next Steps
 
 - [Configuration Reference](/configuration) - All configuration options
-- [The Quality Stack](/ketchup-technique) - Why you can walk away
+- [The Ketchup Technique](/ketchup-technique) - The planning methodology
 - [Hooks Guide](/hooks-guide) - Configure your supervision
 - [Origin Story](/origin-story) - The journey from babysitter to bionic
 
