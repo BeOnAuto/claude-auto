@@ -7,7 +7,7 @@ export default defineConfig({
   base,
   lang: 'en-US',
   title: 'Claude Auto',
-  description: 'Stop Babysitting. Start Parallelizing. Trust the system. Walk away. Ship 5-10 features in parallel.',
+  description: 'Stop Babysitting. Start Parallelizing. Trust the system. Run 3-5 features in parallel. Ship 10+ per week.',
   appearance: 'dark',
 
   themeConfig: {
@@ -122,7 +122,7 @@ export default defineConfig({
       {
         property: 'og:description',
         content:
-          'AI-assisted coding made you a babysitter. Claude Auto creates the trust to parallelize. Supervisor AI validates every commit. Auto-continue keeps going. Git worktrees multiply. 5-10 features/week.',
+          'AI-assisted coding made you a babysitter. Claude Auto earns the trust to parallelize. Supervisor AI validates every commit. Auto-continue keeps going. Git worktrees multiply. 10+ features/week.',
       },
     ],
     [
@@ -162,7 +162,7 @@ export default defineConfig({
       {
         name: 'twitter:description',
         content:
-          'AI-assisted coding made you a babysitter. Claude Auto creates the trust to walk away. Supervisor AI validates commits. Auto-continue keeps going. Git worktrees multiply. 5-10 features/week.',
+          'AI-assisted coding made you a babysitter. Claude Auto earns the trust to parallelize. Supervisor AI validates commits. Auto-continue keeps going. Git worktrees multiply. 10+ features/week.',
       },
     ],
     [

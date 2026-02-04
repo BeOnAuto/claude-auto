@@ -18,11 +18,11 @@ What it delivered was faster serial work with supervision requirements. You're s
 
 The bottleneck moved from typing speed to cognitive load.
 
-You're faster at producing, but you can't walk away. You can't parallelize.
+You're faster at producing, but you can't shift focus. You can't parallelize.
 
 True multiplication requires trust. Trust that the system will execute correctly without you watching.
 
-The Quality Loop creates that trust.
+The Quality Loop earns that trust.
 
 ---
 
@@ -109,7 +109,7 @@ Burst completes
   remains    complete
 ```
 
-No nudging required.
+You check back on results, not babysit the process.
 
 ---
 
@@ -213,7 +213,7 @@ Every burst ends with `[depends: ...]`:
 
 ## Git Worktrees: The Multiplier
 
-The Quality Loop creates trust. Trust enables walking away. Walking away enables parallelization.
+The Quality Loop earns trust. Trust enables delegation. Delegation enables parallelization.
 
 ```bash
 # Create worktrees for parallel features

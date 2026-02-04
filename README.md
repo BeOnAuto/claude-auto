@@ -10,7 +10,7 @@
 
 AI-assisted coding captured your cognitive load.
 
-Every session demands your full attention. Watching, nudging, correcting. You can't walk away because you don't trust the system.
+Every session demands your full attention. Watching, nudging, correcting. You can't shift focus because you don't trust the system.
 
 - You can't context-switch while supervising
 - One task at a time, full attention required
@@ -22,16 +22,16 @@ That's not multiplication. That's marginally faster serial work.
 
 ## The Solution: The Quality Loop
 
-Claude Auto creates trust. Trust enables parallelization.
+Claude Auto earns trust. Trust enables parallelization.
 
 | Component          | What It Does                                 | Result                          |
 | ------------------ | -------------------------------------------- | ------------------------------- |
 | **Auto-Planner**   | Generates plan from your requirements        | No need to specify every detail |
 | **Supervisor AI**  | Validates every commit against your criteria | Automated review                |
 | **TCR Discipline** | Test && Commit \|\| Revert                   | Bad code auto-reverts           |
-| **Auto-Continue**  | Keeps going until the plan is done           | No nudging required             |
+| **Auto-Continue**  | Keeps going until the plan is done           | You check back, not babysit     |
 
-The system is trustworthy. That's what frees you.
+The system is trustworthy. That's what lets you direct instead of babysit.
 
 ---
 
@@ -52,7 +52,7 @@ Each runs a Claude Auto instance. All quality-validated.
 | ----------------------------- | ------------- |
 | Manual coding                 | 1             |
 | AI-assisted (babysitting)     | 1-2           |
-| **Claude Auto + Worktrees**   | **5-10**      |
+| **Claude Auto + Worktrees**   | **10+**       |
 
 ---
 
@@ -68,11 +68,11 @@ Feed your requirements. Claude Auto auto-generates the plan with Bottles, Bursts
 
 ### 2. Release
 
-Start execution and walk away. The Supervisor validates every commit. Auto-continue keeps it going until done.
+Start execution and shift your focus. The Supervisor validates every commit. Auto-continue keeps it going. Check back to review outcomes.
 
 ### 3. Multiply
 
-Open another worktree. Start another instance. Three features. Five features. All in parallel.
+Open another worktree. Start another instance. Run 3-5 features in parallel. Ship 10+ per week.
 
 ---
 
@@ -83,7 +83,7 @@ Open another worktree. Start another instance. Three features. Five features. Al
 | Watching one AI session          | Directing multiple workstreams |
 | Nudging, correcting in real-time | Defining, approving, releasing |
 | Serial productivity              | Parallel productivity          |
-| Marginal gains (1.5x)            | Multiplicative gains (5-10x)   |
+| Marginal gains (1.5x)            | Multiplicative gains (10x+)    |
 | Brain captured by supervision    | Brain freed for the next thing |
 
 From Babysitter to Bionic.
@@ -115,7 +115,7 @@ After installation, claude-auto automatically:
 
 Built on foundations from Kent Beck's TCR and Extreme Programming principles. Refined through production features at Auto.
 
-The on.auto team ships 5-10 features per week. Not 1-2.
+The on.auto team ships 10+ features per week. Not 1-2.
 
 **[Read the origin story →](./docs/origin-story.md)**
 

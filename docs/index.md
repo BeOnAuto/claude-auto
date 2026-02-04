@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Claude Auto
   text: Stop Babysitting. Start Parallelizing.
-  tagline: Trust the system. Walk away. Ship 5-10 features in parallel.
+  tagline: Trust the system. Ship 10+ features a week across 3-5 parallel worktrees.
   image:
     src: /hero.png
     alt: Claude Auto - Stop Babysitting. Start Parallelizing.
@@ -23,11 +23,11 @@ features:
   - icon:
       src: /icon-janitor.png
     title: "The Problem: AI Babysitter"
-    details: Every AI session demands your full attention. Watching, nudging, correcting. You can't walk away.
+    details: Every AI session demands your full attention. Watching, nudging, correcting. You can't shift focus.
   - icon:
       src: /icon-architect.png
     title: "The Solution: Parallel Execution"
-    details: Trust the system. Walk away. Open another worktree. Run 3-5 features in parallel.
+    details: Trust the system. Let it run. Open another worktree. Run 3-5 features in parallel.
   - icon:
       src: /icon-tcr.png
     title: TCR Discipline
@@ -39,27 +39,27 @@ features:
   - icon:
       src: /icon-parallel.png
     title: Auto-Continue
-    details: Keeps going until the plan is done. No nudging required.
+    details: Keeps going until the plan is done. Check back on clean commits.
   - icon:
       src: /icon-coverage.png
     title: 100% Coverage
     details: Enforced by construction. Quality is guaranteed.
 ---
 
-## The Quality Loop: Why You Can Walk Away
+## The Quality Loop: Why You Can Let It Run
 
 The [Ketchup Technique](/ketchup-technique) provides the planning methodology. The Quality Loop is the system that executes it.
 
-You can only parallelize if you trust the execution. The Quality Loop creates that trust:
+You can only parallelize if you trust the execution. The Quality Loop earns that trust:
 
 | Component          | What It Does                                 | Result                          |
 | ------------------ | -------------------------------------------- | ------------------------------- |
 | **Auto-Planner**   | Generates plan from your requirements        | No need to specify every detail |
 | **Supervisor AI**  | Validates every commit against your criteria | Automated review                |
 | **TCR Discipline** | Test && Commit \|\| Revert                   | Bad code auto-reverts           |
-| **Auto-Continue**  | Keeps going until the plan is done           | No nudging required             |
+| **Auto-Continue**  | Keeps going until the plan is done           | You check back, not babysit     |
 
-The system is trustworthy. That's what frees you.
+The system is trustworthy. That's what lets you direct instead of babysit.
 
 ---
 
@@ -81,7 +81,7 @@ Three features running simultaneously. All quality-validated.
 | --------------------------- | ------------- |
 | Manual coding               | 1             |
 | AI-assisted (babysitting)   | 1-2           |
-| **Claude Auto + Worktrees** | **5-10**      |
+| **Claude Auto + Worktrees** | **10+**       |
 
 The bottleneck becomes defining requirements, not executing them.
 
@@ -103,10 +103,10 @@ Feed your PRD, Architecture.md, or requirements. Claude Auto auto-generates the 
 
 ### 3. Release
 
-Start execution and walk away. The Supervisor validates every commit. Auto-continue keeps it going until done.
+Start execution and shift your focus. The Supervisor validates every commit. Auto-continue keeps it going. Check back to review outcomes.
 
 ### 4. Multiply
 
-Open another git worktree. Start another Claude Auto instance. Three features. Five features. All in parallel.
+Open another git worktree. Start another Claude Auto instance. Run 3-5 features in parallel. Ship 10+ per week.
 
 **[Get Started →](/getting-started)**

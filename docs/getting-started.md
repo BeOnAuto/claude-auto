@@ -42,7 +42,7 @@ Behind the scenes, claude-auto:
 npx claude-auto doctor
 ```
 
-All green? Claude Auto is active. The Quality Loop is running. You can now walk away.
+All green? Claude Auto is active. The Quality Loop is running. You can now let it run and check back on outcomes.
 
 ---
 

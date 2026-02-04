@@ -10,7 +10,7 @@ I was stuck in a loop.
 
 Every Claude session demanded my full attention. Watching for drift. Nudging it back on track. Correcting hallucinations in real-time.
 
-I couldn't walk away. I couldn't context-switch. I couldn't parallelize.
+I couldn't shift focus. I couldn't context-switch. I couldn't parallelize.
 
 AI-assisted coding had captured my cognitive load.
 
@@ -56,7 +56,7 @@ I needed fresh vocabulary. Unpolluted terms that wouldn't trigger pattern-matchi
 
 That's how **The Ketchup Technique** was born — a play on "catch up." Like the Pomodoro Technique gave fresh vocabulary for time management (a tomato timer instead of "timeboxing"), the Ketchup Technique gives fresh vocabulary for AI-assisted planning. It is the *methodology*: Bottles, Bursts, dependencies, and `ketchup-plan.md`.
 
-But a methodology is just theory until it runs. Through refinement, the methodology crystallized into **the Quality Loop** — a four-component validation *system*: Auto-Planner, Supervisor AI, TCR Discipline, and Auto-Continue. The Quality Loop is what creates the trust that lets you walk away.
+But a methodology is just theory until it runs. Through refinement, the methodology crystallized into **the Quality Loop** — a four-component validation *system*: Auto-Planner, Supervisor AI, TCR Discipline, and Auto-Continue. The Quality Loop is what earns the trust that lets you parallelize.
 
 Enter **Claude Auto** — the open-source *tool* that implements both. It's the hooks, the validators, the auto-continue system, the reminders. The machinery that turns methodology into execution.
 
@@ -100,7 +100,7 @@ What changed wasn't the AI. It was my role.
 
 **Before:** Watch AI's work, catch problems, nudge corrections, watch more.
 
-**After:** Define requirements. The system executes. Walk away. Review clean increments.
+**After:** Define requirements. The system executes. Shift focus. Check back on clean increments.
 
 The hooks enforce what I used to do manually:
 
@@ -127,7 +127,7 @@ Three features running simultaneously. All quality-validated.
 
 Not doing one thing faster. Doing many things at once.
 
-The on.auto team ships 5-10 features per week. Not 1-2.
+The on.auto team ships 10+ features per week. Not 1-2.
 
 ---
 
@@ -140,7 +140,7 @@ Through refinement, four components emerged:
 | **Auto-Planner**   | Generates plan from your requirements      | No need to specify every detail |
 | **Supervisor AI**  | Validates every commit against your criteria | Automated review               |
 | **TCR Discipline** | Test && Commit \|\| Revert                 | Bad code auto-reverts           |
-| **Auto-Continue**  | Keeps going until the plan is done         | No nudging required             |
+| **Auto-Continue**  | Keeps going until the plan is done         | You check back, not babysit     |
 
 Together: Trust that enables parallelization.
 
@@ -179,7 +179,7 @@ You don't have to be the babysitter.
 | Watching one AI session          | Directing multiple workstreams |
 | Nudging, correcting in real-time | Defining, approving, releasing |
 | Serial productivity              | Parallel productivity          |
-| Marginal gains (1.5x)            | Multiplicative gains (5-10x)   |
+| Marginal gains (1.5x)            | Multiplicative gains (10x+)    |
 | Brain captured by supervision    | Brain freed for the next thing |
 
 From Babysitter to Bionic.
