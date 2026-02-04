@@ -14,7 +14,7 @@ describe('createCli', () => {
     }).toEqual({
       name: 'claude-auto',
       description: 'Husky-style hooks and skills management for Claude Code',
-      commands: ['install', 'status', 'doctor', 'repair', 'reminders'],
+      commands: ['install', 'status', 'doctor', 'repair', 'reminders', 'tui'],
     });
   });
 
