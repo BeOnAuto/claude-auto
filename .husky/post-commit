@@ -17,8 +17,9 @@ if [ "${AUTO_CHANGESET_ENABLED:-true}" = "false" ]; then
 fi
 
 # Auto-generate changesets
+# Unset git env vars to prevent Claude CLI's plugin system from contaminating our index
 echo "🔄 Auto-generating changesets..."
-pnpm tsx scripts/generate-changeset.ts || EXIT_CODE=$?
+(unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_OBJECT_DIRECTORY GIT_ALTERNATE_OBJECT_DIRECTORIES; pnpm tsx scripts/generate-changeset.ts) || EXIT_CODE=$?
 
 # Check exit code
 EXIT_CODE=${EXIT_CODE:-0}

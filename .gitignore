@@ -15,6 +15,7 @@ docs/.vitepress/cache
 .playwright-mcp
 .claude/
 .claude.old
+.claude-plugin/
 .vscode/
 .idea/
 
