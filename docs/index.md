@@ -4,10 +4,10 @@ layout: home
 hero:
   name: Claude Auto
   text: Stop Babysitting. Start Parallelizing.
-  tagline: Put Claude on Auto
+  tagline: Trust the system. Walk away. Ship 5-10 features in parallel.
   image:
     src: /hero.png
-    alt: Claude Auto - From Babysitter to Bionic
+    alt: Claude Auto - Stop Babysitting. Start Parallelizing.
   actions:
     - theme: brand
       text: Get Started
