@@ -1,5 +1,13 @@
 # claude-ketchup
 
+## 0.13.3
+
+### Patch Changes
+
+- 160022c: - Standardized numeric claims across documentation: "3-5" for parallel capacity, "10+" for weekly throughput, and "10x+" for multiplier claims
+  - Updated messaging tone to emphasize confident delegation over passive automation, replacing "walk away" with "shift focus" and "let it run"
+  - Refined trust and autonomy language to better reflect the director-style workflow the product enables
+
 ## 0.13.2
 
 ### Patch Changes
