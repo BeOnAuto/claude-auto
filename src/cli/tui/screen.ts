@@ -1,5 +1,6 @@
 import { colors } from '../../logger.js';
 import { renderBanner } from './banner.js';
+import { colorizeLogLine } from './log-color.js';
 
 export interface ScreenOptions {
   logLines: string[];
@@ -25,7 +26,7 @@ export function renderScreen(options: ScreenOptions): string {
   } else {
     const visible = logLines.slice(-availableRows);
     for (const line of visible) {
-      output.push(`  ${line}`);
+      output.push(`  ${colorizeLogLine(line)}`);
     }
   }
 
