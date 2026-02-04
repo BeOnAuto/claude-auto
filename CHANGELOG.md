@@ -1,5 +1,15 @@
 # claude-ketchup
 
+## 0.13.2
+
+### Patch Changes
+
+- edbbcc7: - Fixed an issue where the Claude CLI plugin system could corrupt the project's git index, causing fatal errors during commits
+  - Added safety guard to prevent plugin marketplace files from leaking into project repositories
+  - Updated documentation descriptions and taglines for clarity and consistency
+- edbbcc7: - Updated documentation descriptions and taglines for improved clarity and consistency
+- edbbcc7: - Updated documentation descriptions and taglines for improved clarity and consistency
+
 ## 0.13.1
 
 ### Patch Changes
