@@ -313,6 +313,48 @@ describe('parseBatchedOutput', () => {
     ]);
   });
 
+  it('extracts JSON array from bracket match when top-level and fenced parsing fails', () => {
+    const inner = 'Some preamble text [{"id":"v1","decision":"ACK"}] trailing text';
+    const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: inner });
+
+    const results = parseBatchedOutput(stdout, ['v1']);
+
+    expect(results).toEqual([{ validator: 'v1', decision: 'ACK' }]);
+  });
+
+  it('NACKs when fenced code block contains a JSON object instead of array', () => {
+    const inner = '```json\n{"id":"v1","decision":"ACK"}\n```';
+    const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: inner });
+
+    const results = parseBatchedOutput(stdout, ['v1']);
+
+    expect(results).toEqual([
+      { validator: 'v1', decision: 'NACK', reason: 'batched validator returned unparseable response' },
+    ]);
+  });
+
+  it('NACKs when bracket match contains a JSON object instead of array', () => {
+    const inner = 'text {"id":"v1","decision":"ACK"} more text';
+    const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: inner });
+
+    const results = parseBatchedOutput(stdout, ['v1']);
+
+    expect(results).toEqual([
+      { validator: 'v1', decision: 'NACK', reason: 'batched validator returned unparseable response' },
+    ]);
+  });
+
+  it('NACKs when top-level parse returns a non-array JSON object', () => {
+    const inner = '{"id":"v1","decision":"ACK"}';
+    const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: inner });
+
+    const results = parseBatchedOutput(stdout, ['v1']);
+
+    expect(results).toEqual([
+      { validator: 'v1', decision: 'NACK', reason: 'batched validator returned unparseable response' },
+    ]);
+  });
+
   it('accepts validator key as alias for id', () => {
     const inner = [{ validator: 'v1', decision: 'ACK' }];
     const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: JSON.stringify(inner) });
