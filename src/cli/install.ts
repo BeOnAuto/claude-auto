@@ -24,7 +24,7 @@ export function getPackageRoot(startDir: string = __dirname): string {
   throw new Error(`Could not find package root from ${startDir}`);
 }
 
-function copyDir(sourceDir: string, targetDir: string): void {
+export function copyDir(sourceDir: string, targetDir: string): void {
   debug('copyDir:', sourceDir, '→', targetDir);
   if (!fs.existsSync(sourceDir)) {
     debug('  source does not exist, skipping');

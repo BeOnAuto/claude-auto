@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { getPackageRoot, install } from './install.js';
+import { copyDir, getPackageRoot, install } from './install.js';
 
 describe('cli install', () => {
   let tempDir: string;
@@ -251,5 +251,48 @@ describe('getPackageRoot', () => {
     const root = getPackageRoot(__dirname);
 
     expect(root).toBe(path.resolve(__dirname, '..', '..'));
+  });
+});
+
+describe('copyDir', () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-copydir-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  it('skips when source directory does not exist', () => {
+    const target = path.join(tempDir, 'target');
+
+    copyDir(path.join(tempDir, 'nonexistent'), target);
+
+    expect(fs.existsSync(target)).toBe(false);
+  });
+
+  it('skips when source directory has no files', () => {
+    const source = path.join(tempDir, 'source');
+    fs.mkdirSync(path.join(source, 'subdir'), { recursive: true });
+    const target = path.join(tempDir, 'target');
+
+    copyDir(source, target);
+
+    expect(fs.existsSync(target)).toBe(false);
+  });
+
+  it('copies files from source to target', () => {
+    const source = path.join(tempDir, 'source');
+    fs.mkdirSync(source);
+    fs.writeFileSync(path.join(source, 'a.txt'), 'content-a');
+    fs.writeFileSync(path.join(source, 'b.txt'), 'content-b');
+    const target = path.join(tempDir, 'target');
+
+    copyDir(source, target);
+
+    expect(fs.readFileSync(path.join(target, 'a.txt'), 'utf-8')).toBe('content-a');
+    expect(fs.readFileSync(path.join(target, 'b.txt'), 'utf-8')).toBe('content-b');
   });
 });
