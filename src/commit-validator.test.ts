@@ -342,6 +342,17 @@ describe('parseBatchedOutput', () => {
     ]);
   });
 
+  it('NACKs when bracket match contains invalid JSON', () => {
+    const inner = 'text [not valid json] more text';
+    const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: inner });
+
+    const results = parseBatchedOutput(stdout, ['v1']);
+
+    expect(results).toEqual([
+      { validator: 'v1', decision: 'NACK', reason: 'batched validator returned unparseable response' },
+    ]);
+  });
+
   it('NACKs when bracket match contains a JSON object instead of array', () => {
     const inner = 'text {"id":"v1","decision":"ACK"} more text';
     const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: inner });
