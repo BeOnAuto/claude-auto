@@ -12,16 +12,16 @@ export type InstallResult = {
 
 const debug = process.env.DEBUG ? (...args: unknown[]) => console.error('[claude-auto]', ...args) : () => {};
 
-function getPackageRoot(): string {
-  let dir = __dirname;
+export function getPackageRoot(startDir: string = __dirname): string {
+  let dir = startDir;
   while (dir !== path.dirname(dir)) {
     if (fs.existsSync(path.join(dir, 'package.json'))) {
-      debug('packageRoot:', dir, '(__dirname:', __dirname, ')');
+      debug('packageRoot:', dir, '(startDir:', startDir, ')');
       return dir;
     }
     dir = path.dirname(dir);
   }
-  throw new Error(`Could not find package root from ${__dirname}`);
+  throw new Error(`Could not find package root from ${startDir}`);
 }
 
 function copyDir(sourceDir: string, targetDir: string): void {

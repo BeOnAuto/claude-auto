@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { install } from './install.js';
+import { getPackageRoot, install } from './install.js';
 
 describe('cli install', () => {
   let tempDir: string;
@@ -239,5 +239,17 @@ describe('local install', () => {
     expect(result.claudeDir).toBe(path.join(tempDir, '.claude'));
     expect(result.settingsCreated).toBe(false);
     expect(result.status).toBe('updated');
+  });
+});
+
+describe('getPackageRoot', () => {
+  it('throws when no package.json exists up the directory tree', () => {
+    expect(() => getPackageRoot('/')).toThrow('Could not find package root from /');
+  });
+
+  it('finds package root from a nested directory', () => {
+    const root = getPackageRoot(__dirname);
+
+    expect(root).toBe(path.resolve(__dirname, '..', '..'));
   });
 });
