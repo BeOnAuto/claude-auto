@@ -4,8 +4,8 @@
 
 The Ketchup Technique is the methodology. The Quality Loop is the system. Claude Auto is the tool.
 
-- **The Ketchup Technique** gives fresh vocabulary for AI-assisted planning: Bottles, Bursts, dependencies, and the `ketchup-plan.md` format. It is the *what you write*.
-- **The Quality Loop** is the four-component validation system that executes those plans: Auto-Planner, Supervisor AI, TCR Discipline, and Auto-Continue. It is the *what runs*.
+- **The Ketchup Technique** gives fresh vocabulary for AI-assisted planning: Bottles, Bursts, dependencies, and the `ketchup-plan.md` format. It is the contract between your requirements and what the AI builds—a detailed, disciplined breakdown of work that keeps agents focused on rigorous software development.
+- **The Quality Loop** is the four-component validation system that executes those plans: Auto-Planner, Supervisor AI, TCR Discipline, and Auto-Continue. It is the _what runs_.
 - **Claude Auto** is the open-source engine that implements both.
 
 ---
@@ -46,7 +46,7 @@ Feed your requirements. Get a complete plan.
 - [x] Burst 0: Project setup (abc123)
 ```
 
-Define the goal, approve the plan. No need to specify every detail.
+Oversight over every detail, ahead of time. The ketchup plan surfaces decisions before they're made—no opaque reasoning from agents.
 
 ### 2. Supervisor AI
 
@@ -71,7 +71,7 @@ Claude attempts commit
             & learns
 ```
 
-Automated review. Bad code never lands.
+Bad code is minimized because the adversarial AI follows rules you created. Validators are a highly customizable way to codify qualitative standards, like an intelligent lint enforcer.
 
 ### 3. TCR Discipline
 
@@ -85,7 +85,7 @@ Red → Green → TCR → Refactor → TCR → Done
 - Tests fail → Revert completely
 - Never patch failing code
 
-Problems can't ship.
+Emergent design without bad foundations. When tests fail, revert and rethink—don't let the AI patch mistakes over and over.
 
 ### 4. Auto-Continue
 
@@ -224,8 +224,8 @@ git worktree add ../feature-dashboard feature/dashboard
 
 Three isolated workspaces. Each running a Claude Auto instance.
 
-| Worktree            | Feature               | Status               |
-| ------------------- | --------------------- | -------------------- |
+| Worktree            | Feature               | Status                   |
+| ------------------- | --------------------- | ------------------------ |
 | `feature-auth`      | Authentication system | Claude Auto executing... |
 | `feature-payments`  | Payment integration   | Claude Auto executing... |
 | `feature-dashboard` | Admin dashboard       | Claude Auto executing... |
