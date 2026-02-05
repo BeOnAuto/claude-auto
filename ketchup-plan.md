@@ -2,6 +2,17 @@
 
 ## TODO
 
+### Coverage: Bring all coverage metrics to 100%
+
+- [ ] Burst C1: Remove dead code in log-tailer.ts + add coverage tests [depends: none]
+- [ ] Burst C2: Export install.ts helpers + add coverage tests [depends: none]
+- [ ] Burst C3: Remove dead branch in auto-continue.ts + add coverage tests [depends: none]
+- [ ] Burst C4: Remove dead branch in pre-tool-use.ts + add coverage tests [depends: none]
+- [ ] Burst C5: Add commit-validator.test.ts branch coverage tests [depends: none]
+- [ ] Burst C6: Rewrite cli.test.ts for full coverage [depends: none]
+- [ ] Burst C7: Add validator-loader.test.ts + tui.test.ts coverage tests [depends: none]
+- [ ] Burst C8: Fix remaining commit-validator.ts branch coverage gaps [depends: C5]
+
 ### Feature 1: Dangerous Bash Command Detection
 
 - [ ] Burst 1.1: Add tests for dangerous command pattern detection (rm -rf /, sudo rm, etc.)
