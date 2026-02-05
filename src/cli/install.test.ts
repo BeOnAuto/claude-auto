@@ -151,6 +151,32 @@ describe('cli install', () => {
 
     expect(result.status).toBe('updated');
   });
+
+  it('migrates .ketchup/ to .claude-auto/ when legacy dir exists', async () => {
+    const legacyDir = path.join(tempDir, '.ketchup');
+    fs.mkdirSync(legacyDir, { recursive: true });
+    fs.writeFileSync(path.join(legacyDir, 'marker.txt'), 'legacy');
+
+    await install(tempDir);
+
+    expect(fs.existsSync(path.join(tempDir, '.ketchup'))).toBe(false);
+    expect(fs.existsSync(path.join(tempDir, '.claude-auto', 'marker.txt'))).toBe(true);
+    expect(fs.readFileSync(path.join(tempDir, '.claude-auto', 'marker.txt'), 'utf-8')).toBe('legacy');
+  });
+
+  it('does not migrate .ketchup/ when .claude-auto/ already exists', async () => {
+    const legacyDir = path.join(tempDir, '.ketchup');
+    fs.mkdirSync(legacyDir, { recursive: true });
+    fs.writeFileSync(path.join(legacyDir, 'old.txt'), 'old');
+    const autoDir = path.join(tempDir, '.claude-auto');
+    fs.mkdirSync(autoDir, { recursive: true });
+    fs.writeFileSync(path.join(autoDir, 'new.txt'), 'new');
+
+    await install(tempDir);
+
+    expect(fs.existsSync(path.join(tempDir, '.ketchup', 'old.txt'))).toBe(true);
+    expect(fs.existsSync(path.join(tempDir, '.claude-auto', 'new.txt'))).toBe(true);
+  });
 });
 
 describe('local install', () => {
