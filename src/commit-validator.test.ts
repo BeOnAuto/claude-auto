@@ -729,6 +729,29 @@ RESPOND WITH JSON ONLY - NO PROSE, NO MARKDOWN, NO EXPLANATION OUTSIDE THE JSON.
     ]);
   });
 
+  it('omits token info from log when response has no usage field', async () => {
+    const stdout = JSON.stringify({
+      type: 'result',
+      subtype: 'success',
+      result: JSON.stringify([{ id: 'v1', decision: 'ACK' }]),
+    });
+    const executor = vi.fn().mockReturnValue({ status: 0, stdout });
+    const logs: Array<{ event: string; name: string; detail?: string }> = [];
+    const onLog = (event: string, name: string, detail?: string) => {
+      logs.push({ event, name, detail });
+    };
+
+    const validators: Validator[] = [{ name: 'v1', description: 'd', enabled: true, content: 'c', path: '/v.md' }];
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+
+    await validateCommit(validators, context, executor, onLog);
+
+    expect(logs).toEqual([
+      { event: 'spawn', name: 'batch-0', detail: 'validators: v1' },
+      { event: 'complete', name: 'v1', detail: 'ACK' },
+    ]);
+  });
+
   it('logs shared token counts for all validators in a batch', async () => {
     const stdout = JSON.stringify({
       type: 'result',
@@ -750,6 +773,30 @@ RESPOND WITH JSON ONLY - NO PROSE, NO MARKDOWN, NO EXPLANATION OUTSIDE THE JSON.
     expect(logs).toEqual([
       { event: 'spawn', name: 'batch-0', detail: 'validators: v1' },
       { event: 'complete', name: 'v1', detail: 'ACK (in:150 out:20)' },
+    ]);
+  });
+
+  it('defaults missing cache token fields to zero in batch usage', async () => {
+    const stdout = JSON.stringify({
+      type: 'result',
+      subtype: 'success',
+      result: JSON.stringify([{ id: 'v1', decision: 'ACK' }]),
+      usage: { input_tokens: 10, output_tokens: 5 },
+    });
+    const executor = vi.fn().mockReturnValue({ status: 0, stdout });
+    const logs: Array<{ event: string; name: string; detail?: string }> = [];
+    const onLog = (event: string, name: string, detail?: string) => {
+      logs.push({ event, name, detail });
+    };
+
+    const validators: Validator[] = [{ name: 'v1', description: 'd', enabled: true, content: 'c', path: '/v.md' }];
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+
+    await validateCommit(validators, context, executor, onLog);
+
+    expect(logs).toEqual([
+      { event: 'spawn', name: 'batch-0', detail: 'validators: v1' },
+      { event: 'complete', name: 'v1', detail: 'ACK (in:10 out:5)' },
     ]);
   });
 
