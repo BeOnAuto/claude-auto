@@ -1,5 +1,11 @@
 # claude-ketchup
 
+## 0.13.5
+
+### Patch Changes
+
+- 3b09e31: - Enhanced clarity and detail in methodology documentation
+
 ## 0.13.4
 
 ### Patch Changes
