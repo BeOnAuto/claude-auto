@@ -1,172 +1,326 @@
 # Claude Auto
 
-**Put Claude on Auto.**
+Husky-style hooks and skills management for Claude Code.
 
-[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE) [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=flat-square)]()
-
----
-
-## The Problem: You're an AI Babysitter
-
-AI-assisted coding captured your cognitive load.
-
-Every session demands your full attention. Watching, nudging, correcting. You can't shift focus because you don't trust the system.
-
-- You can't context-switch while supervising
-- One task at a time, full attention required
-- The bottleneck is your attention, not AI's speed
-
-That's not multiplication. That's marginally faster serial work.
+[![Build](https://img.shields.io/github/actions/workflow/status/BeOnAuto/claude-auto/ci.yml?style=flat-square)](https://github.com/BeOnAuto/claude-auto/actions) [![npm](https://img.shields.io/npm/v/claude-auto?style=flat-square)](https://www.npmjs.com/package/claude-auto) [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE) [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=flat-square)]()
 
 ---
 
-## The Solution: The Quality Loop
+## Purpose
 
-Claude Auto earns trust. Trust enables parallelization.
+Without Claude Auto, you babysit every AI coding session. You watch, nudge, correct, and context-switch constantly. One task at a time, full attention required.
 
-| Component          | What It Does                                 | Result                          |
-| ------------------ | -------------------------------------------- | ------------------------------- |
-| **Auto-Planner**   | Generates plan from your requirements        | No need to specify every detail |
-| **Supervisor AI**  | Validates every commit against your criteria | Automated review                |
-| **TCR Discipline** | Test && Commit \|\| Revert                   | Bad code auto-reverts           |
-| **Auto-Continue**  | Keeps going until the plan is done           | You check back, not babysit     |
+Claude Auto installs a quality loop into Claude Code via hooks. Validators gate every commit. Reminders inject your guidelines into every prompt. Deny-lists protect files from modification. Auto-continue keeps the agent working until the plan is done. The system earns trust, and trust enables parallelization via git worktrees.
 
-The system is trustworthy. That's what lets you direct instead of babysit.
+## Key Concepts
 
----
-
-## The Multiplier: Git Worktrees
-
-Git worktrees let you run multiple isolated workspaces from the same repo.
-
-```bash
-# Create worktrees for parallel features
-git worktree add ../feature-auth feature/auth
-git worktree add ../feature-payments feature/payments
-git worktree add ../feature-dashboard feature/dashboard
-```
-
-Each runs a Claude Auto instance. All quality-validated.
-
-| Approach                      | Features/Week |
-| ----------------------------- | ------------- |
-| Manual coding                 | 1             |
-| AI-assisted (babysitting)     | 1-2           |
-| **Claude Auto + Worktrees**   | **10+**       |
-
----
-
-## Three Steps
-
-### 1. Install
-
-```bash
-npx claude-auto install
-```
-
-Feed your requirements. Claude Auto auto-generates the plan with Bottles, Bursts, and Dependencies.
-
-### 2. Release
-
-Start execution and shift your focus. The Supervisor validates every commit. Auto-continue keeps it going. Check back to review outcomes.
-
-### 3. Multiply
-
-Open another worktree. Start another instance. Run 3-5 features in parallel. Ship 10+ per week.
-
----
-
-## The Transformation
-
-| Before (Babysitter)              | After (Bionic)                 |
-| -------------------------------- | ------------------------------ |
-| Watching one AI session          | Directing multiple workstreams |
-| Nudging, correcting in real-time | Defining, approving, releasing |
-| Serial productivity              | Parallel productivity          |
-| Marginal gains (1.5x)            | Multiplicative gains (10x+)    |
-| Brain captured by supervision    | Brain freed for the next thing |
-
-From Babysitter to Bionic.
+- **Hooks**: Four integration points (SessionStart, PreToolUse, UserPromptSubmit, Stop) that let Claude Auto observe and control Claude Code's behavior
+- **Validators**: Markdown files with YAML frontmatter that ACK or NACK commits based on your criteria
+- **Reminders**: Context-injection files that surface your guidelines at the right moment
+- **Deny-list**: Glob patterns that protect files from modification
+- **TCR Discipline**: Test && Commit || Revert. Bad code auto-reverts
+- **Auto-Continue**: Keeps the agent going until the plan is done
 
 ---
 
 ## Installation
 
 ```bash
-# Install Claude Auto
 npx claude-auto install
-
-# Verify installation
-npx claude-auto doctor
-
-# You're ready to become Bionic
 ```
 
-After installation, claude-auto automatically:
+## Quick Start
 
-- Injects hooks that validate every commit
-- Creates reminders that inject your guidelines
+```bash
+npx claude-auto install
+npx claude-auto doctor
+```
+
+After installation, Claude Auto automatically:
+
+- Injects hooks that validate every commit against your criteria
+- Creates reminders that inject your guidelines into prompts
 - Sets up file protection via deny-lists
 - Merges settings with smart project/local overrides
 
+**Next steps:**
+
+- [Getting Started guide](./docs/getting-started.md)
+- [The Ketchup Technique](./docs/ketchup-technique.md)
+
 ---
 
-## Authority: Battle-Tested
+## How-to Guides
 
-Built on foundations from Kent Beck's TCR and Extreme Programming principles. Refined through production features at Auto.
+### Verify Installation Health
 
-The on.auto team ships 10+ features per week. Not 1-2.
+```bash
+npx claude-auto doctor
+```
 
-**[Read the origin story →](./docs/origin-story.md)**
+### Fix Broken Symlinks
+
+```bash
+npx claude-auto repair
+```
+
+### List Active Reminders
+
+```bash
+npx claude-auto reminders
+```
+
+### Configure for CI/CD
+
+```bash
+npx claude-auto install --non-interactive
+```
+
+### Multiply with Git Worktrees
+
+```bash
+git worktree add ../feature-auth feature/auth
+git worktree add ../feature-payments feature/payments
+
+cd ../feature-auth && npx claude-auto install
+cd ../feature-payments && npx claude-auto install
+```
+
+Each worktree runs its own Claude Auto instance, all quality-validated.
 
 ---
 
 ## CLI Reference
 
-| Command                    | Description                                         |
-| ------------------------- | --------------------------------------------------- |
-| `claude-auto install`     | Install and configure claude-auto in your project   |
-| `claude-auto init`        | Initialize configuration                            |
-| `claude-auto status`      | Show symlink status for hook scripts and reminders  |
-| `claude-auto doctor`      | Diagnose installation health                        |
-| `claude-auto repair`      | Recreate broken or missing symlinks                 |
-| `claude-auto reminders`   | List active reminders with metadata                 |
-| `claude-auto clean-logs`  | Remove old log files (use `--older-than=N` to keep N recent logs) |
+### Commands
+
+#### `claude-auto install`
+
+Install and configure Claude Auto in your project.
+
+```bash
+claude-auto install [target-path] [options]
+```
+
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `--local` | boolean | false | Use development mode (runs TypeScript source directly via tsx) |
+
+#### `claude-auto doctor`
+
+Verify every expected symlink is valid and report issues.
+
+```bash
+claude-auto doctor
+```
+
+#### `claude-auto status`
+
+Show symlink status for hook scripts, validators, and reminders.
+
+```bash
+claude-auto status
+```
+
+#### `claude-auto repair`
+
+Recreate broken or missing symlinks between the package and project directories.
+
+```bash
+claude-auto repair
+```
+
+#### `claude-auto reminders`
+
+List active reminders with name, hook, and priority metadata.
+
+```bash
+claude-auto reminders
+```
+
+#### `claude-auto clean-logs`
+
+Remove old log files from the logs directory.
+
+```bash
+claude-auto clean-logs [options]
+```
+
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `--older-than` | number | 60 | Keep logs newer than N minutes |
+
+#### `claude-auto tui`
+
+Launch the full-screen terminal UI with live log tailing.
+
+```bash
+claude-auto tui
+```
+
+### Configuration File
+
+```json
+{
+  "autoContinue": { "mode": "smart" },
+  "validateCommit": { "mode": "strict", "batchCount": 3 },
+  "denyList": { "enabled": true },
+  "promptReminder": { "enabled": true },
+  "subagentHooks": {
+    "validateCommitOnExplore": false,
+    "validateCommitOnWork": true,
+    "validateCommitOnUnknown": true
+  }
+}
+```
+
+Configuration lives in `.claude-auto/.claude.hooks.json`. See the [Configuration guide](./docs/configuration.md) for all options.
+
+### Settings Layering
+
+Settings merge in priority order:
+
+1. `templates/settings.json` (package defaults)
+2. `.claude/settings.project.json` (team overrides)
+3. `.claude/settings.local.json` (personal overrides)
+
+---
+
+## How It Works
+
+```mermaid
+flowchart LR
+    A[Claude Code] --> B[Hook Scripts]
+    B --> C{Hook Type}
+    C -->|SessionStart| D[Load Reminders]
+    C -->|PreToolUse| E[Validate Commits + Deny-list]
+    C -->|UserPromptSubmit| F[Inject Reminders]
+    C -->|Stop| G[Auto-Continue Decision]
+    E -->|ACK| H[Allow]
+    E -->|NACK| I[Block + Revert]
+```
+
+Hook scripts read JSON from stdin, delegate to handlers in `src/hooks/`, log results, and output JSON to stdout. Validators are batched (default 3 per Claude CLI call) for efficient parallel validation. Reminders are matched by hook type, mode, and tool name, then injected as `<system-reminder>` blocks.
+
+---
+
+## Troubleshooting
+
+### Command Not Found
+
+**Symptom:** `claude-auto: command not found`
+
+**Cause:** Package not installed globally or not in PATH.
+
+**Solution:**
+
+```bash
+npx claude-auto install
+```
+
+### Hooks Not Firing
+
+**Symptom:** Commits go through without validation.
+
+**Cause:** Settings not merged or symlinks broken.
+
+**Solution:**
+
+```bash
+npx claude-auto doctor
+npx claude-auto repair
+```
+
+### Enable Debug Logging
+
+```bash
+DEBUG=claude-auto npx claude-auto install
+```
+
+Debug logs write to `.claude-auto/logs/claude-auto/debug.log`.
 
 ---
 
 ## Documentation
 
-| Guide                                            | Description                     |
-| ------------------------------------------------ | ------------------------------- |
-| [Getting Started](./docs/getting-started.md)     | 5-minute transformation         |
-| [Installation](./docs/installation.md)           | Detailed installation guide     |
+| Guide | Description |
+| ----- | ----------- |
+| [Getting Started](./docs/getting-started.md) | First-time setup and core concepts |
+| [Installation](./docs/installation.md) | Detailed installation guide |
 | [The Ketchup Technique](./docs/ketchup-technique.md) | The planning methodology |
-| [Configuration](./docs/configuration.md)         | All configuration options       |
-| [Hooks Guide](./docs/hooks-guide.md)             | Configure your supervision      |
-| [Reminders Guide](./docs/reminders-guide.md)     | Context injection system        |
-| [Validators Guide](./docs/validators-guide.md)   | Commit validation rules         |
-| [API Reference](./docs/api-reference.md)         | Programmatic access             |
-| [Architecture](./docs/architecture.md)           | System design internals         |
+| [Configuration](./docs/configuration.md) | All configuration options |
+| [Hooks Guide](./docs/hooks-guide.md) | Hook system deep-dive |
+| [Reminders Guide](./docs/reminders-guide.md) | Context injection system |
+| [Validators Guide](./docs/validators-guide.md) | Commit validation rules |
+| [API Reference](./docs/api-reference.md) | Programmatic access |
+| [Architecture](./docs/architecture.md) | System design internals |
+| [Origin Story](./docs/origin-story.md) | How Claude Auto came to be |
+
+---
+
+## Architecture
+
+```
+src/
+├── cli/                  # CLI commands (install, doctor, repair, status, reminders, tui)
+│   └── tui/              # Full-screen terminal UI with live log tailing
+├── hooks/                # Hook handlers (session-start, pre-tool-use, user-prompt-submit, auto-continue)
+├── commit-validator.ts   # Batched commit validation with appeal support
+├── config-loader.ts      # Cosmiconfig-based configuration
+├── deny-list.ts          # File protection via micromatch patterns
+├── reminder-loader.ts    # Markdown + YAML frontmatter reminder system
+├── settings-merger.ts    # Three-layer settings merge with lock-file caching
+├── hook-state.ts         # Hook state management (.claude.hooks.json)
+├── validator-loader.ts   # Markdown validator loader
+└── index.ts              # Public API barrel exports
+scripts/
+├── session-start.ts      # SessionStart hook entry-point
+├── pre-tool-use.ts       # PreToolUse hook entry-point
+├── user-prompt-submit.ts # UserPromptSubmit hook entry-point
+└── auto-continue.ts      # Stop hook entry-point
+```
+
+### Dependencies
+
+| Package | Usage |
+| ------- | ----- |
+| commander | CLI framework |
+| cosmiconfig | Configuration file discovery |
+| gray-matter | YAML frontmatter parsing for validators and reminders |
+| micromatch | Glob pattern matching for deny-lists |
 
 ---
 
 ## Development
 
+### Prerequisites
+
+- Node.js 18+
+- pnpm 10+
+
+### Setup
+
 ```bash
 git clone https://github.com/BeOnAuto/claude-auto.git
 cd claude-auto
 pnpm install
-pnpm test
 pnpm build
 ```
+
+### Commands
+
+| Command | Description |
+| ------- | ----------- |
+| `pnpm build` | TypeScript compile + esbuild bundle scripts |
+| `pnpm test` | Run all tests (vitest) |
+| `pnpm type-check` | TypeScript type checking |
+| `pnpm lint` | Biome lint check |
+| `pnpm check` | Full CI: build + type-check + test + lint |
 
 ---
 
 ## License
 
-MIT © 2025 BeOnAuto, Inc.
+MIT &copy; 2025 BeOnAuto, Inc.
 
 See [LICENSE](LICENSE) for details.
-
----
