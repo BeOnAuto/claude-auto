@@ -118,4 +118,34 @@ describe('tui action', () => {
     stdoutWrite.mockRestore();
     vi.restoreAllMocks();
   });
+
+  it('renders tui output to stdout on successful launch', async () => {
+    const ketchupDir = path.join(tempDir, '.ketchup');
+    fs.mkdirSync(path.join(ketchupDir, 'logs'), { recursive: true });
+    fs.writeFileSync(path.join(ketchupDir, '.claude.hooks.json'), '{}');
+
+    const writes: string[] = [];
+    const stdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation((chunk: string | Uint8Array) => {
+      writes.push(String(chunk));
+      return true;
+    });
+    const cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(tempDir);
+    vi.spyOn(process.stdout, 'on').mockReturnValue(process.stdout);
+    vi.spyOn(process, 'on').mockReturnValue(process);
+
+    Object.defineProperty(process.stdout, 'columns', { value: 80, configurable: true });
+    Object.defineProperty(process.stdout, 'rows', { value: 24, configurable: true });
+
+    const program = createCli();
+    program.exitOverride();
+    await program.parseAsync(['node', 'claude-auto', 'tui']);
+
+    expect(writes[0]).toBe('\x1b[?25l');
+    // biome-ignore lint/suspicious/noControlCharactersInRegex: matching ANSI escape sequences
+    expect(writes[1]).toMatch(/\x1b\[2J\x1b\[H[\s\S]*activity log[\s\S]*waiting for activity/);
+
+    cwdSpy.mockRestore();
+    stdoutWrite.mockRestore();
+    vi.restoreAllMocks();
+  });
 });
