@@ -176,8 +176,8 @@ describe('tui action', () => {
     await program.parseAsync(['node', 'claude-auto', 'tui']);
 
     writes.length = 0;
-    Object.defineProperty(process.stdout, 'columns', { value: 120, configurable: true });
-    Object.defineProperty(process.stdout, 'rows', { value: 40, configurable: true });
+    Object.defineProperty(process.stdout, 'columns', { value: 0, configurable: true });
+    Object.defineProperty(process.stdout, 'rows', { value: 0, configurable: true });
     resizeHandler!();
 
     // biome-ignore lint/suspicious/noControlCharactersInRegex: matching ANSI escape sequences
