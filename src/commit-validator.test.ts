@@ -196,6 +196,19 @@ describe('parseClaudeJsonOutput', () => {
     expect(parsed).toEqual({ decision: 'ACK', inputTokens: 28415, outputTokens: 9 });
   });
 
+  it('handles missing cache token fields in usage', () => {
+    const stdout = JSON.stringify({
+      type: 'result',
+      subtype: 'success',
+      result: '{"decision":"ACK"}',
+      usage: { input_tokens: 50, output_tokens: 10 },
+    });
+
+    const parsed = parseClaudeJsonOutput(stdout);
+
+    expect(parsed).toEqual({ decision: 'ACK', inputTokens: 50, outputTokens: 10 });
+  });
+
   it('extracts NACK with reason and tokens from wrapper', () => {
     const stdout = JSON.stringify({
       type: 'result',
