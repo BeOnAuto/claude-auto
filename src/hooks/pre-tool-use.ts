@@ -84,7 +84,7 @@ async function handleCommitValidation(
   const context = getCommitContext(process.cwd(), command);
   const state = createHookState(autoDir).read();
   const onLog: ValidatorLogger = (event, name, detail) => {
-    activityLog(autoDir, sessionId, 'pre-tool-use', `validator ${event}: ${name}${detail ? ` → ${detail}` : ''}`);
+    activityLog(autoDir, sessionId, 'pre-tool-use', `validator ${event}: ${name} → ${detail}`);
   };
   const results = await validateCommit(validators, context, options.executor, onLog, state.validateCommit.batchCount);
 
