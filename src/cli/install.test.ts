@@ -177,6 +177,12 @@ describe('cli install', () => {
     expect(fs.existsSync(path.join(tempDir, '.ketchup', 'old.txt'))).toBe(true);
     expect(fs.existsSync(path.join(tempDir, '.claude-auto', 'new.txt'))).toBe(true);
   });
+
+  it('defaults to current directory when targetPath is undefined', async () => {
+    const result = await install();
+
+    expect(result.targetDir).toBe(path.resolve('.'));
+  });
 });
 
 describe('local install', () => {
