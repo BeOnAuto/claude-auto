@@ -85,6 +85,28 @@ describe('createTui', () => {
     });
   });
 
+  it('re-renders when new log lines arrive', async () => {
+    const logFile = path.join(tempDir, '.ketchup', 'logs', 'activity.log');
+    fs.writeFileSync(logFile, '');
+
+    const writes: string[] = [];
+    const tui = createTui({
+      dir: tempDir,
+      write: (s) => writes.push(s),
+      cols: 80,
+      rows: 24,
+    });
+
+    writes.length = 0;
+    fs.appendFileSync(logFile, 'dynamic-entry\n');
+
+    await new Promise((r) => setTimeout(r, 200));
+    tui.stop();
+
+    const output = writes.join('');
+    expect(output).toMatch(/activity log[\s\S]*dynamic-entry/);
+  });
+
   it('stop cleans up resources', () => {
     const tui = createTui({
       dir: tempDir,
