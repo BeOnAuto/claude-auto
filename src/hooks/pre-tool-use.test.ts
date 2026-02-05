@@ -89,6 +89,16 @@ describe('pre-tool-use hook', () => {
     expect(content).toContain('blocked');
   });
 
+  it('allows git commit when no validators are configured', async () => {
+    const toolInput = {
+      command: 'git commit -m "Test commit"',
+    };
+
+    const result = await handlePreToolUse(claudeDir, 'session-no-validators', toolInput);
+
+    expect(result).toEqual({ decision: 'allow' });
+  });
+
   it('routes Bash git commit to validator and blocks on NACK', async () => {
     const validatorsDir = path.join(autoDir, 'validators');
     fs.mkdirSync(validatorsDir);
