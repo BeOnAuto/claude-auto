@@ -322,6 +322,15 @@ describe('parseBatchedOutput', () => {
     expect(results).toEqual([{ validator: 'v1', decision: 'ACK' }]);
   });
 
+  it('falls through fenced parse failure to bracket match', () => {
+    const inner = '```json\n{invalid json\n``` [{"id":"v1","decision":"ACK"}]';
+    const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: inner });
+
+    const results = parseBatchedOutput(stdout, ['v1']);
+
+    expect(results).toEqual([{ validator: 'v1', decision: 'ACK' }]);
+  });
+
   it('NACKs when fenced code block contains a JSON object instead of array', () => {
     const inner = '```json\n{"id":"v1","decision":"ACK"}\n```';
     const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: inner });
