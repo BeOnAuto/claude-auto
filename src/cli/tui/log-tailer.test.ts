@@ -74,6 +74,18 @@ describe('createLogTailer', () => {
     expect(lines).toEqual(['c', 'd', 'e']);
   });
 
+  it('handles log file being deleted during tailing', async () => {
+    fs.writeFileSync(logFile, 'initial\n');
+    const received: string[] = [];
+    const tailer = createLogTailer(tempDir, (line) => received.push(line));
+
+    fs.unlinkSync(logFile);
+    await new Promise((r) => setTimeout(r, 200));
+    tailer.stop();
+
+    expect(received).toEqual([]);
+  });
+
   it('stop prevents further callbacks', async () => {
     fs.writeFileSync(logFile, '');
     const received: string[] = [];
