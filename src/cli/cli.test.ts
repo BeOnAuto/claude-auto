@@ -79,3 +79,43 @@ describe('install action', () => {
     expect(logs).toEqual([`claude-auto already installed, updating ${tempDir}`]);
   });
 });
+
+describe('tui action', () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cli-tui-action-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  it('exits with error when launchTui returns not-configured', async () => {
+    const errors: string[] = [];
+    vi.spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
+      errors.push(args.join(' '));
+    });
+
+    const stdoutWrite = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+    const cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(tempDir);
+    const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
+      throw new Error('process.exit');
+    });
+
+    const program = createCli();
+    program.exitOverride();
+
+    await expect(program.parseAsync(['node', 'claude-auto', 'tui'])).rejects.toThrow('process.exit');
+
+    expect(errors).toEqual([
+      'No claude-auto configuration found in this directory.',
+      'Run `claude-ketchup install` first.',
+    ]);
+
+    exitSpy.mockRestore();
+    cwdSpy.mockRestore();
+    stdoutWrite.mockRestore();
+    vi.restoreAllMocks();
+  });
+});
