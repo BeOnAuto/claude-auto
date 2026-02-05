@@ -72,6 +72,22 @@ describe('auto-continue hook', () => {
       expect(result.todoSection).toBe('');
     });
 
+    it('returns fallback todoSection when no TODO header exists', () => {
+      const planPath = path.join(tempDir, 'ketchup-plan.md');
+      fs.writeFileSync(
+        planPath,
+        `# Ketchup Plan
+
+- [ ] Burst 1: Task without TODO header
+`,
+      );
+
+      const result = getIncompleteBursts(planPath);
+
+      expect(result.count).toBe(1);
+      expect(result.todoSection).toBe('1 unchecked items found');
+    });
+
     it('handles triple-hash headers', () => {
       const planPath = path.join(tempDir, 'ketchup-plan.md');
       fs.writeFileSync(
@@ -159,6 +175,17 @@ describe('auto-continue hook', () => {
       const result = handleStop(autoDir, input);
 
       expect(result).toEqual({ decision: 'allow', reason: 'stop hook already active' });
+    });
+
+    it('returns allow with no work remaining when smart mode has no signals', () => {
+      const autoDir = path.join(tempDir, '.claude-auto');
+      fs.mkdirSync(autoDir, { recursive: true });
+      fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify({ autoContinue: { mode: 'smart' } }));
+
+      const input: StopHookInput = { session_id: 'test-session' };
+      const result = handleStop(autoDir, input);
+
+      expect(result).toEqual({ decision: 'allow', reason: 'no work remaining' });
     });
 
     it('defaults to skipping plan mode via DEFAULT_HOOK_STATE skipModes', () => {
