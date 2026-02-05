@@ -149,3 +149,39 @@ describe('tui action', () => {
     vi.restoreAllMocks();
   });
 });
+
+describe('default action', () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cli-default-action-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  it('shows help when not auto-configured', async () => {
+    const cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(tempDir);
+    const writes: string[] = [];
+    const stdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation((chunk: string | Uint8Array) => {
+      writes.push(String(chunk));
+      return true;
+    });
+
+    const program = createCli();
+    program.exitOverride();
+
+    try {
+      await program.parseAsync(['node', 'claude-auto']);
+    } catch {
+      // exitOverride throws on help
+    }
+
+    expect(writes).toEqual([expect.stringMatching(/Usage:.*claude-auto/)]);
+
+    cwdSpy.mockRestore();
+    stdoutWrite.mockRestore();
+    vi.restoreAllMocks();
+  });
+});
