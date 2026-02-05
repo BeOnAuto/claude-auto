@@ -55,13 +55,7 @@ export function createLogTailer(
       if (!stopped) pollNewLines();
     });
 
-    const interval = setInterval(() => {
-      if (stopped) {
-        clearInterval(interval);
-        return;
-      }
-      pollNewLines();
-    }, 100);
+    const interval = setInterval(() => pollNewLines(), 100);
 
     watcher.on('close', () => clearInterval(interval));
   }
