@@ -873,6 +873,30 @@ RESPOND WITH JSON ONLY - NO PROSE, NO MARKDOWN, NO EXPLANATION OUTSIDE THE JSON.
     ]);
   });
 
+  it('defaults missing input_tokens to zero in batch usage', async () => {
+    const stdout = JSON.stringify({
+      type: 'result',
+      subtype: 'success',
+      result: JSON.stringify([{ id: 'v1', decision: 'ACK' }]),
+      usage: { output_tokens: 7 },
+    });
+    const executor = vi.fn().mockReturnValue({ status: 0, stdout });
+    const logs: Array<{ event: string; name: string; detail?: string }> = [];
+    const onLog = (event: string, name: string, detail?: string) => {
+      logs.push({ event, name, detail });
+    };
+
+    const validators: Validator[] = [{ name: 'v1', description: 'd', enabled: true, content: 'c', path: '/v.md' }];
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+
+    await validateCommit(validators, context, executor, onLog);
+
+    expect(logs).toEqual([
+      { event: 'spawn', name: 'batch-0', detail: 'validators: v1' },
+      { event: 'complete', name: 'v1', detail: 'ACK (in:0 out:7)' },
+    ]);
+  });
+
   it('uses provided batchCount to control chunk size', async () => {
     const executor = vi.fn().mockImplementation((_cmd: string, args: string[]) => {
       const prompt = args[2];
