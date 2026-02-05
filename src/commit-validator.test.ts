@@ -802,6 +802,24 @@ RESPOND WITH JSON ONLY - NO PROSE, NO MARKDOWN, NO EXPLANATION OUTSIDE THE JSON.
     ]);
   });
 
+  it('logs error via onLog when executor throws', async () => {
+    const executor = vi.fn().mockRejectedValue(new Error('spawn failed'));
+    const logs: Array<{ event: string; name: string; detail?: string }> = [];
+    const onLog = (event: string, name: string, detail?: string) => {
+      logs.push({ event, name, detail });
+    };
+
+    const validators: Validator[] = [{ name: 'v1', description: 'd', enabled: true, content: 'c', path: '/v.md' }];
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+
+    await validateCommit(validators, context, executor, onLog);
+
+    expect(logs).toEqual([
+      { event: 'spawn', name: 'batch-0', detail: 'validators: v1' },
+      { event: 'error', name: 'batch-0', detail: 'Error: spawn failed' },
+    ]);
+  });
+
   it('omits token info from log when response has no usage field', async () => {
     const stdout = JSON.stringify({
       type: 'result',
