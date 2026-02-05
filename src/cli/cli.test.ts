@@ -149,6 +149,45 @@ describe('tui action', () => {
     vi.restoreAllMocks();
   });
 
+  it('resize handler updates tui dimensions', async () => {
+    const ketchupDir = path.join(tempDir, '.ketchup');
+    fs.mkdirSync(path.join(ketchupDir, 'logs'), { recursive: true });
+    fs.writeFileSync(path.join(ketchupDir, '.claude.hooks.json'), '{}');
+
+    const writes: string[] = [];
+    const stdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation((chunk: string | Uint8Array) => {
+      writes.push(String(chunk));
+      return true;
+    });
+    const cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(tempDir);
+
+    let resizeHandler: (() => void) | undefined;
+    vi.spyOn(process.stdout, 'on').mockImplementation((event: string, handler: (...args: unknown[]) => void) => {
+      if (event === 'resize') resizeHandler = handler as () => void;
+      return process.stdout;
+    });
+    vi.spyOn(process, 'on').mockReturnValue(process);
+
+    Object.defineProperty(process.stdout, 'columns', { value: 80, configurable: true });
+    Object.defineProperty(process.stdout, 'rows', { value: 24, configurable: true });
+
+    const program = createCli();
+    program.exitOverride();
+    await program.parseAsync(['node', 'claude-auto', 'tui']);
+
+    writes.length = 0;
+    Object.defineProperty(process.stdout, 'columns', { value: 120, configurable: true });
+    Object.defineProperty(process.stdout, 'rows', { value: 40, configurable: true });
+    resizeHandler!();
+
+    // biome-ignore lint/suspicious/noControlCharactersInRegex: matching ANSI escape sequences
+    expect(writes[0]).toMatch(/\x1b\[2J\x1b\[H[\s\S]*activity log/);
+
+    cwdSpy.mockRestore();
+    stdoutWrite.mockRestore();
+    vi.restoreAllMocks();
+  });
+
   it('SIGINT handler stops tui and restores cursor', async () => {
     const ketchupDir = path.join(tempDir, '.ketchup');
     fs.mkdirSync(path.join(ketchupDir, 'logs'), { recursive: true });
