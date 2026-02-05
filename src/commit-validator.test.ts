@@ -15,6 +15,7 @@ import {
   parseClaudeJsonOutput,
   runAppealValidator,
   runValidator,
+  spawnAsync,
   validateCommit,
 } from './commit-validator.js';
 import type { Validator } from './validator-loader.js';
@@ -26,6 +27,32 @@ function claudeJson(inner: Record<string, unknown>): string {
 function claudeBatchJson(results: Array<{ id: string; decision: string; reason?: string }>): string {
   return JSON.stringify({ type: 'result', subtype: 'success', result: JSON.stringify(results) });
 }
+
+describe('spawnAsync', () => {
+  it('resolves with stdout, stderr, and exit status from spawned process', async () => {
+    const result = await spawnAsync('echo', ['hello'], { encoding: 'utf8' });
+
+    expect(result).toEqual({
+      stdout: 'hello\n',
+      stderr: '',
+      status: 0,
+    });
+  });
+
+  it('captures stderr output from spawned process', async () => {
+    const result = await spawnAsync('node', ['-e', 'process.stderr.write("oops")'], { encoding: 'utf8' });
+
+    expect(result).toEqual({
+      stdout: '',
+      stderr: 'oops',
+      status: 0,
+    });
+  });
+
+  it('rejects when command does not exist', async () => {
+    await expect(spawnAsync('nonexistent-cmd-xyz', [], { encoding: 'utf8' })).rejects.toThrow();
+  });
+});
 
 describe('extractAppeal', () => {
   it('extracts appeal from commit message with [appeal: reason]', () => {
