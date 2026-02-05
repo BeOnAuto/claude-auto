@@ -60,6 +60,20 @@ describe('createLogTailer', () => {
     expect(lines).toEqual(['c', 'd', 'e']);
   });
 
+  it('enforces maxLines limit when new lines arrive during live tailing', async () => {
+    fs.writeFileSync(logFile, 'a\nb\n');
+    const received: string[] = [];
+    const tailer = createLogTailer(tempDir, (line) => received.push(line), { maxLines: 3 });
+
+    fs.appendFileSync(logFile, 'c\nd\ne\n');
+
+    await new Promise((r) => setTimeout(r, 200));
+    const lines = tailer.readAll();
+    tailer.stop();
+
+    expect(lines).toEqual(['c', 'd', 'e']);
+  });
+
   it('stop prevents further callbacks', async () => {
     fs.writeFileSync(logFile, '');
     const received: string[] = [];
