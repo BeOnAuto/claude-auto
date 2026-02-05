@@ -209,6 +209,19 @@ describe('parseClaudeJsonOutput', () => {
     expect(parsed).toEqual({ decision: 'ACK', inputTokens: 50, outputTokens: 10 });
   });
 
+  it('defaults input_tokens to zero when missing from usage', () => {
+    const stdout = JSON.stringify({
+      type: 'result',
+      subtype: 'success',
+      result: '{"decision":"ACK"}',
+      usage: { output_tokens: 10 },
+    });
+
+    const parsed = parseClaudeJsonOutput(stdout);
+
+    expect(parsed).toEqual({ decision: 'ACK', inputTokens: 0, outputTokens: 10 });
+  });
+
   it('extracts NACK with reason and tokens from wrapper', () => {
     const stdout = JSON.stringify({
       type: 'result',
