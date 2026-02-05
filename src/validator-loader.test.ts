@@ -88,6 +88,34 @@ Content`,
     ]);
   });
 
+  it('skips non-.md files in the directory', () => {
+    const validatorsDir = path.join(tempDir, 'validators');
+    fs.mkdirSync(validatorsDir);
+    fs.writeFileSync(
+      path.join(validatorsDir, 'valid.md'),
+      `---
+name: valid-validator
+description: Valid
+enabled: true
+---
+Content`,
+    );
+    fs.writeFileSync(path.join(validatorsDir, 'notes.txt'), 'not a validator');
+    fs.writeFileSync(path.join(validatorsDir, 'data.json'), '{}');
+
+    const result = loadValidators([validatorsDir]);
+
+    expect(result).toEqual([
+      {
+        name: 'valid-validator',
+        description: 'Valid',
+        enabled: true,
+        content: 'Content',
+        path: path.join(validatorsDir, 'valid.md'),
+      },
+    ]);
+  });
+
   it('loads from multiple directories', () => {
     const dir1 = path.join(tempDir, 'validators1');
     const dir2 = path.join(tempDir, 'validators2');
