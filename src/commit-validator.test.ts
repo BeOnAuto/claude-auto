@@ -593,6 +593,28 @@ describe('runAppealValidator', () => {
 
     expect(result).toEqual({ decision: 'NACK', reason: 'Appeal does not justify violation' });
   });
+
+  it('formats results without reason in appeal prompt', async () => {
+    const executor = vi.fn().mockReturnValue({
+      status: 0,
+      stdout: claudeJson({ decision: 'ACK' }),
+    });
+
+    const appealValidator: Validator = {
+      name: 'appeal-system',
+      description: 'Evaluate appeals',
+      enabled: true,
+      content: 'Judge',
+      path: '/appeal.md',
+    };
+    const context = { diff: '+a', files: ['a.txt'], message: 'msg' };
+    const results = [{ validator: 'v1', decision: 'NACK' as const, appealable: true }];
+
+    await runAppealValidator(appealValidator, context, results, 'appeal', executor);
+
+    const prompt = executor.mock.calls[0][1][2];
+    expect(prompt).toMatch(/v1: NACK\n/);
+  });
 });
 
 describe('validateCommit', () => {
