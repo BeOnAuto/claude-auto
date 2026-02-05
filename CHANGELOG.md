@@ -1,5 +1,88 @@
 # claude-ketchup
 
+## 0.13.4
+
+### Patch Changes
+
+- 45011c5: - Added test coverage for the TUI action error path when not configured
+- df73523: - Export getPackageRoot function with optional startDir parameter for programmatic package root detection
+  - Add comprehensive test coverage for getPackageRoot functionality
+- 6091972: - Added test coverage for the SIGINT signal handler that stops the TUI and restores the cursor
+- fa27eaf: - Simplified internal logging logic in pre-tool-use hook by removing unnecessary conditional code
+- 16f6fc2: - Added test coverage for the TUI action's successful launch output
+- 283bb43: - Removed unnecessary interval state checking code in log tailer to simplify implementation
+- 1011ca9: - Added test coverage for CLI default action launching the TUI when configured
+- 80a74e5: - Added test coverage for stdout, stderr, and error handling in the spawn async utility
+- c88807b: - Added test coverage for error handling when the commit validator's executor throws an error
+- 059a7b7: - Added test coverage for parsing Claude JSON output when cache token fields are missing
+- 169ced8: This is a planning/infrastructure commit that added tasks to the ketchup plan but didn't make any user-facing changes. Since it's a `chore` commit that only modified the plan file, it doesn't represent actual feature delivery or bug fixes. This type of commit typically shouldn't appear in a user-facing changelog.
+
+  However, if you need a changelog entry:
+
+  - Added development plan for achieving 100% test coverage across the codebase
+
+- e34de12: - Added test coverage for migrating from old `.ketchup` directory structure to new `.claude-auto` directory
+- c04d3b8: Looking at the commit, this appears to be a test-only addition with no user-facing changes. For changelog purposes:
+
+  - Added test coverage for maximum line enforcement during live log tailing
+
+  However, if this is purely an internal test improvement with no user-facing behavioral changes, it might not warrant a changelog entry at all. Test-only commits typically don't appear in changelogs unless they're fixing a bug that was previously uncovered or documenting newly added behavior.
+
+  Would you like me to:
+
+  1. Omit this from the changelog (recommended for test-only commits)
+  2. Keep the single bullet point above
+  3. Review the actual code changes to see if there's a user-facing aspect I'm missing
+
+- 1b484ae: - Added test coverage for handling missing input token counts during batch usage validation
+- 11bc4d2: - Exported copyDir function from CLI package for external use
+  - Added comprehensive test coverage for all three code branches in copyDir
+- 1c98291: Looking at this commit, I can see it's a test-only change that adds coverage for a specific code path in the pre-tool-use hook. Since this is purely internal test coverage improvement with no user-facing changes, here's the changelog:
+
+  - Improved test coverage for hook validation scenarios
+
+- 7ba85aa: - Added test coverage for parsing batched output when receiving raw JSON arrays
+- b3859e9: - Added runtime debug mode checking functionality with comprehensive test coverage
+- 3296b16: These commits are all test coverage additions and minor refactors — no user-facing features, bug fixes, or behavioral changes. Here's the changelog:
+
+  - Added comprehensive test coverage for CLI actions including install, TUI launch, and default help output
+  - Added test coverage for core utilities including commit validation, output parsing, and process spawning
+  - Added test coverage for hook behaviors including auto-continue and pre-tool-use validation
+  - Removed dead code paths discovered during coverage improvements
+
+- b9b802f: - Added test coverage for install action fresh-install logging in the CLI
+- dbb0d6e: - Added test coverage for the install action's update message when a project is already installed
+- 19fc1b6: - Added test coverage for handling missing input token counts in Claude JSON output parsing
+- 971a22e: Looking at this commit, it's a test-only change with no user-facing functionality. Since this adds test coverage but doesn't modify behavior or add features:
+
+  - Improved test coverage for installation command default behavior
+
+- 2d6c555: - Added batch count tracking to hook state for better execution monitoring
+  - Updated build configuration to ignore local install scripts
+- e480dfd: - Added test coverage for validator-loader to verify it correctly skips non-markdown files
+- b94a7d3: - Added test coverage for terminal resize handler when column and row values are missing
+- e7a1949: - Added test coverage for the terminal resize handler that updates TUI dimensions
+- cc4f38b: - Added test coverage for handling unexpected input types in batched output parsing
+- f83607e: - Added test coverage for commit validation token logging when usage data is absent or cache fields are missing
+- 712987e: - Added test coverage for log file deletion during active tailing operations
+- ccf4fb2: - Added test coverage for TUI re-rendering when new log lines arrive
+- 35252ce: - Added CLAUDE.md file with comprehensive development guidance for the codebase
+- 1d891e4: Based on all the commits on this branch:
+
+  - Added test coverage for core parsing functions, log tailing, and async process spawning
+  - Added test coverage for CLI installation paths, migration handling, and package resolution
+  - Added test coverage for hook validators, auto-continue behavior, and pre-tool-use paths
+  - Fixed a bug where the Claude CLI plugin system could corrupt the git index
+  - Removed dead code in hooks and log-tailer modules to improve maintainability
+
+- afcbd85: - Rewrote README with problem-solution framing for clearer project communication
+- f7ad835: - Added test coverage for JSON array parsing error handling in core module
+- dfbba6a: - Improved test coverage for auto-continue hook edge cases when no work remains or TODO header is missing
+- eeb8239: - Added test coverage for JSON array extraction error handling when bracket parsing fails
+- 55f38a7: - Added test coverage for appeal prompt formatting when results have no reason provided
+- 596ce57: - Made auto-continue hook configuration more explicit by requiring skipModes to be specified
+  - Added test coverage to ensure plan mode is skipped by default when using auto-continue
+
 ## 0.13.3
 
 ### Patch Changes
