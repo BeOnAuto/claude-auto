@@ -19,5 +19,8 @@ docs/.vitepress/cache
 .vscode/
 .idea/
 
+# Local install artifacts
+.claude-auto/scripts/
+
 # Temp files
 .changeset-prompt-*.txt

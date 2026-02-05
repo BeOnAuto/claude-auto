@@ -6,7 +6,8 @@
     "skipModes": ["plan"]
   },
   "validateCommit": {
-    "mode": "strict"
+    "mode": "strict",
+    "batchCount": 17
   },
   "denyList": {
     "enabled": true,
