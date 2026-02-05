@@ -59,4 +59,23 @@ describe('install action', () => {
       `Created ${path.join(tempDir, '.claude')}/settings.json`,
     ]);
   });
+
+  it('logs update message for already installed project', async () => {
+    const autoDir = path.join(tempDir, '.claude-auto');
+    fs.mkdirSync(autoDir, { recursive: true });
+    fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), '{}');
+
+    const logs: string[] = [];
+    vi.spyOn(console, 'log').mockImplementation((...args: unknown[]) => {
+      logs.push(args.join(' '));
+    });
+
+    const program = createCli();
+    program.exitOverride();
+    await program.parseAsync(['node', 'claude-auto', 'install', tempDir]);
+
+    vi.restoreAllMocks();
+
+    expect(logs).toEqual([`claude-auto already installed, updating ${tempDir}`]);
+  });
 });
