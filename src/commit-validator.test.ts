@@ -355,6 +355,14 @@ describe('parseBatchedOutput', () => {
     ]);
   });
 
+  it('handles stdout that is a raw JSON array without wrapper', () => {
+    const stdout = JSON.stringify([{ id: 'v1', decision: 'ACK' }]);
+
+    const results = parseBatchedOutput(stdout, ['v1']);
+
+    expect(results).toEqual([{ validator: 'v1', decision: 'ACK' }]);
+  });
+
   it('accepts validator key as alias for id', () => {
     const inner = [{ validator: 'v1', decision: 'ACK' }];
     const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: JSON.stringify(inner) });
