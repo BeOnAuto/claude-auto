@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { copyDir, getPackageRoot, install } from './install.js';
 
@@ -294,5 +294,33 @@ describe('copyDir', () => {
 
     expect(fs.readFileSync(path.join(target, 'a.txt'), 'utf-8')).toBe('content-a');
     expect(fs.readFileSync(path.join(target, 'b.txt'), 'utf-8')).toBe('content-b');
+  });
+});
+
+describe('install with DEBUG', () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ketchup-install-debug-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  it('logs debug output when DEBUG is set', async () => {
+    process.env.DEBUG = 'claude-auto';
+    const calls: unknown[][] = [];
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
+      calls.push(args);
+    });
+
+    await install(tempDir);
+
+    delete process.env.DEBUG;
+    errorSpy.mockRestore();
+
+    expect(calls.every((c) => c[0] === '[claude-auto]')).toEqual(true);
+    expect(calls.find((c) => c[1] === 'target:')).toEqual(['[claude-auto]', 'target:', tempDir]);
   });
 });

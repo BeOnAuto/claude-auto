@@ -10,7 +10,9 @@ export type InstallResult = {
   status: 'installed' | 'updated';
 };
 
-const debug = process.env.DEBUG ? (...args: unknown[]) => console.error('[claude-auto]', ...args) : () => {};
+function debug(...args: unknown[]): void {
+  if (process.env.DEBUG) console.error('[claude-auto]', ...args);
+}
 
 export function getPackageRoot(startDir: string = __dirname): string {
   let dir = startDir;
