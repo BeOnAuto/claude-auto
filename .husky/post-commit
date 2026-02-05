@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Skip during rebase operations to prevent conflicts
+if [ -d "$(git rev-parse --git-dir)/rebase-merge" ] || [ -d "$(git rev-parse --git-dir)/rebase-apply" ]; then
+  exit 0
+fi
+
 # Skip if this commit was already a changeset commit (prevent infinite loop)
 COMMIT_MSG=$(git log -1 --pretty=%s)
 if echo "$COMMIT_MSG" | grep -q "^chore(global): add changeset$"; then
