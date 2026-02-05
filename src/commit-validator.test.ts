@@ -383,6 +383,16 @@ describe('parseBatchedOutput', () => {
     expect(results).toEqual([{ validator: 'v1', decision: 'ACK' }]);
   });
 
+  it('NACKs when outer object has non-string result field', () => {
+    const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: 42 });
+
+    const results = parseBatchedOutput(stdout, ['v1']);
+
+    expect(results).toEqual([
+      { validator: 'v1', decision: 'NACK', reason: 'batched validator returned unparseable response' },
+    ]);
+  });
+
   it('accepts validator key as alias for id', () => {
     const inner = [{ validator: 'v1', decision: 'ACK' }];
     const stdout = JSON.stringify({ type: 'result', subtype: 'success', result: JSON.stringify(inner) });
