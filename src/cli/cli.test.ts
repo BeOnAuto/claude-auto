@@ -148,6 +148,47 @@ describe('tui action', () => {
     stdoutWrite.mockRestore();
     vi.restoreAllMocks();
   });
+
+  it('SIGINT handler stops tui and restores cursor', async () => {
+    const ketchupDir = path.join(tempDir, '.ketchup');
+    fs.mkdirSync(path.join(ketchupDir, 'logs'), { recursive: true });
+    fs.writeFileSync(path.join(ketchupDir, '.claude.hooks.json'), '{}');
+
+    const writes: string[] = [];
+    const stdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation((chunk: string | Uint8Array) => {
+      writes.push(String(chunk));
+      return true;
+    });
+    const cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(tempDir);
+    vi.spyOn(process.stdout, 'on').mockReturnValue(process.stdout);
+
+    let sigintHandler: (() => void) | undefined;
+    vi.spyOn(process, 'on').mockImplementation((event: string | symbol, handler: (...args: unknown[]) => void) => {
+      if (event === 'SIGINT') sigintHandler = handler as () => void;
+      return process;
+    });
+
+    const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
+      throw new Error('process.exit');
+    });
+
+    Object.defineProperty(process.stdout, 'columns', { value: 80, configurable: true });
+    Object.defineProperty(process.stdout, 'rows', { value: 24, configurable: true });
+
+    const program = createCli();
+    program.exitOverride();
+    await program.parseAsync(['node', 'claude-auto', 'tui']);
+
+    writes.length = 0;
+
+    expect(() => sigintHandler!()).toThrow('process.exit');
+    expect(writes).toEqual(['\x1b[?25h']);
+
+    exitSpy.mockRestore();
+    cwdSpy.mockRestore();
+    stdoutWrite.mockRestore();
+    vi.restoreAllMocks();
+  });
 });
 
 describe('default action', () => {
