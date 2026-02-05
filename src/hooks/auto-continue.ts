@@ -88,7 +88,7 @@ export function handleStop(autoDir: string, input: StopHookInput): StopHookResul
     return { decision: 'allow', reason: 'stop hook already active' };
   }
 
-  const modesToSkip = skipModes ?? ['plan'];
+  const modesToSkip = skipModes;
   if (input.permission_mode && modesToSkip.includes(input.permission_mode)) {
     return { decision: 'allow', reason: `skipping mode: ${input.permission_mode}` };
   }

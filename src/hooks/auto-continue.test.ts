@@ -161,6 +161,17 @@ describe('auto-continue hook', () => {
       expect(result).toEqual({ decision: 'allow', reason: 'stop hook already active' });
     });
 
+    it('defaults to skipping plan mode via DEFAULT_HOOK_STATE skipModes', () => {
+      const autoDir = path.join(tempDir, '.claude-auto');
+      fs.mkdirSync(autoDir, { recursive: true });
+      fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify({ autoContinue: { mode: 'smart' } }));
+
+      const input: StopHookInput = { session_id: 'test-session', permission_mode: 'plan' };
+      const result = handleStop(autoDir, input);
+
+      expect(result).toEqual({ decision: 'allow', reason: 'skipping mode: plan' });
+    });
+
     it('returns allow when permission_mode is in skipModes', () => {
       const autoDir = path.join(tempDir, '.claude-auto');
       fs.mkdirSync(autoDir, { recursive: true });

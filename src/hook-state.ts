@@ -8,7 +8,7 @@ export interface AutoContinueState {
   mode: ContinueMode;
   maxIterations?: number;
   iteration?: number;
-  skipModes?: string[];
+  skipModes: string[];
 }
 
 export interface ValidateCommitState {
