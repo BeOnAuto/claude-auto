@@ -14,6 +14,11 @@ function debug(...args: unknown[]): void {
   if (process.env.DEBUG) console.error('[claude-auto]', ...args);
 }
 
+export function resolveScriptPaths(template: string, projectRoot: string): string {
+  const normalizedRoot = projectRoot.endsWith('/') ? projectRoot.slice(0, -1) : projectRoot;
+  return template.replace(/node \.claude-auto\/scripts\//g, `node ${normalizedRoot}/.claude-auto/scripts/`);
+}
+
 export function getPackageRoot(startDir: string = __dirname): string {
   let dir = startDir;
   while (dir !== path.dirname(dir)) {

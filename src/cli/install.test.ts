@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { copyDir, getPackageRoot, install } from './install.js';
+import { copyDir, getPackageRoot, install, resolveScriptPaths } from './install.js';
 
 describe('cli install', () => {
   let tempDir: string;
@@ -354,5 +354,47 @@ describe('install with DEBUG', () => {
 
     expect(calls.every((c) => c[0] === '[claude-auto]')).toEqual(true);
     expect(calls.find((c) => c[1] === 'target:')).toEqual(['[claude-auto]', 'target:', tempDir]);
+  });
+});
+
+describe('resolveScriptPaths', () => {
+  it('replaces relative .claude-auto/scripts/ paths with absolute paths', () => {
+    const template = '{"command": "node .claude-auto/scripts/session-start.js"}';
+    const projectRoot = '/home/user/my-project';
+
+    const result = resolveScriptPaths(template, projectRoot);
+
+    expect(result).toBe('{"command": "node /home/user/my-project/.claude-auto/scripts/session-start.js"}');
+  });
+
+  it('handles multiple script paths in template', () => {
+    const template = JSON.stringify({
+      hooks: {
+        SessionStart: [{ hooks: [{ command: 'node .claude-auto/scripts/session-start.js' }] }],
+        Stop: [{ hooks: [{ command: 'node .claude-auto/scripts/auto-continue.js' }] }],
+      },
+    });
+
+    const result = resolveScriptPaths(template, '/project');
+    const parsed = JSON.parse(result);
+
+    expect(parsed.hooks.SessionStart[0].hooks[0].command).toBe('node /project/.claude-auto/scripts/session-start.js');
+    expect(parsed.hooks.Stop[0].hooks[0].command).toBe('node /project/.claude-auto/scripts/auto-continue.js');
+  });
+
+  it('does not modify non-script paths', () => {
+    const template = '{"autoDir": ".claude-auto"}';
+
+    const result = resolveScriptPaths(template, '/project');
+
+    expect(result).toBe('{"autoDir": ".claude-auto"}');
+  });
+
+  it('normalizes project root with trailing slash', () => {
+    const template = '{"command": "node .claude-auto/scripts/test.js"}';
+
+    const result = resolveScriptPaths(template, '/project/');
+
+    expect(result).toBe('{"command": "node /project/.claude-auto/scripts/test.js"}');
   });
 });
