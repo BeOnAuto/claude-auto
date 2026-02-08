@@ -183,6 +183,18 @@ describe('cli install', () => {
 
     expect(result.targetDir).toBe(path.resolve('.'));
   });
+
+  it('creates settings.json with absolute script paths', async () => {
+    await install(tempDir);
+
+    const settingsPath = path.join(tempDir, '.claude', 'settings.json');
+    const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
+
+    expect(settings.hooks.SessionStart[0].hooks[0].command).toBe(
+      `node ${tempDir}/.claude-auto/scripts/session-start.js`,
+    );
+    expect(settings.hooks.Stop[0].hooks[0].command).toBe(`node ${tempDir}/.claude-auto/scripts/auto-continue.js`);
+  });
 });
 
 describe('local install', () => {

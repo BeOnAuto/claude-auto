@@ -79,7 +79,10 @@ export async function install(targetPath?: string, options?: { local?: boolean }
     const templateName = local ? 'settings.local.json' : 'settings.json';
     const templatePath = path.join(pkgRoot, 'templates', templateName);
     debug('template:', templatePath);
-    const template = fs.readFileSync(templatePath, 'utf-8');
+    let template = fs.readFileSync(templatePath, 'utf-8');
+    if (!local) {
+      template = resolveScriptPaths(template, resolvedTarget);
+    }
     fs.writeFileSync(settingsPath, template);
     settingsCreated = true;
     debug('settings.json created');
