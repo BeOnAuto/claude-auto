@@ -1,5 +1,11 @@
 # claude-ketchup
 
+## 0.13.6
+
+### Patch Changes
+
+- e0b8663: Fix hook scripts not found after cd command by using absolute paths in settings.json
+
 ## 0.13.5
 
 ### Patch Changes
