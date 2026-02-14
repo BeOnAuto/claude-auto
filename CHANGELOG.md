@@ -1,5 +1,13 @@
 # claude-ketchup
 
+## 0.13.8
+
+### Patch Changes
+
+- 0fc3250: - Fixed PreToolUse hook to use the correct Claude Code hook output format
+  - Updated permission decision fields to match current Claude Code hook API (decision, reason, and result field names)
+  - Changed block action value from 'block' to 'deny' per official documentation
+
 ## 0.13.7
 
 ### Patch Changes
