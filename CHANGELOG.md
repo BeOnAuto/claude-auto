@@ -1,5 +1,13 @@
 # claude-ketchup
 
+## 0.13.9
+
+### Patch Changes
+
+- 78cc2bd: - Fixed output format for UserPromptSubmit hooks to correctly use additionalContext for injecting reminders
+  - Fixed output format for Stop hooks to use the proper decision/reason structure for auto-continue behavior
+  - Removed unused parameter from prompt submission handler
+
 ## 0.13.8
 
 ### Patch Changes
