@@ -4,7 +4,10 @@ import { type ResolvedPaths, resolvePaths } from '../path-resolver.js';
 import { loadReminders, scanReminders } from '../reminder-loader.js';
 
 type HookResult = {
-  result: string;
+  hookSpecificOutput: {
+    hookEventName: 'UserPromptSubmit';
+    additionalContext: string;
+  };
 };
 
 export interface UserPromptSubmitDiagnostics {
@@ -16,7 +19,6 @@ export interface UserPromptSubmitDiagnostics {
 export async function handleUserPromptSubmit(
   claudeDir: string,
   sessionId: string,
-  userPrompt: string,
 ): Promise<HookResult & { diagnostics: UserPromptSubmitDiagnostics }> {
   const paths = await resolvePaths(claudeDir);
   const reminderFiles = scanReminders(paths.remindersDir);
@@ -43,12 +45,11 @@ export async function handleUserPromptSubmit(
     matchedReminders: reminders.map((r) => ({ name: r.name, priority: r.priority })),
   };
 
-  if (reminderContent) {
-    return {
-      result: `${userPrompt}\n\n<system-reminder>\n${reminderContent}\n</system-reminder>`,
-      diagnostics,
-    };
-  }
-
-  return { result: userPrompt, diagnostics };
+  return {
+    hookSpecificOutput: {
+      hookEventName: 'UserPromptSubmit',
+      additionalContext: reminderContent,
+    },
+    diagnostics,
+  };
 }

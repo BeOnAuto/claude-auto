@@ -31,7 +31,7 @@ describe('user-prompt-submit hook', () => {
     }
   });
 
-  it('injects reminders into user prompt', async () => {
+  it('injects reminders as additionalContext', async () => {
     const remindersDir = path.join(autoDir, 'reminders');
     fs.mkdirSync(remindersDir, { recursive: true });
     fs.writeFileSync(
@@ -45,18 +45,22 @@ priority: 10
 Remember to follow coding standards.`,
     );
 
-    const result = await handleUserPromptSubmit(claudeDir, 'session-1', 'Help me fix this bug');
+    const result = await handleUserPromptSubmit(claudeDir, 'session-1');
 
-    expect(result.result).toBe(
-      'Help me fix this bug\n\n<system-reminder>\nRemember to follow coding standards.\n</system-reminder>',
-    );
+    expect(result.hookSpecificOutput).toEqual({
+      hookEventName: 'UserPromptSubmit',
+      additionalContext: 'Remember to follow coding standards.',
+    });
     expect(result.diagnostics.matchedReminders).toEqual([{ name: 'coding-standards', priority: 10 }]);
   });
 
-  it('returns prompt unchanged when no reminders exist', async () => {
-    const result = await handleUserPromptSubmit(claudeDir, 'session-2', 'Help me fix this bug');
+  it('returns empty additionalContext when no reminders exist', async () => {
+    const result = await handleUserPromptSubmit(claudeDir, 'session-2');
 
-    expect(result.result).toBe('Help me fix this bug');
+    expect(result.hookSpecificOutput).toEqual({
+      hookEventName: 'UserPromptSubmit',
+      additionalContext: '',
+    });
     expect(result.diagnostics.matchedReminders).toEqual([]);
   });
 
@@ -74,7 +78,7 @@ priority: 10
 Remember to follow coding standards.`,
     );
 
-    await handleUserPromptSubmit(claudeDir, 'my-session-id', 'Help me fix this bug');
+    await handleUserPromptSubmit(claudeDir, 'my-session-id');
 
     const logPath = path.join(autoDir, 'logs', 'activity.log');
     expect(fs.existsSync(logPath)).toBe(true);
@@ -98,7 +102,7 @@ priority: 10
 Remember to follow coding standards.`,
     );
 
-    await handleUserPromptSubmit(claudeDir, 'debug-session', 'Help me fix this bug');
+    await handleUserPromptSubmit(claudeDir, 'debug-session');
 
     const logPath = path.join(autoDir, 'logs', 'claude-auto', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);

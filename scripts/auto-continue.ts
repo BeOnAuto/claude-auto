@@ -20,8 +20,7 @@ const startTime = Date.now();
   const { autoDir } = await resolvePaths(claudeDir);
   const result = handleStop(autoDir, input);
 
-  const output =
-    result.decision === 'block' ? { stopReason: result.reason, forceResult: { behaviour: 'block' } } : null;
+  const output = result.decision === 'block' ? { decision: 'block', reason: result.reason } : null;
 
   writeHookLog(autoDir, {
     hookName: 'auto-continue',
