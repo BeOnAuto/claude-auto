@@ -16,9 +16,12 @@ import { loadValidators } from '../validator-loader.js';
 type ToolInput = Record<string, unknown>;
 
 type HookResult = {
-  decision: 'block' | 'allow';
-  reason?: string;
-  result?: string;
+  hookSpecificOutput: {
+    hookEventName: 'PreToolUse';
+    permissionDecision: 'block' | 'allow';
+    permissionDecisionReason?: string;
+    additionalContext?: string;
+  };
 };
 
 interface PreToolUseOptions {
@@ -46,8 +49,11 @@ export async function handlePreToolUse(
     activityLog(paths.autoDir, sessionId, 'pre-tool-use', `blocked: ${filePath}`);
     debugLog(paths.autoDir, 'pre-tool-use', `${filePath} blocked by deny-list`);
     return {
-      decision: 'block',
-      reason: `Path ${filePath} is denied by claude-auto deny-list`,
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'block',
+        permissionDecisionReason: `Path ${filePath} is denied by claude-auto deny-list`,
+      },
     };
   }
 
@@ -59,10 +65,21 @@ export async function handlePreToolUse(
   const reminderContent = reminders.map((r) => r.content).join('\n\n');
 
   if (reminderContent) {
-    return { decision: 'allow', result: reminderContent };
+    return {
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'allow',
+        additionalContext: reminderContent,
+      },
+    };
   }
 
-  return { decision: 'allow' };
+  return {
+    hookSpecificOutput: {
+      hookEventName: 'PreToolUse',
+      permissionDecision: 'allow',
+    },
+  };
 }
 
 async function handleCommitValidation(
@@ -78,7 +95,12 @@ async function handleCommitValidation(
 
   if (validators.length === 0) {
     activityLog(autoDir, sessionId, 'pre-tool-use', 'commit allowed (no validators)');
-    return { decision: 'allow' };
+    return {
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'allow',
+      },
+    };
   }
 
   const context = getCommitContext(process.cwd(), command);
@@ -95,12 +117,20 @@ async function handleCommitValidation(
     activityLog(autoDir, sessionId, 'pre-tool-use', `commit blocked: ${reasons}`);
     debugLog(autoDir, 'pre-tool-use', `commit blocked: ${reasons}`);
     return {
-      decision: 'block',
-      reason: reasons,
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'block',
+        permissionDecisionReason: reasons,
+      },
     };
   }
 
   activityLog(autoDir, sessionId, 'pre-tool-use', 'commit allowed');
   debugLog(autoDir, 'pre-tool-use', 'commit allowed');
-  return { decision: 'allow' };
+  return {
+    hookSpecificOutput: {
+      hookEventName: 'PreToolUse',
+      permissionDecision: 'allow',
+    },
+  };
 }

@@ -38,8 +38,11 @@ describe('pre-tool-use hook', () => {
     const result = await handlePreToolUse(claudeDir, 'session-1', toolInput);
 
     expect(result).toEqual({
-      decision: 'block',
-      reason: 'Path /project/config.secret is denied by claude-auto deny-list',
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'block',
+        permissionDecisionReason: 'Path /project/config.secret is denied by claude-auto deny-list',
+      },
     });
   });
 
@@ -49,7 +52,12 @@ describe('pre-tool-use hook', () => {
 
     const result = await handlePreToolUse(claudeDir, 'session-2', toolInput);
 
-    expect(result).toEqual({ decision: 'allow' });
+    expect(result).toEqual({
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'allow',
+      },
+    });
   });
 
   it('does not write to activity.log for non-commit non-blocked tool use', async () => {
@@ -96,7 +104,12 @@ describe('pre-tool-use hook', () => {
 
     const result = await handlePreToolUse(claudeDir, 'session-no-validators', toolInput);
 
-    expect(result).toEqual({ decision: 'allow' });
+    expect(result).toEqual({
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'allow',
+      },
+    });
   });
 
   it('routes Bash git commit to validator and blocks on NACK', async () => {
@@ -128,8 +141,11 @@ Validate this commit`,
     const result = await handlePreToolUse(claudeDir, 'session-3', toolInput, { executor });
 
     expect(result).toEqual({
-      decision: 'block',
-      reason: 'test-validator: Missing tests',
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'block',
+        permissionDecisionReason: 'test-validator: Missing tests',
+      },
     });
   });
 
@@ -161,7 +177,12 @@ Validate this commit`,
 
     const result = await handlePreToolUse(claudeDir, 'session-4', toolInput, { executor });
 
-    expect(result).toEqual({ decision: 'allow' });
+    expect(result).toEqual({
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'allow',
+      },
+    });
   });
 
   it('excludes appeal-system from regular validator run', async () => {
@@ -201,7 +222,12 @@ You are the appeal system.`,
 
     const result = await handlePreToolUse(claudeDir, 'session-appeal-exclude', toolInput, { executor });
 
-    expect(result).toEqual({ decision: 'allow' });
+    expect(result).toEqual({
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'allow',
+      },
+    });
     expect(executor).toHaveBeenCalledTimes(1);
   });
 
@@ -249,8 +275,11 @@ Validate this commit`,
       const result = await handlePreToolUse(claudeDir, 'session-cd-fix', toolInput, { executor });
 
       expect(result).toEqual({
-        decision: 'block',
-        reason: 'test-validator: Missing tests',
+        hookSpecificOutput: {
+          hookEventName: 'PreToolUse',
+          permissionDecision: 'block',
+          permissionDecisionReason: 'test-validator: Missing tests',
+        },
       });
     } finally {
       cwdSpy.mockRestore();
@@ -286,8 +315,11 @@ Check for typos.`,
     const result = await handlePreToolUse(claudeDir, 'session-5', toolInput, { toolName: 'Bash' });
 
     expect(result).toEqual({
-      decision: 'allow',
-      result: 'Remember: test && commit || revert',
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'allow',
+        additionalContext: 'Remember: test && commit || revert',
+      },
     });
   });
 });
