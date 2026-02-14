@@ -14,7 +14,7 @@ const startTime = Date.now();
 (async () => {
   const { autoDir } = await resolvePaths(claudeDir);
   try {
-    const { diagnostics, ...result } = await handleUserPromptSubmit(claudeDir, input.session_id, input.prompt || '');
+    const { diagnostics, ...result } = await handleUserPromptSubmit(claudeDir, input.session_id);
     writeHookLog(autoDir, {
       hookName: 'user-prompt-submit',
       timestamp: new Date().toISOString(),
@@ -22,7 +22,7 @@ const startTime = Date.now();
       resolvedPaths: diagnostics.resolvedPaths,
       reminderFiles: diagnostics.reminderFiles,
       matchedReminders: diagnostics.matchedReminders,
-      output: { resultLength: result.result.length },
+      output: { contextLength: result.hookSpecificOutput.additionalContext.length },
       durationMs: Date.now() - startTime,
     });
     console.log(JSON.stringify(result));
