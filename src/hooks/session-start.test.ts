@@ -111,4 +111,41 @@ Reminder B content.`,
     expect(content).toContain('[session-start]');
     expect(content).toContain('loaded 1 reminders for SessionStart');
   });
+
+  it('skips reminders for validator subagent sessions', async () => {
+    const remindersDir = path.join(autoDir, 'reminders');
+    fs.mkdirSync(remindersDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(remindersDir, 'reminder.md'),
+      `---
+when:
+  hook: SessionStart
+priority: 10
+---
+
+Should be skipped.`,
+    );
+
+    const validatorPrompt = `<diff>
+changes
+</diff>
+
+<commit-message>
+fix(core): something
+</commit-message>
+
+<files>
+src/file.ts
+</files>
+
+You are a commit validator.`;
+
+    const result = await handleSessionStart(claudeDir, 'validator-session', validatorPrompt);
+
+    expect(result.hookSpecificOutput).toEqual({
+      hookEventName: 'SessionStart',
+      additionalContext: '',
+    });
+    expect(result.diagnostics.matchedReminders).toEqual([]);
+  });
 });
