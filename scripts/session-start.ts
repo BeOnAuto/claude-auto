@@ -2,6 +2,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+import { activityLog } from '../src/activity-logger.js';
 import { parseHookInput } from '../src/hook-input.js';
 import { writeHookLog } from '../src/hook-logger.js';
 import { handleSessionStart } from '../src/hooks/session-start.js';
@@ -28,6 +29,7 @@ const startTime = Date.now();
     console.log(JSON.stringify(result));
     process.exit(0);
   } catch (err) {
+    activityLog(autoDir, input.session_id, 'session-start', `error: ${String(err)}`);
     writeHookLog(autoDir, {
       hookName: 'session-start',
       timestamp: new Date().toISOString(),
