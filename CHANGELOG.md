@@ -1,5 +1,30 @@
 # claude-ketchup
 
+## 0.14.0
+
+### Minor Changes
+
+- 8bb654c: - Hook errors are now logged to the main activity.log file, making failures easier to discover without checking individual hook log files
+- af6797e: - Validator sessions are now detected by agent type instead of prompt content, making detection more reliable and less fragile
+- b518201: - Skip loading reminders for validator subagent sessions during session start, reducing unnecessary overhead for ephemeral validation processes
+- 43c688c: - Added detection of validator subagent sessions by identifying validation-specific tags in prompts
+  - Enables skipping unnecessary reminder injection during commit validation, improving validation performance
+- 52bd08e: - Added agent_type field to hook inputs, enabling hooks to detect whether they're running in a main session or a subagent
+  - Validator subagents now skip reminder injection at session start and prompt submit, reducing noise during automated validation
+- 26ce2a3: - Skip reminder injection for validator subagent sessions in both session-start and user-prompt-submit hooks, reducing unnecessary overhead during commit validation
+  - Add isValidatorSession utility to detect when a session is running as a validator subagent
+- 475b22c: - Added `--agent validator` flag to all validator subagent spawns, enabling hooks to detect and customize behavior for validator sessions
+  - Created `.claude-auto/agents/validator.md` agent definition file for validator subagents
+- b4ec2d5: - Added automatic copying of agent definitions during install to support commit validation subagents
+
+### Patch Changes
+
+- 0011b45: - Updated core module description to clarify its role as a subagent
+- 06f5d8e: - Fixed git commands failing when claude-auto is installed in a non-git parent directory containing git repo subdirectories
+  - Hook scripts now correctly use the working directory reported by Claude Code instead of the installation directory
+- 21abd5e: - Added planning document for the skip reminders feature
+- 9c0fa4d: - Updated ketchup plan to reflect all bursts complete
+
 ## 0.13.9
 
 ### Patch Changes
