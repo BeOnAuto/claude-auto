@@ -40,7 +40,7 @@ describe('pre-tool-use hook', () => {
     expect(result).toEqual({
       hookSpecificOutput: {
         hookEventName: 'PreToolUse',
-        permissionDecision: 'block',
+        permissionDecision: 'deny',
         permissionDecisionReason: 'Path /project/config.secret is denied by claude-auto deny-list',
       },
     });
@@ -143,7 +143,7 @@ Validate this commit`,
     expect(result).toEqual({
       hookSpecificOutput: {
         hookEventName: 'PreToolUse',
-        permissionDecision: 'block',
+        permissionDecision: 'deny',
         permissionDecisionReason: 'test-validator: Missing tests',
       },
     });
@@ -277,7 +277,7 @@ Validate this commit`,
       expect(result).toEqual({
         hookSpecificOutput: {
           hookEventName: 'PreToolUse',
-          permissionDecision: 'block',
+          permissionDecision: 'deny',
           permissionDecisionReason: 'test-validator: Missing tests',
         },
       });

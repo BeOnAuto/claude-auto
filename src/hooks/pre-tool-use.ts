@@ -18,7 +18,7 @@ type ToolInput = Record<string, unknown>;
 type HookResult = {
   hookSpecificOutput: {
     hookEventName: 'PreToolUse';
-    permissionDecision: 'block' | 'allow';
+    permissionDecision: 'deny' | 'allow';
     permissionDecisionReason?: string;
     additionalContext?: string;
   };
@@ -51,7 +51,7 @@ export async function handlePreToolUse(
     return {
       hookSpecificOutput: {
         hookEventName: 'PreToolUse',
-        permissionDecision: 'block',
+        permissionDecision: 'deny',
         permissionDecisionReason: `Path ${filePath} is denied by claude-auto deny-list`,
       },
     };
@@ -119,7 +119,7 @@ async function handleCommitValidation(
     return {
       hookSpecificOutput: {
         hookEventName: 'PreToolUse',
-        permissionDecision: 'block',
+        permissionDecision: 'deny',
         permissionDecisionReason: reasons,
       },
     };
