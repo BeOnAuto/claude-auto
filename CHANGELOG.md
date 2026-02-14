@@ -1,5 +1,11 @@
 # claude-ketchup
 
+## 0.13.7
+
+### Patch Changes
+
+- 05f2bc8: - Fixed hooks to use the updated hooks result format
+
 ## 0.13.6
 
 ### Patch Changes
