@@ -194,7 +194,7 @@ export async function runValidator(
   executor: Executor = spawnAsync,
 ): Promise<ValidatorResult> {
   const prompt = buildPrompt(validator, context);
-  const args = ['-p', '--no-session-persistence', prompt, '--output-format', 'json'];
+  const args = ['-p', '--no-session-persistence', '--agent', 'validator', prompt, '--output-format', 'json'];
   const opts = { encoding: 'utf8' } as const;
 
   const first = await executor('claude', args, opts);
@@ -262,9 +262,13 @@ export async function runAppealValidator(
   executor: Executor = spawnAsync,
 ): Promise<ValidatorResult> {
   const prompt = buildAppealPrompt(appealValidator, context, results, appeal);
-  const result = await executor('claude', ['-p', '--no-session-persistence', prompt, '--output-format', 'json'], {
-    encoding: 'utf8',
-  });
+  const result = await executor(
+    'claude',
+    ['-p', '--no-session-persistence', '--agent', 'validator', prompt, '--output-format', 'json'],
+    {
+      encoding: 'utf8',
+    },
+  );
 
   return parseClaudeJsonOutput(result.stdout);
 }
@@ -343,7 +347,7 @@ export async function validateCommit(
 
     try {
       const prompt = buildBatchedPrompt(chunk, context);
-      const args = ['-p', '--no-session-persistence', prompt, '--output-format', 'json'];
+      const args = ['-p', '--no-session-persistence', '--agent', 'validator', prompt, '--output-format', 'json'];
       const opts = { encoding: 'utf8' } as const;
 
       const spawnResult = await executor('claude', args, opts);

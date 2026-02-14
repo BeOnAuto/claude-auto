@@ -28,6 +28,12 @@ function claudeBatchJson(results: Array<{ id: string; decision: string; reason?:
   return JSON.stringify({ type: 'result', subtype: 'success', result: JSON.stringify(results) });
 }
 
+function extractPromptArg(args: string[]): string {
+  const prompt = args.find((arg) => arg.includes('<diff>') || arg.includes('<validator') || arg.includes('<appeal>'));
+  if (!prompt) throw new Error('No prompt argument found in args');
+  return prompt;
+}
+
 describe('spawnAsync', () => {
   it('resolves with stdout, stderr, and exit status from spawned process', async () => {
     const result = await spawnAsync('echo', ['hello'], { encoding: 'utf8' });
@@ -440,7 +446,15 @@ describe('runValidator', () => {
 
     expect(executor).toHaveBeenCalledWith(
       'claude',
-      ['-p', '--no-session-persistence', expect.stringContaining('<diff>'), '--output-format', 'json'],
+      [
+        '-p',
+        '--no-session-persistence',
+        '--agent',
+        'validator',
+        expect.stringContaining('<diff>'),
+        '--output-format',
+        'json',
+      ],
       expect.objectContaining({ encoding: 'utf8' }),
     );
   });
@@ -466,14 +480,41 @@ describe('runValidator', () => {
 
     await runValidator(validator, context, executor);
 
-    const prompt = executor.mock.calls[0][1][2];
-    expect(prompt).toContain('Check that tests pass');
-    expect(prompt).toContain('<diff>');
-    expect(prompt).toContain('+hello');
-    expect(prompt).toContain('<commit-message>');
-    expect(prompt).toContain('Test commit');
-    expect(prompt).toContain('<files>');
-    expect(prompt).toContain('test.txt');
+    expect(executor).toHaveBeenCalledWith(
+      'claude',
+      expect.arrayContaining([expect.stringContaining('Check that tests pass')]),
+      expect.anything(),
+    );
+    expect(executor).toHaveBeenCalledWith(
+      'claude',
+      expect.arrayContaining([expect.stringContaining('<diff>')]),
+      expect.anything(),
+    );
+    expect(executor).toHaveBeenCalledWith(
+      'claude',
+      expect.arrayContaining([expect.stringContaining('+hello')]),
+      expect.anything(),
+    );
+    expect(executor).toHaveBeenCalledWith(
+      'claude',
+      expect.arrayContaining([expect.stringContaining('<commit-message>')]),
+      expect.anything(),
+    );
+    expect(executor).toHaveBeenCalledWith(
+      'claude',
+      expect.arrayContaining([expect.stringContaining('Test commit')]),
+      expect.anything(),
+    );
+    expect(executor).toHaveBeenCalledWith(
+      'claude',
+      expect.arrayContaining([expect.stringContaining('<files>')]),
+      expect.anything(),
+    );
+    expect(executor).toHaveBeenCalledWith(
+      'claude',
+      expect.arrayContaining([expect.stringContaining('test.txt')]),
+      expect.anything(),
+    );
   });
 
   it('parses ACK response from claude json wrapper', async () => {
@@ -595,12 +636,31 @@ describe('runAppealValidator', () => {
 
     await runAppealValidator(appealValidator, context, results, appeal, executor);
 
-    const prompt = executor.mock.calls[0][1][2];
-    expect(prompt).toContain('<validator-results>');
-    expect(prompt).toContain('coverage-rules: NACK - Missing tests');
-    expect(prompt).toContain('<appeal>');
-    expect(prompt).toContain('these files are tightly coupled');
-    expect(prompt).toContain('Judge the appeal');
+    expect(executor).toHaveBeenCalledWith(
+      'claude',
+      expect.arrayContaining([expect.stringContaining('<validator-results>')]),
+      expect.anything(),
+    );
+    expect(executor).toHaveBeenCalledWith(
+      'claude',
+      expect.arrayContaining([expect.stringContaining('coverage-rules: NACK - Missing tests')]),
+      expect.anything(),
+    );
+    expect(executor).toHaveBeenCalledWith(
+      'claude',
+      expect.arrayContaining([expect.stringContaining('<appeal>')]),
+      expect.anything(),
+    );
+    expect(executor).toHaveBeenCalledWith(
+      'claude',
+      expect.arrayContaining([expect.stringContaining('these files are tightly coupled')]),
+      expect.anything(),
+    );
+    expect(executor).toHaveBeenCalledWith(
+      'claude',
+      expect.arrayContaining([expect.stringContaining('Judge the appeal')]),
+      expect.anything(),
+    );
   });
 
   it('returns ACK when appeal is valid', async () => {
@@ -663,16 +723,20 @@ describe('runAppealValidator', () => {
 
     await runAppealValidator(appealValidator, context, results, 'appeal', executor);
 
-    const prompt = executor.mock.calls[0][1][2];
-    expect(prompt).toMatch(/v1: NACK\n/);
+    expect(executor).toHaveBeenCalledWith(
+      'claude',
+      expect.arrayContaining([expect.stringMatching(/v1: NACK\n/)]),
+      expect.anything(),
+    );
   });
 });
 
 describe('validateCommit', () => {
   it('builds batched prompt with validator tags and stripped boilerplate', async () => {
-    const executor = vi.fn().mockReturnValue({
-      status: 0,
-      stdout: claudeBatchJson([{ id: 'v1', decision: 'ACK' }]),
+    let capturedPrompt = '';
+    const executor = vi.fn().mockImplementation((_cmd: string, args: string[]) => {
+      capturedPrompt = extractPromptArg(args);
+      return { status: 0, stdout: claudeBatchJson([{ id: 'v1', decision: 'ACK' }]) };
     });
 
     const boilerplateContent = `You are a commit validator. You MUST respond with ONLY a JSON object, no other text.
@@ -692,20 +756,19 @@ RESPOND WITH JSON ONLY - NO PROSE, NO MARKDOWN, NO EXPLANATION OUTSIDE THE JSON.
 
     await validateCommit(validators, context, executor);
 
-    const prompt = executor.mock.calls[0][1][2];
-    expect(prompt).toContain('<validator id="v1">');
-    expect(prompt).toContain('Check for tests.');
-    expect(prompt).not.toContain('You are a commit validator. You MUST');
-    expect(prompt).not.toContain('RESPOND WITH JSON ONLY');
-    expect(prompt).not.toContain('Valid responses:');
-    expect(prompt).toContain('Respond with ONLY a JSON array');
+    expect(capturedPrompt).toContain('<validator id="v1">');
+    expect(capturedPrompt).toContain('Check for tests.');
+    expect(capturedPrompt).not.toContain('You are a commit validator. You MUST');
+    expect(capturedPrompt).not.toContain('RESPOND WITH JSON ONLY');
+    expect(capturedPrompt).not.toContain('Valid responses:');
+    expect(capturedPrompt).toContain('Respond with ONLY a JSON array');
   });
 
   it('runs batches in parallel and returns flattened results', async () => {
     const callLog: string[] = [];
 
     const asyncExecutor = vi.fn().mockImplementation((_cmd: string, args: string[]) => {
-      const prompt = args[2];
+      const prompt = extractPromptArg(args);
       const batchName = prompt.includes('"v1"') ? 'batch-0' : prompt.includes('"v2"') ? 'batch-1' : 'batch-2';
       callLog.push(`start:${batchName}`);
       return new Promise((resolve) => {
@@ -917,7 +980,7 @@ RESPOND WITH JSON ONLY - NO PROSE, NO MARKDOWN, NO EXPLANATION OUTSIDE THE JSON.
 
   it('uses provided batchCount to control chunk size', async () => {
     const executor = vi.fn().mockImplementation((_cmd: string, args: string[]) => {
-      const prompt = args[2];
+      const prompt = extractPromptArg(args);
       if (prompt.includes('"v1"') && prompt.includes('"v2"')) {
         return {
           status: 0,
