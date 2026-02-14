@@ -110,4 +110,41 @@ Remember to follow coding standards.`,
     expect(content).toContain('[user-prompt-submit]');
     expect(content).toContain('injected 1 reminder');
   });
+
+  it('skips reminders for validator subagent sessions', async () => {
+    const remindersDir = path.join(autoDir, 'reminders');
+    fs.mkdirSync(remindersDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(remindersDir, 'reminder.md'),
+      `---
+when:
+  hook: UserPromptSubmit
+priority: 10
+---
+
+Should be skipped.`,
+    );
+
+    const validatorPrompt = `<diff>
+changes
+</diff>
+
+<commit-message>
+fix(core): something
+</commit-message>
+
+<files>
+src/file.ts
+</files>
+
+You are a commit validator.`;
+
+    const result = await handleUserPromptSubmit(claudeDir, 'validator-session', validatorPrompt);
+
+    expect(result.hookSpecificOutput).toEqual({
+      hookEventName: 'UserPromptSubmit',
+      additionalContext: '',
+    });
+    expect(result.diagnostics.matchedReminders).toEqual([]);
+  });
 });

@@ -15,7 +15,7 @@ const startTime = Date.now();
 (async () => {
   const { autoDir } = await resolvePaths(claudeDir);
   try {
-    const { diagnostics, ...result } = await handleUserPromptSubmit(claudeDir, input.session_id);
+    const { diagnostics, ...result } = await handleUserPromptSubmit(claudeDir, input.session_id, input.prompt);
     writeHookLog(autoDir, {
       hookName: 'user-prompt-submit',
       timestamp: new Date().toISOString(),
