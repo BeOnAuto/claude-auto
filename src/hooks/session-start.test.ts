@@ -126,21 +126,7 @@ priority: 10
 Should be skipped.`,
     );
 
-    const validatorPrompt = `<diff>
-changes
-</diff>
-
-<commit-message>
-fix(core): something
-</commit-message>
-
-<files>
-src/file.ts
-</files>
-
-You are a commit validator.`;
-
-    const result = await handleSessionStart(claudeDir, 'validator-session', validatorPrompt);
+    const result = await handleSessionStart(claudeDir, 'validator-session', 'validator');
 
     expect(result.hookSpecificOutput).toEqual({
       hookEventName: 'SessionStart',

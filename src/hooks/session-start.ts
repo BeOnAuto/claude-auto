@@ -2,7 +2,6 @@ import { activityLog } from '../activity-logger.js';
 import { debugLog } from '../debug-logger.js';
 import { type ResolvedPaths, resolvePaths } from '../path-resolver.js';
 import { loadReminders, scanReminders } from '../reminder-loader.js';
-import { isValidatorSession } from '../validator-session.js';
 
 type HookResult = {
   hookSpecificOutput: {
@@ -20,12 +19,12 @@ export interface SessionStartDiagnostics {
 export async function handleSessionStart(
   claudeDir: string,
   sessionId: string = '',
-  prompt?: string,
+  agentType?: string,
 ): Promise<HookResult & { diagnostics: SessionStartDiagnostics }> {
   const paths = await resolvePaths(claudeDir);
   const reminderFiles = scanReminders(paths.remindersDir);
 
-  if (isValidatorSession(prompt)) {
+  if (agentType === 'validator') {
     activityLog(paths.autoDir, sessionId, 'session-start', 'skipped reminders for validator session');
     debugLog(paths.autoDir, 'session-start', 'skipped reminders for validator session');
 

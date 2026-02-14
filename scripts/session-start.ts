@@ -15,7 +15,7 @@ const startTime = Date.now();
 (async () => {
   const { autoDir } = await resolvePaths(claudeDir);
   try {
-    const { diagnostics, ...result } = await handleSessionStart(claudeDir, input.session_id, input.prompt);
+    const { diagnostics, ...result } = await handleSessionStart(claudeDir, input.session_id, input.agent_type);
     writeHookLog(autoDir, {
       hookName: 'session-start',
       timestamp: new Date().toISOString(),
