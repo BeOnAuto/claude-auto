@@ -99,6 +99,7 @@ export async function install(targetPath?: string, options?: { local?: boolean }
   if (!local) {
     copyDir(path.join(pkgRoot, '.claude-auto', 'validators'), path.join(autoDir, 'validators'));
     copyDir(path.join(pkgRoot, '.claude-auto', 'reminders'), path.join(autoDir, 'reminders'));
+    copyDir(path.join(pkgRoot, '.claude-auto', 'agents'), path.join(claudeDir, 'agents'));
   }
 
   // Initialize hook state with defaults if it doesn't exist

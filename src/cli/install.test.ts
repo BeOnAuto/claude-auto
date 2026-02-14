@@ -82,6 +82,15 @@ describe('cli install', () => {
     }
   });
 
+  it('copies agents to .claude/agents/', async () => {
+    await install(tempDir);
+
+    const agentsDir = path.join(tempDir, '.claude', 'agents');
+    expect(fs.existsSync(agentsDir)).toBe(true);
+    const files = fs.readdirSync(agentsDir);
+    expect(files).toContain('validator.md');
+  });
+
   it('creates .claude-auto/.claude.hooks.json with defaults', async () => {
     await install(tempDir);
 
