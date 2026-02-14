@@ -17,7 +17,7 @@ const startTime = Date.now();
   try {
     const toolInput = input.tool_input || {};
     const command = toolInput.command as string | undefined;
-    const result = await handlePreToolUse(claudeDir, input.session_id, toolInput);
+    const result = await handlePreToolUse(claudeDir, input.session_id, toolInput, { cwd: input.cwd });
     if (command && isCommitCommand(command)) {
       writeHookLog(autoDir, {
         hookName: 'pre-tool-use',

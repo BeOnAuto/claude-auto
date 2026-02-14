@@ -27,6 +27,7 @@ type HookResult = {
 interface PreToolUseOptions {
   executor?: Executor;
   toolName?: string;
+  cwd?: string;
 }
 
 export async function handlePreToolUse(
@@ -39,7 +40,8 @@ export async function handlePreToolUse(
   const command = toolInput.command as string | undefined;
 
   if (command && isCommitCommand(command)) {
-    return handleCommitValidation(claudeDir, sessionId, command, options, paths.autoDir);
+    const gitCwd = options.cwd ?? process.cwd();
+    return handleCommitValidation(claudeDir, sessionId, command, options, paths.autoDir, gitCwd);
   }
 
   const patterns = loadDenyPatterns(claudeDir);
@@ -88,6 +90,7 @@ async function handleCommitValidation(
   command: string,
   options: PreToolUseOptions,
   autoDir: string,
+  gitCwd: string,
 ): Promise<HookResult> {
   const paths = await resolvePaths(claudeDir);
   const allValidators = loadValidators([paths.validatorsDir]);
@@ -103,7 +106,7 @@ async function handleCommitValidation(
     };
   }
 
-  const context = getCommitContext(process.cwd(), command);
+  const context = getCommitContext(gitCwd, command);
   const state = createHookState(autoDir).read();
   const onLog: ValidatorLogger = (event, name, detail) => {
     activityLog(autoDir, sessionId, 'pre-tool-use', `validator ${event}: ${name} → ${detail}`);
