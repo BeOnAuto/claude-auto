@@ -1,5 +1,16 @@
 # claude-ketchup
 
+## 0.15.0
+
+### Minor Changes
+
+- 0f4c87c: - **cli**: add CopyResult type to copyDir for tracking changes
+- 79da7f0: - **cli**: add granular install update messaging
+
+### Patch Changes
+
+- f8c7c46: - **global**: update ketchup plan - granular messaging complete
+
 ## 0.14.1
 
 ### Patch Changes
