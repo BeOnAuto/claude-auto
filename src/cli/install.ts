@@ -3,6 +3,12 @@ import * as path from 'node:path';
 
 import { createHookState } from '../hook-state.js';
 
+export type CopyResult = {
+  added: string[];
+  updated: string[];
+  removed: string[];
+};
+
 export type InstallResult = {
   targetDir: string;
   claudeDir: string;
@@ -31,23 +37,61 @@ export function getPackageRoot(startDir: string = __dirname): string {
   throw new Error(`Could not find package root from ${startDir}`);
 }
 
-export function copyDir(sourceDir: string, targetDir: string): void {
+export function copyDir(sourceDir: string, targetDir: string): CopyResult {
+  const result: CopyResult = { added: [], updated: [], removed: [] };
   debug('copyDir:', sourceDir, '→', targetDir);
+
   if (!fs.existsSync(sourceDir)) {
     debug('  source does not exist, skipping');
-    return;
+    return result;
   }
-  const entries = fs.readdirSync(sourceDir, { withFileTypes: true });
-  const files = entries.filter((e) => e.isFile());
-  if (files.length === 0) {
+
+  const sourceEntries = fs.readdirSync(sourceDir, { withFileTypes: true });
+  const sourceFiles = sourceEntries.filter((e) => e.isFile()).map((e) => e.name);
+
+  if (sourceFiles.length === 0) {
     debug('  source is empty, skipping');
-    return;
+    return result;
   }
+
   fs.mkdirSync(targetDir, { recursive: true });
-  for (const entry of files) {
-    debug('  copy:', entry.name);
-    fs.copyFileSync(path.join(sourceDir, entry.name), path.join(targetDir, entry.name));
+
+  const targetFiles = fs.existsSync(targetDir)
+    ? fs
+        .readdirSync(targetDir, { withFileTypes: true })
+        .filter((e) => e.isFile())
+        .map((e) => e.name)
+    : [];
+
+  for (const fileName of sourceFiles) {
+    const sourcePath = path.join(sourceDir, fileName);
+    const targetPath = path.join(targetDir, fileName);
+    const sourceContent = fs.readFileSync(sourcePath);
+
+    if (!fs.existsSync(targetPath)) {
+      debug('  add:', fileName);
+      fs.copyFileSync(sourcePath, targetPath);
+      result.added.push(fileName);
+    } else {
+      const targetContent = fs.readFileSync(targetPath);
+      if (!sourceContent.equals(targetContent)) {
+        debug('  update:', fileName);
+        fs.copyFileSync(sourcePath, targetPath);
+        result.updated.push(fileName);
+      } else {
+        debug('  skip (unchanged):', fileName);
+      }
+    }
   }
+
+  for (const fileName of targetFiles) {
+    if (!sourceFiles.includes(fileName)) {
+      debug('  removed (in target only):', fileName);
+      result.removed.push(fileName);
+    }
+  }
+
+  return result;
 }
 
 export async function install(targetPath?: string, options?: { local?: boolean }): Promise<InstallResult> {

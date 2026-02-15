@@ -321,9 +321,10 @@ describe('copyDir', () => {
   it('skips when source directory does not exist', () => {
     const target = path.join(tempDir, 'target');
 
-    copyDir(path.join(tempDir, 'nonexistent'), target);
+    const result = copyDir(path.join(tempDir, 'nonexistent'), target);
 
     expect(fs.existsSync(target)).toBe(false);
+    expect(result).toEqual({ added: [], updated: [], removed: [] });
   });
 
   it('skips when source directory has no files', () => {
@@ -331,9 +332,10 @@ describe('copyDir', () => {
     fs.mkdirSync(path.join(source, 'subdir'), { recursive: true });
     const target = path.join(tempDir, 'target');
 
-    copyDir(source, target);
+    const result = copyDir(source, target);
 
     expect(fs.existsSync(target)).toBe(false);
+    expect(result).toEqual({ added: [], updated: [], removed: [] });
   });
 
   it('copies files from source to target', () => {
@@ -343,10 +345,53 @@ describe('copyDir', () => {
     fs.writeFileSync(path.join(source, 'b.txt'), 'content-b');
     const target = path.join(tempDir, 'target');
 
-    copyDir(source, target);
+    const result = copyDir(source, target);
 
     expect(fs.readFileSync(path.join(target, 'a.txt'), 'utf-8')).toBe('content-a');
     expect(fs.readFileSync(path.join(target, 'b.txt'), 'utf-8')).toBe('content-b');
+    expect(result).toEqual({ added: ['a.txt', 'b.txt'], updated: [], removed: [] });
+  });
+
+  it('returns added for new files and updated for changed files', () => {
+    const source = path.join(tempDir, 'source');
+    const target = path.join(tempDir, 'target');
+    fs.mkdirSync(source);
+    fs.mkdirSync(target);
+    fs.writeFileSync(path.join(source, 'new.txt'), 'new-content');
+    fs.writeFileSync(path.join(source, 'changed.txt'), 'updated-content');
+    fs.writeFileSync(path.join(target, 'changed.txt'), 'old-content');
+
+    const result = copyDir(source, target);
+
+    expect(result).toEqual({ added: ['new.txt'], updated: ['changed.txt'], removed: [] });
+  });
+
+  it('does not update files with identical content', () => {
+    const source = path.join(tempDir, 'source');
+    const target = path.join(tempDir, 'target');
+    fs.mkdirSync(source);
+    fs.mkdirSync(target);
+    fs.writeFileSync(path.join(source, 'same.txt'), 'identical');
+    fs.writeFileSync(path.join(target, 'same.txt'), 'identical');
+
+    const result = copyDir(source, target);
+
+    expect(result).toEqual({ added: [], updated: [], removed: [] });
+  });
+
+  it('reports removed files that exist in target but not in source', () => {
+    const source = path.join(tempDir, 'source');
+    const target = path.join(tempDir, 'target');
+    fs.mkdirSync(source);
+    fs.mkdirSync(target);
+    fs.writeFileSync(path.join(source, 'kept.txt'), 'kept');
+    fs.writeFileSync(path.join(target, 'kept.txt'), 'kept');
+    fs.writeFileSync(path.join(target, 'orphan.txt'), 'orphan');
+
+    const result = copyDir(source, target);
+
+    expect(result).toEqual({ added: [], updated: [], removed: ['orphan.txt'] });
+    expect(fs.existsSync(path.join(target, 'orphan.txt'))).toBe(true);
   });
 });
 
