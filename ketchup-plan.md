@@ -1,8 +1,8 @@
-# Ketchup Plan: Skip Reminders for Validator Subagents (Phase 2)
+# Ketchup Plan: Fix spawnAsync inheriting CLAUDECODE env var
 
 ## TODO
 
-(none)
+- [ ] Burst 1: spawnAsync strips CLAUDECODE from child process env [depends: none]
 
 ## DONE
 
