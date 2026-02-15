@@ -10,7 +10,8 @@ export interface SpawnResult {
 
 export function spawnAsync(cmd: string, args: string[], _options: { encoding: 'utf8' }): Promise<SpawnResult> {
   return new Promise((resolve, reject) => {
-    const child = spawn(cmd, args, { stdio: ['ignore', 'pipe', 'pipe'] });
+    const { CLAUDECODE: _, ...cleanEnv } = process.env;
+    const child = spawn(cmd, args, { stdio: ['ignore', 'pipe', 'pipe'], env: cleanEnv });
     let stdout = '';
     let stderr = '';
     child.stdout.on('data', (data: Buffer) => {

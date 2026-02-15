@@ -2,9 +2,13 @@
 
 ## TODO
 
-- [ ] Burst 1: spawnAsync strips CLAUDECODE from child process env [depends: none]
+(none)
 
 ## DONE
+
+- [x] Burst 1: spawnAsync strips CLAUDECODE from child process env [depends: none]
+
+## Previous Phase: Skip Reminders for Validator Subagents (Phase 2)
 
 - [x] Burst 1: Add agent_type to HookInput type [depends: none]
 - [x] Burst 2: Create .claude-auto/agents/validator.md agent definition [depends: none]

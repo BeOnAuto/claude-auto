@@ -58,6 +58,22 @@ describe('spawnAsync', () => {
   it('rejects when command does not exist', async () => {
     await expect(spawnAsync('nonexistent-cmd-xyz', [], { encoding: 'utf8' })).rejects.toThrow();
   });
+
+  it('strips CLAUDECODE from child process environment', async () => {
+    process.env.CLAUDECODE = '1';
+
+    const result = await spawnAsync('node', ['-e', 'process.stdout.write(String(process.env.CLAUDECODE))'], {
+      encoding: 'utf8',
+    });
+
+    delete process.env.CLAUDECODE;
+
+    expect(result).toEqual({
+      stdout: 'undefined',
+      stderr: '',
+      status: 0,
+    });
+  });
 });
 
 describe('extractAppeal', () => {
