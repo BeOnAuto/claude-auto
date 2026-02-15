@@ -1,5 +1,12 @@
 # claude-ketchup
 
+## 0.14.1
+
+### Patch Changes
+
+- 42c93dc: - **core**: strip CLAUDECODE env var from spawned validator subprocesses
+- c545253: - **core**: update ketchup plan - fix spawnAsync CLAUDECODE inheritance
+
 ## 0.14.0
 
 ### Minor Changes
