@@ -138,6 +138,28 @@ describe('cli install', () => {
     expect(result.settingsCreated).toBe(true);
   });
 
+  it('returns CopyResult for scripts, validators, reminders, agents', async () => {
+    const result = await install(tempDir);
+
+    expect(result.scripts.added.length).toBeGreaterThan(0);
+    expect(result.scripts.updated).toEqual([]);
+    expect(result.scripts.removed).toEqual([]);
+
+    expect(result.validators.added.length).toBeGreaterThan(0);
+    expect(result.reminders.added.length).toBeGreaterThan(0);
+    expect(result.agents.added.length).toBeGreaterThan(0);
+  });
+
+  it('returns empty CopyResults on second install when nothing changed', async () => {
+    await install(tempDir);
+    const result = await install(tempDir);
+
+    expect(result.scripts).toEqual({ added: [], updated: [], removed: [] });
+    expect(result.validators).toEqual({ added: [], updated: [], removed: [] });
+    expect(result.reminders).toEqual({ added: [], updated: [], removed: [] });
+    expect(result.agents).toEqual({ added: [], updated: [], removed: [] });
+  });
+
   it('returns status "installed" on fresh install', async () => {
     const result = await install(tempDir);
 

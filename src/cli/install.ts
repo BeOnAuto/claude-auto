@@ -14,6 +14,11 @@ export type InstallResult = {
   claudeDir: string;
   settingsCreated: boolean;
   status: 'installed' | 'updated';
+  scripts: CopyResult;
+  validators: CopyResult;
+  reminders: CopyResult;
+  agents: CopyResult;
+  commands: CopyResult;
 };
 
 function debug(...args: unknown[]): void {
@@ -134,22 +139,40 @@ export async function install(targetPath?: string, options?: { local?: boolean }
     debug('settings.json already exists, skipping');
   }
 
-  if (!local) {
-    copyDir(path.join(pkgRoot, 'dist', 'bundle', 'scripts'), path.join(autoDir, 'scripts'));
-  }
+  const emptyResult: CopyResult = { added: [], updated: [], removed: [] };
 
-  copyDir(path.join(pkgRoot, 'commands'), path.join(claudeDir, 'commands'));
+  const scripts = local
+    ? emptyResult
+    : copyDir(path.join(pkgRoot, 'dist', 'bundle', 'scripts'), path.join(autoDir, 'scripts'));
 
-  if (!local) {
-    copyDir(path.join(pkgRoot, '.claude-auto', 'validators'), path.join(autoDir, 'validators'));
-    copyDir(path.join(pkgRoot, '.claude-auto', 'reminders'), path.join(autoDir, 'reminders'));
-    copyDir(path.join(pkgRoot, '.claude-auto', 'agents'), path.join(claudeDir, 'agents'));
-  }
+  const commands = copyDir(path.join(pkgRoot, 'commands'), path.join(claudeDir, 'commands'));
+
+  const validators = local
+    ? emptyResult
+    : copyDir(path.join(pkgRoot, '.claude-auto', 'validators'), path.join(autoDir, 'validators'));
+
+  const reminders = local
+    ? emptyResult
+    : copyDir(path.join(pkgRoot, '.claude-auto', 'reminders'), path.join(autoDir, 'reminders'));
+
+  const agents = local
+    ? emptyResult
+    : copyDir(path.join(pkgRoot, '.claude-auto', 'agents'), path.join(claudeDir, 'agents'));
 
   // Initialize hook state with defaults if it doesn't exist
   const hookState = createHookState(autoDir);
   hookState.read();
 
   const status = alreadyInstalled ? 'updated' : 'installed';
-  return { targetDir: resolvedTarget, claudeDir, settingsCreated, status };
+  return {
+    targetDir: resolvedTarget,
+    claudeDir,
+    settingsCreated,
+    status,
+    scripts,
+    validators,
+    reminders,
+    agents,
+    commands,
+  };
 }

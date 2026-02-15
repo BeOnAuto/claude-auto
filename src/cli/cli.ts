@@ -1,6 +1,40 @@
 import { Command } from 'commander';
 
+import type { CopyResult, InstallResult } from './install.js';
 import { install } from './install.js';
+
+function formatInstallSummary(result: InstallResult): string {
+  const parts: string[] = [];
+
+  const formatCategory = (copy: CopyResult, singular: string, plural: string): void => {
+    if (copy.added.length > 0) {
+      parts.push(`added ${copy.added.length} ${copy.added.length === 1 ? singular : plural}`);
+    }
+    if (copy.updated.length > 0) {
+      parts.push(`updated ${copy.updated.length} ${copy.updated.length === 1 ? singular : plural}`);
+    }
+    if (copy.removed.length > 0) {
+      parts.push(`removed ${copy.removed.length} ${copy.removed.length === 1 ? singular : plural}`);
+    }
+  };
+
+  formatCategory(result.scripts, 'script', 'scripts');
+  formatCategory(result.validators, 'validator', 'validators');
+  formatCategory(result.reminders, 'reminder', 'reminders');
+  formatCategory(result.agents, 'agent', 'agents');
+  formatCategory(result.commands, 'command', 'commands');
+
+  if (result.settingsCreated) {
+    parts.push('settings.json');
+  }
+
+  if (parts.length === 0) {
+    return 'claude-auto up to date';
+  }
+
+  const prefix = result.status === 'installed' ? 'Installed' : 'Updated';
+  return `${prefix} claude-auto: ${parts.join(', ')}`;
+}
 
 async function runTui(): Promise<void> {
   const { launchTui } = await import('./tui/launcher.js');
@@ -45,14 +79,7 @@ export function createCli(): Command {
     .option('--local', 'install from source using tsx (for local dev)')
     .action(async (targetPath: string, options: { local?: boolean }) => {
       const result = await install(targetPath, { local: options.local });
-      if (result.status === 'updated') {
-        console.log(`claude-auto already installed, updating ${result.targetDir}`);
-      } else {
-        console.log(`Installing claude-auto into ${result.targetDir}`);
-        if (result.settingsCreated) {
-          console.log(`Created ${result.claudeDir}/settings.json`);
-        }
-      }
+      console.log(formatInstallSummary(result));
     });
 
   program.command('status').description('Show symlink status');

@@ -42,7 +42,7 @@ describe('install action', () => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
 
-  it('logs installation message for fresh install', async () => {
+  it('logs granular summary for fresh install', async () => {
     const logs: string[] = [];
     vi.spyOn(console, 'log').mockImplementation((...args: unknown[]) => {
       logs.push(args.join(' '));
@@ -54,16 +54,17 @@ describe('install action', () => {
 
     vi.restoreAllMocks();
 
-    expect(logs).toEqual([
-      `Installing claude-auto into ${tempDir}`,
-      `Created ${path.join(tempDir, '.claude')}/settings.json`,
-    ]);
+    expect(logs.length).toBe(1);
+    expect(logs[0]).toMatch(/^Installed claude-auto: added/);
+    expect(logs[0]).toMatch(/script/);
+    expect(logs[0]).toMatch(/validator/);
+    expect(logs[0]).toMatch(/reminder/);
+    expect(logs[0]).toMatch(/agent/);
+    expect(logs[0]).toMatch(/settings\.json/);
   });
 
-  it('logs update message for already installed project', async () => {
-    const autoDir = path.join(tempDir, '.claude-auto');
-    fs.mkdirSync(autoDir, { recursive: true });
-    fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), '{}');
+  it('logs up to date message when nothing changed', async () => {
+    await createCli().parseAsync(['node', 'claude-auto', 'install', tempDir]);
 
     const logs: string[] = [];
     vi.spyOn(console, 'log').mockImplementation((...args: unknown[]) => {
@@ -76,7 +77,27 @@ describe('install action', () => {
 
     vi.restoreAllMocks();
 
-    expect(logs).toEqual([`claude-auto already installed, updating ${tempDir}`]);
+    expect(logs).toEqual(['claude-auto up to date']);
+  });
+
+  it('logs granular update message when files changed', async () => {
+    await createCli().parseAsync(['node', 'claude-auto', 'install', tempDir]);
+
+    fs.writeFileSync(path.join(tempDir, '.claude-auto', 'scripts', 'session-start.js'), 'modified');
+
+    const logs: string[] = [];
+    vi.spyOn(console, 'log').mockImplementation((...args: unknown[]) => {
+      logs.push(args.join(' '));
+    });
+
+    const program = createCli();
+    program.exitOverride();
+    await program.parseAsync(['node', 'claude-auto', 'install', tempDir]);
+
+    vi.restoreAllMocks();
+
+    expect(logs.length).toBe(1);
+    expect(logs[0]).toMatch(/^Updated claude-auto: updated 1 script$/);
   });
 });
 
