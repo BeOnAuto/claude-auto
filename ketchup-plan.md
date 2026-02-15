@@ -1,4 +1,4 @@
-# Ketchup Plan: Fix spawnAsync inheriting CLAUDECODE env var
+# Ketchup Plan: Granular Install Update Messaging
 
 ## TODO
 
@@ -6,9 +6,14 @@
 
 ## DONE
 
+- [x] Burst 1: Add CopyResult type to copyDir for tracking changes (a164689)
+- [x] Burst 2: Add granular install update messaging with added/updated/removed tracking (bc061bd)
+
+## Previous Phase: Fix spawnAsync inheriting CLAUDECODE env var
+
 - [x] Burst 1: spawnAsync strips CLAUDECODE from child process env [depends: none]
 
-## Previous Phase: Skip Reminders for Validator Subagents (Phase 2)
+## Phase 2: Skip Reminders for Validator Subagents
 
 - [x] Burst 1: Add agent_type to HookInput type [depends: none]
 - [x] Burst 2: Create .claude-auto/agents/validator.md agent definition [depends: none]
@@ -16,7 +21,7 @@
 - [x] Burst 4: Update handleSessionStart to check agent_type instead of prompt [depends: 1]
 - [x] Burst 5: Update install.ts to copy agents/ directory [depends: 2]
 
-## Phase 1 (Previous)
+## Phase 1: Validator Session Detection
 
 - [x] Burst 1: Create isValidatorSession function that detects validator prompts [depends: none]
 - [x] Burst 2: Update handleSessionStart to skip reminders when isValidatorSession returns true [depends: 1]
