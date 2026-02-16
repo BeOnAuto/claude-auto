@@ -2,7 +2,7 @@
 
 ## TODO
 
-- [ ] Burst 1: Add resolveClaudeDirFromScript to path-resolver [depends: none]
+- [x] Burst 1: Add resolveClaudeDirFromScript to path-resolver [depends: none] (8d843c8)
 - [ ] Burst 2: Update 4 hook scripts to use __dirname [depends: 1]
 - [ ] Burst 3: Remove volatile fields from HookState [depends: none]
 - [ ] Burst 4: Add runtime.json to gitignore patterns [depends: none]

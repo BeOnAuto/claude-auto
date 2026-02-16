@@ -1,16 +1,15 @@
 #!/usr/bin/env npx tsx
 import * as fs from 'node:fs';
-import * as path from 'node:path';
 
 import { activityLog } from '../src/activity-logger.js';
 import { isCommitCommand } from '../src/commit-validator.js';
 import { parseHookInput } from '../src/hook-input.js';
 import { writeHookLog } from '../src/hook-logger.js';
 import { handlePreToolUse } from '../src/hooks/pre-tool-use.js';
-import { resolvePaths } from '../src/path-resolver.js';
+import { resolveClaudeDirFromScript, resolvePaths } from '../src/path-resolver.js';
 
 const input = parseHookInput(fs.readFileSync(0, 'utf-8'));
-const claudeDir = path.resolve(process.cwd(), '.claude');
+const claudeDir = resolveClaudeDirFromScript(__dirname);
 const startTime = Date.now();
 
 (async () => {

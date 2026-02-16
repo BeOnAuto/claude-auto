@@ -1,13 +1,12 @@
 #!/usr/bin/env npx tsx
 import * as fs from 'node:fs';
-import * as path from 'node:path';
 
 import { activityLog } from '../src/activity-logger.js';
 import { writeHookLog } from '../src/hook-logger.js';
 import { handleStop, type StopHookInput } from '../src/hooks/auto-continue.js';
-import { resolvePaths } from '../src/path-resolver.js';
+import { resolveClaudeDirFromScript, resolvePaths } from '../src/path-resolver.js';
 
-const claudeDir = path.resolve(process.cwd(), '.claude');
+const claudeDir = resolveClaudeDirFromScript(__dirname);
 const stdin = fs.readFileSync(0, 'utf8').trim();
 
 if (!stdin) {
