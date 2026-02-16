@@ -33,13 +33,11 @@ describe('hook-state', () => {
 
     it('reads existing state file', () => {
       const existingState: HookState = {
-        autoContinue: { mode: 'non-stop', maxIterations: 5, iteration: 2, skipModes: ['plan'] },
+        autoContinue: { mode: 'non-stop', maxIterations: 5, skipModes: ['plan'] },
         validateCommit: { mode: 'warn' },
         denyList: { enabled: false },
         promptReminder: { enabled: false },
         subagentHooks: { validateCommitOnExplore: false, validateCommitOnWork: true, validateCommitOnUnknown: true },
-        updatedAt: '2026-01-01T00:00:00Z',
-        updatedBy: 'test',
       };
       fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify(existingState));
 
@@ -47,7 +45,6 @@ describe('hook-state', () => {
       const state = hookState.read();
 
       expect(state.autoContinue.mode).toBe('non-stop');
-      expect(state.autoContinue.iteration).toBe(2);
       expect(state.validateCommit.mode).toBe('warn');
     });
 
@@ -72,6 +69,25 @@ describe('hook-state', () => {
 
       expect(state.validateCommit).toEqual({ mode: 'strict', batchCount: 5 });
     });
+
+    it('reads legacy files with volatile fields without breaking', () => {
+      const legacyState = {
+        autoContinue: { mode: 'smart', maxIterations: 0, iteration: 3, skipModes: ['plan'] },
+        validateCommit: { mode: 'strict' },
+        denyList: { enabled: true },
+        promptReminder: { enabled: true },
+        subagentHooks: { validateCommitOnExplore: false, validateCommitOnWork: true, validateCommitOnUnknown: true },
+        updatedAt: '2026-01-01T00:00:00Z',
+        updatedBy: 'legacy',
+      };
+      fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify(legacyState));
+
+      const hookState = createHookState(autoDir);
+      const state = hookState.read();
+
+      expect(state.autoContinue.mode).toBe('smart');
+      expect(state.validateCommit.mode).toBe('strict');
+    });
   });
 
   describe('write', () => {
@@ -88,14 +104,16 @@ describe('hook-state', () => {
       expect(content.autoContinue.mode).toBe('non-stop');
     });
 
-    it('updates timestamp on write', () => {
+    it('does not add volatile fields to written file', () => {
       const hookState = createHookState(autoDir);
       const state = hookState.read();
 
       hookState.write(state);
 
       const content = JSON.parse(fs.readFileSync(path.join(autoDir, '.claude.hooks.json'), 'utf-8'));
-      expect(content.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+      expect(content.updatedAt).toBeUndefined();
+      expect(content.updatedBy).toBeUndefined();
+      expect(content.autoContinue.iteration).toBeUndefined();
     });
   });
 
@@ -103,71 +121,22 @@ describe('hook-state', () => {
     it('updates specific fields and preserves others', () => {
       const hookState = createHookState(autoDir);
 
-      hookState.update({ validateCommit: { mode: 'off' } }, 'test');
+      hookState.update({ validateCommit: { mode: 'off' } });
 
       const state = hookState.read();
       expect(state.validateCommit.mode).toBe('off');
       expect(state.autoContinue.mode).toBe('smart');
-      expect(state.updatedBy).toBe('test');
-    });
-
-    it('defaults updatedBy to unknown when not provided', () => {
-      const hookState = createHookState(autoDir);
-
-      hookState.update({ validateCommit: { mode: 'warn' } });
-
-      const state = hookState.read();
-      expect(state.updatedBy).toBe('unknown');
-    });
-  });
-
-  describe('incrementIteration', () => {
-    it('increments iteration counter', () => {
-      const hookState = createHookState(autoDir);
-
-      const count = hookState.incrementIteration();
-
-      expect(count).toBe(1);
-      expect(hookState.read().autoContinue.iteration).toBe(1);
-    });
-
-    it('increments from existing value', () => {
-      const existingState = {
-        autoContinue: { mode: 'non-stop', iteration: 5 },
-      };
-      fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify(existingState));
-
-      const hookState = createHookState(autoDir);
-      const count = hookState.incrementIteration();
-
-      expect(count).toBe(6);
-    });
-  });
-
-  describe('resetIteration', () => {
-    it('resets iteration to zero', () => {
-      const existingState = {
-        autoContinue: { mode: 'non-stop', iteration: 10 },
-      };
-      fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify(existingState));
-
-      const hookState = createHookState(autoDir);
-      hookState.resetIteration();
-
-      expect(hookState.read().autoContinue.iteration).toBe(0);
     });
   });
 
   describe('DEFAULT_HOOK_STATE', () => {
     it('has expected default values', () => {
       expect(DEFAULT_HOOK_STATE).toEqual({
-        autoContinue: { mode: 'smart', maxIterations: 0, iteration: expect.any(Number), skipModes: ['plan'] },
+        autoContinue: { mode: 'smart', maxIterations: 0, skipModes: ['plan'] },
         validateCommit: { mode: 'strict', batchCount: 3 },
         denyList: { enabled: true, extraPatterns: [] },
         promptReminder: { enabled: true },
         subagentHooks: { validateCommitOnExplore: false, validateCommitOnWork: true, validateCommitOnUnknown: true },
-        updatedAt: expect.any(String),
-        updatedBy: 'default',
       });
     });
 
@@ -202,12 +171,9 @@ describe('hook-state', () => {
     it('updates subagentHooks with update method', () => {
       const hookState = createHookState(autoDir);
 
-      hookState.update(
-        {
-          subagentHooks: { validateCommitOnExplore: true, validateCommitOnWork: true, validateCommitOnUnknown: true },
-        },
-        'test',
-      );
+      hookState.update({
+        subagentHooks: { validateCommitOnExplore: true, validateCommitOnWork: true, validateCommitOnUnknown: true },
+      });
 
       const state = hookState.read();
       expect(state.subagentHooks.validateCommitOnExplore).toBe(true);
