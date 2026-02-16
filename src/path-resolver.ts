@@ -10,6 +10,11 @@ export interface ResolvedPaths {
   validatorsDir: string;
 }
 
+export function resolveClaudeDirFromScript(scriptDir: string): string {
+  const projectRoot = path.resolve(scriptDir, '..', '..');
+  return path.join(projectRoot, '.claude');
+}
+
 export async function resolvePaths(claudeDir: string): Promise<ResolvedPaths> {
   const projectRoot = path.dirname(claudeDir);
   const config = await loadConfig(projectRoot);

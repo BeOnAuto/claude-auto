@@ -1,8 +1,13 @@
-# Ketchup Plan: Granular Install Update Messaging
+# Ketchup Plan: Fix cwd-based Resolution & Remove HookState Variability
 
 ## TODO
 
-(none)
+- [ ] Burst 1: Add resolveClaudeDirFromScript to path-resolver [depends: none]
+- [ ] Burst 2: Update 4 hook scripts to use __dirname [depends: 1]
+- [ ] Burst 3: Remove volatile fields from HookState [depends: none]
+- [ ] Burst 4: Add runtime.json to gitignore patterns [depends: none]
+- [ ] Burst 5: Delete stale root .claude.hooks.json [depends: none]
+- [ ] Burst 6: Rebuild and verify [depends: 1-5]
 
 ## DONE
 
