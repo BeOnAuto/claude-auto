@@ -1,5 +1,19 @@
 # claude-ketchup
 
+## 0.16.0
+
+### Minor Changes
+
+- 0fb3d3e: - **core**: add resolveClaudeDirFromScript for stable hook path resolution
+- 21beaa7: - **core**: add runtime.json to gitignore patterns
+
+### Patch Changes
+
+- 8cb432b: - **global**: remove stale root .claude.hooks.json
+- e22d722: - **core**: remove volatile fields from HookState
+- f0b93ef: - **global**: update ketchup plan - all bursts complete
+- fbcb127: - **hooks**: use \_\_dirname instead of process.cwd() for claudeDir resolution
+
 ## 0.15.0
 
 ### Minor Changes
