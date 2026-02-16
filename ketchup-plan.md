@@ -6,8 +6,8 @@
 - [x] Burst 2: Update 4 hook scripts to use __dirname [depends: 1] (3d72b69)
 - [x] Burst 3: Remove volatile fields from HookState [depends: none] (d71265f)
 - [x] Burst 4: Add runtime.json to gitignore patterns [depends: none] (315df64)
-- [ ] Burst 5: Delete stale root .claude.hooks.json [depends: none]
-- [ ] Burst 6: Rebuild and verify [depends: 1-5]
+- [x] Burst 5: Delete stale root .claude.hooks.json [depends: none] (3f3f793)
+- [x] Burst 6: Rebuild and verify [depends: 1-5]
 
 ## DONE
 
