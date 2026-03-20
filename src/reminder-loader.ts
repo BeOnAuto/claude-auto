@@ -3,6 +3,8 @@ import * as path from 'node:path';
 
 import matter from 'gray-matter';
 
+import type { ReminderOverride } from './hook-state.js';
+
 export interface ReminderWhen {
   hook?: string;
   mode?: string;
@@ -58,7 +60,11 @@ export function sortByPriority(reminders: Reminder[]): Reminder[] {
   return [...reminders].sort((a, b) => b.priority - a.priority);
 }
 
-export function loadReminders(dirs: string[], context: ReminderContext): Reminder[] {
+export function loadReminders(
+  dirs: string[],
+  context: ReminderContext,
+  overrides?: Record<string, ReminderOverride>,
+): Reminder[] {
   const reminders: Reminder[] = [];
   const seen = new Set<string>();
 
@@ -70,7 +76,17 @@ export function loadReminders(dirs: string[], context: ReminderContext): Reminde
       }
       seen.add(filename);
       const content = fs.readFileSync(path.join(dir, filename), 'utf8');
-      reminders.push(parseReminder(content, filename));
+      const reminder = parseReminder(content, filename);
+
+      const override = overrides?.[reminder.name];
+      if (override?.enabled === false) {
+        continue;
+      }
+      if (override?.priority !== undefined) {
+        reminder.priority = override.priority;
+      }
+
+      reminders.push(reminder);
     }
   }
 

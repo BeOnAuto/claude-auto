@@ -59,10 +59,15 @@ export async function handlePreToolUse(
     };
   }
 
-  const reminders = loadReminders(paths.remindersDirs, {
-    hook: 'PreToolUse',
-    toolName: options.toolName,
-  });
+  const state = createHookState(paths.autoDir).read();
+  const reminders = loadReminders(
+    paths.remindersDirs,
+    {
+      hook: 'PreToolUse',
+      toolName: options.toolName,
+    },
+    state.overrides.reminders,
+  );
 
   const reminderContent = reminders.map((r) => r.content).join('\n\n');
 
@@ -91,7 +96,8 @@ async function handleCommitValidation(
   options: PreToolUseOptions,
   gitCwd: string,
 ): Promise<HookResult> {
-  const allValidators = loadValidators(paths.validatorsDirs);
+  const state = createHookState(paths.autoDir).read();
+  const allValidators = loadValidators(paths.validatorsDirs, state.overrides.validators);
   const validators = allValidators.filter((v) => v.name !== 'appeal-system');
 
   if (validators.length === 0) {
@@ -105,7 +111,6 @@ async function handleCommitValidation(
   }
 
   const context = getCommitContext(gitCwd, command);
-  const state = createHookState(paths.autoDir).read();
   const onLog: ValidatorLogger = (event, name, detail) => {
     activityLog(paths.autoDir, sessionId, 'pre-tool-use', `validator ${event}: ${name} → ${detail}`);
   };

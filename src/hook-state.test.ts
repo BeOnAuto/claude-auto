@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createHookState, DEFAULT_HOOK_STATE, type HookState } from './hook-state.js';
 
@@ -21,6 +21,33 @@ describe('hook-state', () => {
   });
 
   describe('createHookState', () => {
+    it('exists returns false before read and true after read', () => {
+      const hookState = createHookState(autoDir);
+
+      expect(hookState.exists()).toBe(false);
+
+      hookState.read();
+
+      expect(hookState.exists()).toBe(true);
+    });
+
+    it('sets firstSetupRequired when created in plugin mode', () => {
+      vi.stubEnv('CLAUDE_PLUGIN_ROOT', '/plugins/claude-auto');
+      const hookState = createHookState(autoDir);
+      const state = hookState.read();
+
+      expect(state.firstSetupRequired).toBe(true);
+      vi.unstubAllEnvs();
+    });
+
+    it('does not set firstSetupRequired when created in legacy mode', () => {
+      delete process.env.CLAUDE_PLUGIN_ROOT;
+      const hookState = createHookState(autoDir);
+      const state = hookState.read();
+
+      expect(state.firstSetupRequired).toBeUndefined();
+    });
+
     it('creates state file with defaults when not exists', () => {
       const hookState = createHookState(autoDir);
       const state = hookState.read();
@@ -38,6 +65,7 @@ describe('hook-state', () => {
         denyList: { enabled: false },
         promptReminder: { enabled: false },
         subagentHooks: { validateCommitOnExplore: false, validateCommitOnWork: true, validateCommitOnUnknown: true },
+        overrides: { validators: {}, reminders: {} },
       };
       fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify(existingState));
 
@@ -127,6 +155,21 @@ describe('hook-state', () => {
       expect(state.validateCommit.mode).toBe('off');
       expect(state.autoContinue.mode).toBe('smart');
     });
+
+    it('updates overrides via update method', () => {
+      const hookState = createHookState(autoDir);
+
+      hookState.update({
+        overrides: {
+          validators: { 'my-val': { enabled: false } },
+          reminders: { 'my-rem': { priority: 50 } },
+        },
+      });
+
+      const state = hookState.read();
+      expect(state.overrides.validators['my-val']).toEqual({ enabled: false });
+      expect(state.overrides.reminders['my-rem']).toEqual({ priority: 50 });
+    });
   });
 
   describe('DEFAULT_HOOK_STATE', () => {
@@ -137,6 +180,7 @@ describe('hook-state', () => {
         denyList: { enabled: true, extraPatterns: [] },
         promptReminder: { enabled: true },
         subagentHooks: { validateCommitOnExplore: false, validateCommitOnWork: true, validateCommitOnUnknown: true },
+        overrides: { validators: {}, reminders: {} },
       });
     });
 

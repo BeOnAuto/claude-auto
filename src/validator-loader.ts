@@ -3,6 +3,8 @@ import * as path from 'node:path';
 
 import matter from 'gray-matter';
 
+import type { ValidatorOverride } from './hook-state.js';
+
 export interface Validator {
   name: string;
   description: string;
@@ -11,7 +13,23 @@ export interface Validator {
   path: string;
 }
 
-export function loadValidators(dirs: string[]): Validator[] {
+export interface ValidatorMeta {
+  name: string;
+  description: string;
+  enabled: boolean;
+}
+
+export function loadAllValidatorMeta(filePath: string): ValidatorMeta {
+  const fileContent = fs.readFileSync(filePath, 'utf8');
+  const { data } = matter(fileContent);
+  return {
+    name: data.name as string,
+    description: (data.description as string) || '',
+    enabled: data.enabled !== false,
+  };
+}
+
+export function loadValidators(dirs: string[], overrides?: Record<string, ValidatorOverride>): Validator[] {
   const validators: Validator[] = [];
 
   for (const dir of dirs) {
@@ -29,14 +47,18 @@ export function loadValidators(dirs: string[]): Validator[] {
       const fileContent = fs.readFileSync(filePath, 'utf8');
       const { data, content } = matter(fileContent);
 
-      if (data.enabled === false) {
+      const name = data.name as string;
+      const override = overrides?.[name];
+      const enabled = override !== undefined ? override.enabled : data.enabled !== false;
+
+      if (!enabled) {
         continue;
       }
 
       validators.push({
-        name: data.name,
+        name,
         description: data.description,
-        enabled: data.enabled,
+        enabled: true,
         content: content.trim(),
         path: filePath,
       });

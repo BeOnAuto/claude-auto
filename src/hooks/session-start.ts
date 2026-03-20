@@ -1,5 +1,6 @@
 import { activityLog } from '../activity-logger.js';
 import { debugLog } from '../debug-logger.js';
+import { createHookState } from '../hook-state.js';
 import { type ResolvedPaths, resolvePaths } from '../path-resolver.js';
 import { loadReminders, scanReminders } from '../reminder-loader.js';
 
@@ -41,10 +42,10 @@ export async function handleSessionStart(
     };
   }
 
-  const reminders = loadReminders(paths.remindersDirs, { hook: 'SessionStart' });
+  const state = createHookState(paths.autoDir).read();
+  const reminders = loadReminders(paths.remindersDirs, { hook: 'SessionStart' }, state.overrides.reminders);
 
   activityLog(paths.autoDir, sessionId, 'session-start', `loaded ${reminders.length} reminders`);
-
   debugLog(paths.autoDir, 'session-start', `loaded ${reminders.length} reminders for SessionStart`);
 
   const content = reminders.map((r) => r.content).join('\n\n');

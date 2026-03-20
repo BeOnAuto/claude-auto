@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { loadValidators } from './validator-loader.js';
+import { loadAllValidatorMeta, loadValidators } from './validator-loader.js';
 
 describe('loadValidators', () => {
   let tempDir: string;
@@ -15,6 +15,22 @@ describe('loadValidators', () => {
 
   afterEach(() => {
     fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  it('loadAllValidatorMeta defaults description to empty string', () => {
+    const validatorsDir = path.join(tempDir, 'validators');
+    fs.mkdirSync(validatorsDir);
+    fs.writeFileSync(
+      path.join(validatorsDir, 'no-desc.md'),
+      `---
+name: no-desc
+enabled: true
+---
+Content`,
+    );
+
+    const meta = loadAllValidatorMeta(path.join(validatorsDir, 'no-desc.md'));
+    expect(meta.description).toBe('');
   });
 
   it('returns empty array when directory does not exist', () => {
@@ -156,6 +172,50 @@ Second content`,
         enabled: true,
         content: 'Second content',
         path: path.join(dir2, 'second.md'),
+      },
+    ]);
+  });
+
+  it('disables a validator via overrides', () => {
+    const validatorsDir = path.join(tempDir, 'validators');
+    fs.mkdirSync(validatorsDir);
+    fs.writeFileSync(
+      path.join(validatorsDir, 'test.md'),
+      `---
+name: test-validator
+description: Test
+enabled: true
+---
+Content`,
+    );
+
+    const result = loadValidators([validatorsDir], { 'test-validator': { enabled: false } });
+
+    expect(result).toEqual([]);
+  });
+
+  it('enables a disabled validator via overrides', () => {
+    const validatorsDir = path.join(tempDir, 'validators');
+    fs.mkdirSync(validatorsDir);
+    fs.writeFileSync(
+      path.join(validatorsDir, 'test.md'),
+      `---
+name: disabled-val
+description: Disabled
+enabled: false
+---
+Content`,
+    );
+
+    const result = loadValidators([validatorsDir], { 'disabled-val': { enabled: true } });
+
+    expect(result).toEqual([
+      {
+        name: 'disabled-val',
+        description: 'Disabled',
+        enabled: true,
+        content: 'Content',
+        path: path.join(validatorsDir, 'test.md'),
       },
     ]);
   });

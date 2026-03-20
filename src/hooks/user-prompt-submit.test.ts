@@ -5,6 +5,7 @@ import * as path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { DEFAULT_AUTO_DIR } from '../config-loader.js';
+import { FIRST_SETUP_MESSAGE } from '../welcome-message.js';
 import { handleUserPromptSubmit } from './user-prompt-submit.js';
 
 describe('user-prompt-submit hook', () => {
@@ -109,6 +110,19 @@ Remember to follow coding standards.`,
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[user-prompt-submit]');
     expect(content).toContain('injected 1 reminder');
+  });
+
+  it('injects first-setup directive when firstSetupRequired is true', async () => {
+    fs.writeFileSync(
+      path.join(autoDir, '.claude.hooks.json'),
+      JSON.stringify({ firstSetupRequired: true }),
+    );
+
+    const result = await handleUserPromptSubmit(claudeDir, 'setup-session', 'do something');
+
+    expect(result.hookSpecificOutput.additionalContext).toBe(FIRST_SETUP_MESSAGE);
+    const state = JSON.parse(fs.readFileSync(path.join(autoDir, '.claude.hooks.json'), 'utf-8'));
+    expect(state.firstSetupRequired).toBeUndefined();
   });
 
   it('skips reminders for validator subagent sessions', async () => {

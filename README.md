@@ -68,6 +68,69 @@ After installation, Claude Auto automatically:
 
 ---
 
+## Custom Validators and Reminders
+
+Add project-specific rules by creating markdown files in `.claude-auto/validators/` and `.claude-auto/reminders/`. These work in both plugin and legacy mode.
+
+### Custom Validator
+
+Create `.claude-auto/validators/my-rule.md`:
+
+```markdown
+---
+name: my-rule
+description: Enforce my custom rule
+enabled: true
+---
+
+You are validating a git commit. Check that [your criteria here].
+
+Respond with JSON only:
+- If the commit passes: {"decision":"ACK"}
+- If the commit fails: {"decision":"NACK","reason":"explanation"}
+```
+
+Validators receive the staged diff, file list, and commit message. They must return ACK or NACK as JSON.
+
+### Custom Reminder
+
+Create `.claude-auto/reminders/my-reminder.md`:
+
+```markdown
+---
+when:
+  hook: UserPromptSubmit
+priority: 50
+---
+
+Your reminder content here. This gets injected on every prompt.
+```
+
+The `when` field controls when the reminder fires:
+
+| Condition | Fires when |
+|-----------|-----------|
+| `hook: SessionStart` | Once at session start |
+| `hook: UserPromptSubmit` | Every user prompt |
+| `hook: PreToolUse` | Before tool execution |
+| `hook: PreToolUse` + `toolName: Bash` | Only before Bash tool |
+| _(no `when`)_ | All hooks |
+
+Higher `priority` = appears first. In plugin mode, project-local files are loaded alongside plugin defaults. If filenames collide, plugin versions take precedence.
+
+### Runtime Configuration
+
+Toggle validators and reminders without editing files:
+
+```bash
+/claude-auto:config show
+/claude-auto:config validators disable no-comments
+/claude-auto:config reminders priority my-reminder 200
+/claude-auto:config reminders add my-rule --hook UserPromptSubmit --priority 50 --content "Always use early returns"
+```
+
+---
+
 ## How-to Guides
 
 ### Verify Installation Health

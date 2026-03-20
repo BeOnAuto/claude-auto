@@ -5,6 +5,7 @@ import * as path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { DEFAULT_AUTO_DIR } from '../config-loader.js';
+import { DEFAULT_HOOK_STATE } from '../hook-state.js';
 import { handleSessionStart } from './session-start.js';
 
 describe('session-start hook', () => {
@@ -19,6 +20,7 @@ describe('session-start hook', () => {
     autoDir = path.join(tempDir, DEFAULT_AUTO_DIR);
     fs.mkdirSync(claudeDir, { recursive: true });
     fs.mkdirSync(autoDir, { recursive: true });
+    fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify(DEFAULT_HOOK_STATE));
     fs.writeFileSync(path.join(tempDir, 'package.json'), '{}');
   });
 
@@ -110,6 +112,26 @@ Reminder B content.`,
     const content = fs.readFileSync(logPath, 'utf8');
     expect(content).toContain('[session-start]');
     expect(content).toContain('loaded 1 reminders for SessionStart');
+  });
+
+  it('returns normal reminders on subsequent use when state file exists', async () => {
+    const remindersDir = path.join(autoDir, 'reminders');
+    fs.mkdirSync(remindersDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(remindersDir, 'test.md'),
+      `---
+when:
+  hook: SessionStart
+priority: 10
+---
+
+Test content.`,
+    );
+
+    const result = await handleSessionStart(claudeDir, 'normal-session');
+
+    expect(result.hookSpecificOutput.additionalContext).toBe('Test content.');
+    expect(result.hookSpecificOutput.additionalContext).not.toContain('Welcome to Claude Auto');
   });
 
   it('skips reminders for validator subagent sessions', async () => {
