@@ -91,11 +91,14 @@ The bottleneck becomes defining requirements, not executing them.
 
 ### 1. Install
 
-```bash
-npx claude-auto install
+From within a Claude Code session:
+
+```
+/plugin marketplace add BeOnAuto/claude-auto
+/plugin install claude-auto@beon-auto
 ```
 
-That's it! This single command sets up everything you need.
+That's it! The plugin sets up everything you need.
 
 ### 2. Define
 

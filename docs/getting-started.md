@@ -14,35 +14,41 @@ Install Claude Auto in 5 minutes.
 
 ## Prerequisites
 
-- Node.js 18.0.0+
+- Claude Code installed
 - A project where you want to parallelize AI execution
 
 ---
 
 ## Step 1: Install Claude Auto
 
-```bash
-npx claude-auto install
+From within a Claude Code session:
+
+```
+/plugin marketplace add BeOnAuto/claude-auto
+/plugin install claude-auto@beon-auto
 ```
 
-This single command sets up everything you need - no package installation or configuration required.
+Or for local development:
 
-Behind the scenes, claude-auto:
+```bash
+claude --plugin-dir /path/to/claude-auto
+```
 
-- Copies hook scripts to `.claude-auto/scripts/`
+The plugin automatically:
+
 - Creates reminders that inject your guidelines
 - Sets up the supervisor that ACKs or NACKs changes
 - Initializes hook state with sensible defaults
 
 ---
 
-## Step 2: Verify Your Transformation
+## Step 2: Verify Your Installation
 
-```bash
-npx claude-auto doctor
+```
+/claude-auto:config show
 ```
 
-All green? Claude Auto is active. The Quality Loop is running. You can now let it run and check back on outcomes.
+Everything looks good? Claude Auto is active. The Quality Loop is running. You can now let it run and check back on outcomes.
 
 ---
 
@@ -164,6 +170,6 @@ See the [transformation story](/origin-story#the-transformation) for the complet
 
 Having issues? See the [Configuration Guide](/configuration#troubleshooting) for common problems and solutions, or run:
 
-```bash
-npx claude-auto doctor
+```
+/claude-auto:config show
 ```

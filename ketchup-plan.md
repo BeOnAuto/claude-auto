@@ -2,8 +2,6 @@
 
 ## TODO
 
-- [ ] Burst 15: resolvePathsFromEnv works when only CLAUDE_PLUGIN_ROOT is set (skills context) [depends: none]
-
 ## DONE
 
 - [x] Burst 1: Delete src/cli/ directory (all 26 files)
@@ -20,3 +18,6 @@
 - [x] Burst 12: Clean up index.ts barrel exports
 - [x] Burst 13: Remove commander/cosmiconfig/yaml deps, bin entry, legacy scripts from package.json
 - [x] Burst 14: Update README.md and CLAUDE.md
+- [x] Burst 15: Fix resolvePathsFromEnv for skills context (CLAUDE_PLUGIN_ROOT only)
+- [x] Burst 16: Add explicit pluginRoot parameter to resolvePathsFromEnv, use in config.ts
+- [x] Burst 17: Update all docs, delete npm-package-test.yml, delete install-local-spec.md, clean stale dist

@@ -52,10 +52,9 @@ Understanding how the Quality Loop works under the hood.
 claude-auto follows several key principles:
 
 1. **Convention over Configuration**: Sensible defaults that just work
-2. **Copied Scripts, Layered Settings**: Hook scripts are copied to `.claude-auto/scripts/` for reliability; settings use a layered merge strategy
-3. **Layered Settings**: Package → Project → Local override chain
-4. **Transparent Operation**: All files are human-readable
-5. **Minimal Dependencies**: Only three runtime dependencies
+2. **Plugin Architecture**: Runs as a Claude Code plugin with bundled hook scripts
+3. **Transparent Operation**: All files are human-readable
+4. **Minimal Dependencies**: Only two runtime dependencies (gray-matter, micromatch)
 
 ---
 
@@ -66,86 +65,28 @@ claude-auto follows several key principles:
 │                     Your Project                             │
 ├─────────────────────────────────────────────────────────────┤
 │  .claude/                                                    │
-│  ├── commands/ ────────────────► Copied from package        │
-│  ├── settings.json ────────────► Merged configuration       │
-│  ├── settings.project.json ────► Project overrides          │
-│  ├── settings.local.json ──────► Local overrides            │
 │  ├── deny-list.project.txt ────► File protection patterns   │
-│  ├── deny-list.local.txt ──────► Local protection patterns  │
-│  └── state.json ───────────────► Runtime state              │
+│  └── deny-list.local.txt ──────► Local protection patterns  │
 │                                                              │
-│  .claude-auto/                                                   │
-│  ├── scripts/ ─────────────────► Hook scripts (copied)      │
+│  .claude-auto/                                               │
 │  ├── reminders/ ───────────────► Context injection files    │
 │  ├── validators/ ──────────────► Commit validation rules    │
 │  ├── .claude.hooks.json ───────► Hook behavior state        │
 │  └── logs/                                                   │
 │      └── activity.log ─────────► Activity log               │
 │                                                              │
-│                                                              │
-│                                                              │
 └─────────────────────────────────────────────────────────────┘
                               │
-                              ▼
+                   Plugin loaded by Claude Code
+                              │
 ┌─────────────────────────────────────────────────────────────┐
-│           node_modules/claude-auto/                       │
+│           claude-auto plugin                                 │
 ├─────────────────────────────────────────────────────────────┤
-│  scripts/                   Source hook scripts              │
+│  dist/bundle/scripts/       Bundled hook scripts             │
 │  reminders/                 Default reminders                │
 │  validators/                Default validators               │
-│  commands/                  Command definitions              │
-│  templates/settings.json    Default settings                 │
 │  src/                       Core library code                │
-│  bin/                       CLI and lifecycle scripts        │
 └─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Lifecycle Hooks
-
-### Postinstall
-
-When you run `npx claude-auto install`, the installation script:
-
-```
-install()
-    │
-    ├─► Resolve target path
-    │
-    ├─► Create .claude/ directory
-    │
-    ├─► Create settings.json from template
-    │   └─► Skip if settings.json already exists
-    │
-    ├─► Copy bundled scripts to .claude-auto/scripts/
-    │   └─► session-start.js, pre-tool-use.js,
-    │       user-prompt-submit.js, auto-continue.js
-    │
-    ├─► Copy commands to .claude/commands/
-    │
-    ├─► Copy validators to .claude-auto/validators/
-    │
-    ├─► Copy reminders to .claude-auto/reminders/
-    │
-    └─► Initialize hook state
-        └─► .claude-auto/.claude.hooks.json with defaults
-            (autoContinue: smart, validateCommit: strict,
-             denyList: enabled)
-```
-
-### Preuninstall
-
-When you run `npm uninstall claude-auto`:
-
-```
-preuninstall.ts
-    │
-    ├─► findProjectRoot()
-    │
-    └─► For each directory (scripts, reminders, commands):
-        └─► removeSymlink() for each symlink
-            └─► Only removes if target is symlink (preserves real files)
 ```
 
 ---
@@ -326,95 +267,6 @@ Claude Attempts git commit
 
 ---
 
-## Settings Merge Strategy
-
-Settings are merged using a layered approach with special override syntax.
-
-### Layer Priority
-
-```
-Layer 1: templates/settings.json (package defaults)
-              │
-              ▼ deep merge
-Layer 2: settings.project.json (project overrides)
-              │
-              ▼ deep merge
-Layer 3: settings.local.json (local overrides)
-              │
-              ▼
-         Final settings.json
-```
-
-### Merge Rules
-
-**Standard array append (default):**
-
-```json
-// templates/settings.json
-{ "hooks": { "SessionStart": [{ "hooks": [...] }] } }
-
-// settings.project.json
-{ "hooks": { "SessionStart": [{ "hooks": [...] }] } }
-
-// Result: Both hooks concatenated, deduplicated by command
-```
-
-**Replace mode:**
-
-```json
-// settings.project.json
-{
-  "hooks": {
-    "SessionStart": {
-      "_mode": "replace",
-      "_value": [{ "hooks": [...] }]
-    }
-  }
-}
-
-// Result: Only _value contents, package defaults removed
-```
-
-**Disable mode:**
-
-```json
-// settings.project.json
-{
-  "hooks": {
-    "SessionStart": {
-      "_disabled": ["command-to-remove"]
-    }
-  }
-}
-
-// Result: Package defaults minus disabled commands
-```
-
-### Lock File Caching
-
-```
-┌───────────────────┐
-│ Compute SHA-256   │
-│ of all inputs     │
-└────────┬──────────┘
-         │
-         ▼
-┌───────────────────┐
-│ Compare with      │
-│ settings.lock.json│
-└────────┬──────────┘
-         │
-    ┌────┴────┐
-    │         │
-    ▼         ▼
-  Match     Differ
-  Skip      Remerge
-  merge     & update
-            lock
-```
-
----
-
 ## Subagent Classification
 
 The subagent classifier analyzes Task tool descriptions to determine behavior.
@@ -502,22 +354,13 @@ transcript.jsonl
 
 ## Directory Structure
 
-### Package Structure
+### Plugin Structure
 
 ```
 claude-auto/
-├── bin/
-│   ├── cli.ts              CLI entry point
-│   ├── postinstall.ts      npm postinstall script
-│   └── preuninstall.ts     npm preuninstall script
-│
 ├── src/
 │   ├── index.ts            Barrel export (public API)
-│   ├── root-finder.ts      Project root detection
-│   ├── linker.ts           Symlink management
-│   ├── gitignore-manager.ts  Gitignore generation
-│   ├── settings-merger.ts  Settings merge logic
-│   ├── state-manager.ts    Simple state read/write
+│   ├── path-resolver.ts    Path resolution from environment
 │   ├── hook-state.ts       Hook state management (internal)
 │   ├── reminder-loader.ts  Reminder parsing and filtering
 │   ├── validator-loader.ts Validator parsing and loading
@@ -527,16 +370,6 @@ claude-auto/
 │   ├── clean-logs.ts       Log cleanup (internal)
 │   ├── subagent-classifier.ts  Task classification (internal)
 │   ├── clue-collector.ts   Transcript analysis (internal)
-│   ├── postinstall.ts      Postinstall logic
-│   ├── preuninstall.ts     Preuninstall logic
-│   ├── e2e.test.ts         End-to-end tests
-│   │
-│   ├── cli/
-│   │   ├── cli.ts          Commander setup
-│   │   ├── status.ts       Status command
-│   │   ├── repair.ts       Repair command
-│   │   ├── doctor.ts       Doctor command
-│   │   └── reminders.ts    Reminders list command
 │   │
 │   └── hooks/
 │       ├── session-start.ts     SessionStart handler
@@ -550,42 +383,29 @@ claude-auto/
 │   ├── user-prompt-submit.ts
 │   └── test-hooks.sh
 │
-├── reminders/               Symlink targets (copied to .claude-auto/reminders/)
+├── reminders/               Default reminders
 │   └── *.md                 Context injection reminders
 │
-├── validators/              Symlink targets (copied to .claude-auto/validators/)
+├── validators/              Default validators
 │   └── *.md                 Commit validation rules
 │
-├── commands/                Symlink targets (copied to .claude/commands/)
-│   └── ketchup.md
-│
-└── templates/
-    └── settings.json        Default hook configuration
+└── .claude-plugin/
+    └── plugin.json          Plugin manifest
 ```
 
-### Project .claude/ Structure (After Install)
+### Project Structure (After Plugin Activation)
 
 ```
 your-project/
 ├── .claude/
-│   ├── commands/
-│   │   └── *.md                  Copied from package
-│   ├── settings.json             Merged (generated)
-│   ├── settings.project.json     Project overrides (optional)
-│   ├── settings.local.json       Local overrides (optional)
 │   ├── deny-list.project.txt     Project deny patterns
 │   └── deny-list.local.txt       Local deny patterns
 │
 ├── .claude-auto/
-│   ├── scripts/
-│   │   ├── session-start.js      Copied from package bundle
-│   │   ├── pre-tool-use.js       Copied from package bundle
-│   │   ├── user-prompt-submit.js Copied from package bundle
-│   │   └── auto-continue.js      Copied from package bundle
 │   ├── reminders/
-│   │   └── *.md                  Copied from package
+│   │   └── *.md                  Context injection reminders
 │   ├── validators/
-│   │   └── *.md                  Copied from package
+│   │   └── *.md                  Commit validation rules
 │   ├── .claude.hooks.json        Hook behavior state
 │   └── logs/
 │       └── activity.log          Activity log
@@ -597,7 +417,6 @@ your-project/
 
 | Package | Purpose |
 |---------|---------|
-| **commander** | CLI argument parsing for `claude-auto` commands |
 | **micromatch** | Glob pattern matching for deny-list file filtering |
 | **gray-matter** | YAML frontmatter parsing for reminders and validators |
 
@@ -617,14 +436,6 @@ All dependencies are chosen for:
 function readState(dir: string): State {
   if (!fs.existsSync(statePath)) {
     return {};  // Empty state, not an error
-  }
-  // ...
-}
-
-// Symlink operations are idempotent
-function createSymlink(source: string, target: string): void {
-  if (existingSymlinkPointsToSource) {
-    return;  // Already correct, no-op
   }
   // ...
 }
@@ -658,19 +469,15 @@ Hooks that fail return safe defaults:
 
 ```
 Unit Tests (vitest)
-├── Core utilities (linker, root-finder, etc.)
 ├── Reminder loader (parse, filter, sort)
 ├── Validator loader (parse, validate)
 ├── Deny-list (load patterns, match files)
-├── Settings merger (merge, override modes)
 ├── Hook state (read, write, update)
 ├── Subagent classifier (patterns, extraction)
-└── CLI commands (status, doctor, repair)
+├── Path resolver (environment-based resolution)
+└── Clue collector (transcript analysis)
 
 E2E Tests (scripts/test-hooks.sh)
-├── Full postinstall flow
-├── Symlink creation/verification
-├── Settings merge with all override modes
 ├── Deny-list blocking
 ├── Reminder injection
 ├── Validator execution
@@ -681,22 +488,6 @@ E2E Tests (scripts/test-hooks.sh)
 ---
 
 ## Performance Considerations
-
-### Lock File Optimization
-
-Settings are only remerged when input files change:
-
-```typescript
-const currentHash = computeHash([
-  packageContent,
-  projectContent,
-  localContent
-]);
-
-if (lockData.hash === currentHash) {
-  return;  // Skip expensive merge
-}
-```
 
 ### Minimal File I/O
 

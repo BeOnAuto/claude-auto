@@ -41,7 +41,7 @@ For a complete reference of all configuration files and options, see the [Config
 - Define architectural patterns to follow
 - Establish testing requirements
 
-**Script location:** `.claude-auto/scripts/session-start.js` (copied from package)
+**Script location:** Bundled within the plugin (`dist/bundle/scripts/session-start.js`)
 
 ### PreToolUse Hook
 
@@ -66,7 +66,7 @@ For a complete reference of all configuration files and options, see the [Config
 - Validate commit messages and content
 - Enforce test-driven development
 
-**Script location:** `.claude-auto/scripts/pre-tool-use.js` (copied from package)
+**Script location:** Bundled within the plugin (`dist/bundle/scripts/pre-tool-use.js`)
 
 ### UserPromptSubmit Hook
 
@@ -90,7 +90,7 @@ For a complete reference of all configuration files and options, see the [Config
 - Add warnings about common pitfalls
 - Include relevant documentation snippets
 
-**Script location:** `.claude-auto/scripts/user-prompt-submit.js` (copied from package)
+**Script location:** Bundled within the plugin (`dist/bundle/scripts/user-prompt-submit.js`)
 
 ### Stop Hook
 
@@ -115,7 +115,7 @@ For a complete reference of all configuration files and options, see the [Config
 - Stop when hitting error limits
 - Pause for user review at milestones
 
-**Script location:** `.claude-auto/scripts/auto-continue.js` (copied from package)
+**Script location:** Bundled within the plugin (`dist/bundle/scripts/auto-continue.js`)
 
 ---
 
@@ -176,81 +176,6 @@ Uses [micromatch](https://github.com/micromatch/micromatch) glob patterns:
 | `dist/**` | Everything in `dist/` recursively |
 | `.env*` | `.env`, `.env.local`, `.env.production` |
 | `**/test/**` | Any `test/` directory at any depth |
-
----
-
-## Override Default Settings
-
-Customize hook behavior per project or locally.
-
-### Project settings (committed)
-
-Create `.claude/settings.project.json`:
-
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "my-custom-validator"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-### Local settings (not committed)
-
-Create `.claude/settings.local.json`:
-
-```json
-{
-  "hooks": {
-    "SessionStart": {
-      "_mode": "replace",
-      "_value": []
-    }
-  }
-}
-```
-
-### Disable specific hooks
-
-```json
-{
-  "hooks": {
-    "PreToolUse": {
-      "_disabled": ["node .claude-auto/scripts/pre-tool-use.js"]
-    }
-  }
-}
-```
-
-### Replace entire hook
-
-```json
-{
-  "hooks": {
-    "SessionStart": {
-      "_mode": "replace",
-      "_value": [
-        {
-          "matcher": "",
-          "hooks": [
-            { "type": "command", "command": "my-session-start" }
-          ]
-        }
-      ]
-    }
-  }
-}
-```
 
 ---
 
@@ -330,7 +255,7 @@ Control which subagent types trigger validation:
 ### Enable debug logging
 
 ```bash
-DEBUG=claude-auto* claude-auto status
+DEBUG=claude-auto* claude
 ```
 
 Logs are written to `.claude-auto/logs/debug.log`.

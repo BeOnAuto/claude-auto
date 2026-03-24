@@ -28,7 +28,7 @@ pnpm vitest run src/hooks/validate-commit.test.ts
 
 - **100% test coverage** enforced via vitest thresholds (lines, functions, branches, statements). No escape hatches. Coverage excludes `src/**/*.test.ts` and `src/index.ts` (barrel exports only).
 - **Biome linting**: `useImportType: error`, `noUnusedImports: error`, `noExplicitAny: warn`. Max cognitive complexity 15 (20 in tests). Line width 120, single quotes, semicolons, trailing commas.
-- **Conventional commits required** with scope: `type(scope): subject`. Valid types: `feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert`. Valid scopes: `cli|hooks|skills|core|docs|global|ci|release`.
+- **Conventional commits required** with scope: `type(scope): subject`. Valid types: `feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert`. Valid scopes: `hooks|skills|core|docs|global|ci|release`.
 
 ## Architecture
 

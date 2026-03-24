@@ -256,7 +256,7 @@ Claude Auto comes with several built-in reminders:
 
 - **documentation.md** - When and how to update docs
 
-These are symlinked from the package and always available.
+These are provided by the plugin and always available.
 
 ---
 
@@ -388,10 +388,10 @@ Commit project reminders (not personal preferences):
 
 ### Check What's Loaded
 
-See which reminders are active:
+See which reminders are active from within a Claude Code session:
 
-```bash
-npx claude-auto reminders
+```
+/claude-auto:config reminders
 ```
 
 ### Test Reminder Loading

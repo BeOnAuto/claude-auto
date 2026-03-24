@@ -11,17 +11,10 @@ Claude Auto uses a layered configuration system with multiple files:
 | File | Purpose | Committed? | Auto-Created? |
 |------|---------|------------|---------------|
 | `.claude-auto/.claude.hooks.json` | Primary runtime hook state | No | Yes |
-| `.claude/settings.json` | Merged hook configuration | No | Yes |
-| `.claude/settings.project.json` | Project-level overrides | Yes | No |
-| `.claude/settings.local.json` | Local/personal overrides | No | No |
-| `.claude/settings.lock.json` | Merge cache | No | Yes |
 | `.claude/deny-list.project.txt` | Project file protection | Yes | No |
 | `.claude/deny-list.local.txt` | Local file protection | No | No |
-| `.claude/state.json` | Project state for conditionals | No | No |
-| `.claude-autorc.json` (or variants) | Cosmiconfig options | Yes | No |
-| `.claude-auto/scripts/*.js` | Hook scripts | No | Yes (copied) |
-| `.claude-auto/reminders/*.md` | Context injection reminders | Yes/No | Yes (copied) |
-| `.claude-auto/validators/*.md` | Commit validation rules | Yes/No | Yes (copied) |
+| `.claude-auto/reminders/*.md` | Context injection reminders | Yes/No | Yes |
+| `.claude-auto/validators/*.md` | Commit validation rules | Yes/No | Yes |
 
 ---
 
@@ -127,107 +120,6 @@ Controls which subagent types trigger validation hooks.
 
 ---
 
-## Settings Layering
-
-Claude Auto merges settings from three sources in priority order:
-
-1. **Package defaults** (`node_modules/claude-auto/templates/settings.json`)
-2. **Project overrides** (`.claude/settings.project.json`)
-3. **Local overrides** (`.claude/settings.local.json`)
-
-The merged result is written to `.claude/settings.json`.
-
-See [Architecture Guide](/architecture#settings-merge-strategy) for detailed merge implementation.
-
-### Override Syntax
-
-#### Disable specific hooks
-
-```json
-{
-  "hooks": {
-    "PreToolUse": {
-      "_disabled": ["node .claude-auto/scripts/pre-tool-use.js"]
-    }
-  }
-}
-```
-
-#### Replace entire hook array
-
-```json
-{
-  "hooks": {
-    "SessionStart": {
-      "_mode": "replace",
-      "_value": []
-    }
-  }
-}
-```
-
-#### Add new hooks
-
-New hooks are merged with existing ones (duplicates removed by command):
-
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          { "type": "command", "command": "my-custom-validator" }
-        ]
-      }
-    ]
-  }
-}
-```
-
-### Default Hook Configuration
-
-The package provides these default hooks:
-
-```json
-{
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "",
-        "hooks": [
-          { "type": "command", "command": "node .claude-auto/scripts/session-start.js" }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write|NotebookEdit|Bash",
-        "hooks": [
-          { "type": "command", "command": "node .claude-auto/scripts/pre-tool-use.js" }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "matcher": "",
-        "hooks": [
-          { "type": "command", "command": "node .claude-auto/scripts/user-prompt-submit.js" }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          { "type": "command", "command": "node .claude-auto/scripts/auto-continue.js" }
-        ]
-      }
-    ]
-  }
-}
-```
-
 ---
 
 ## Deny-List Files
@@ -245,111 +137,16 @@ Patterns use [micromatch](https://github.com/micromatch/micromatch) glob syntax.
 
 ---
 
-## Cosmiconfig Support
+## Managing Configuration
 
-For advanced configuration, Claude Auto supports cosmiconfig.
+Configuration is managed via the `/claude-auto:config` skill from within a Claude Code session:
 
-### Supported Files
-
-- `.claude-autorc.json`
-- `.claude-autorc.yaml` / `.claude-autorc.yml`
-- `.claude-autorc.js`
-- `claude-auto.config.js`
-- `claude-auto` key in `package.json`
-
-### Configuration Schema
-
-```typescript
-interface AutoConfig {
-  /** Directory for claude-auto data (reminders, validators). Default: '.claude-auto' */
-  autoDir?: string;
-
-  /** Validator configuration */
-  validators?: {
-    dirs?: string[];       // Additional validator directories
-    enabled?: boolean;     // Enable/disable validators globally
-    mode?: 'strict' | 'warn' | 'off';  // Validation strictness
-  };
-
-  /** Reminder configuration */
-  reminders?: {
-    dirs?: string[];       // Additional reminder directories
-    enabled?: boolean;     // Enable/disable reminders globally
-  };
-
-  /** Hook configuration overrides */
-  hooks?: {
-    skipInstall?: boolean; // Skip postinstall setup
-    logLevel?: 'debug' | 'info' | 'warn' | 'error';
-  };
-}
 ```
-
-### Example `.claude-autorc.json`
-
-```json
-{
-  "autoDir": ".claude-auto",
-  "validators": {
-    "dirs": ["./custom-validators", "./team-validators"],
-    "mode": "strict"
-  },
-  "reminders": {
-    "dirs": ["./project-reminders"],
-    "enabled": true
-  },
-  "hooks": {
-    "logLevel": "info"
-  }
-}
+/claude-auto:config show          # View current configuration
+/claude-auto:config set <key> <value>  # Update a setting
+/claude-auto:config validators    # List active validators
+/claude-auto:config reminders     # List active reminders
 ```
-
-### Example in `package.json`
-
-```json
-{
-  "name": "my-project",
-  "claude-auto": {
-    "validators": {
-      "enabled": true,
-      "mode": "warn"
-    },
-    "reminders": {
-      "dirs": ["./docs/reminders"]
-    }
-  }
-}
-```
-
-### Example `.claude-autorc.js`
-
-```javascript
-module.exports = {
-  autoDir: process.env.CI ? '.claude-auto-ci' : '.claude-auto',
-  validators: {
-    enabled: process.env.NODE_ENV !== 'development',
-    mode: process.env.STRICT_MODE ? 'strict' : 'warn'
-  },
-  reminders: {
-    dirs: [
-      './reminders',
-      process.env.TEAM_REMINDERS_PATH
-    ].filter(Boolean)
-  }
-};
-```
-
-### Load Priority
-
-Cosmiconfig searches for configuration in this order:
-
-1. `claude-auto` property in `package.json`
-2. `.claude-autorc.json`
-3. `.claude-autorc.yaml` / `.claude-autorc.yml`
-4. `.claude-autorc.js`
-5. `claude-auto.config.js`
-
-The first configuration found is used (no merging between different config files).
 
 ---
 
@@ -361,9 +158,7 @@ The first configuration found is used (no merging between different config files
 | `INIT_CWD` | Starting directory for root search | `process.cwd()` |
 | `DEBUG` | Enable debug logging | - |
 | `AUTO_LOG` | Filter activity logging | Log everything |
-| `AUTO_SKIP_POSTINSTALL` | Skip postinstall in CI | `false` |
 | `CI` | Detect CI environment | - |
-| `NODE_ENV` | Node environment | `development` |
 | `AUTO_VALIDATOR_MODE` | Override validator mode | From config |
 | `AUTO_AUTO_CONTINUE` | Override auto-continue mode | From config |
 
@@ -401,14 +196,6 @@ AUTO_LOG="session-start,block" claude
 ```
 
 Activity logs written to `.claude-auto/logs/activity.log`.
-
-### `AUTO_SKIP_POSTINSTALL`
-
-Skip postinstall script (useful for CI):
-
-```bash
-AUTO_SKIP_POSTINSTALL=true npm install
-```
 
 ### `AUTO_VALIDATOR_MODE`
 
@@ -488,7 +275,7 @@ Reminders are Markdown files with YAML frontmatter that inject context into Clau
 
 ### Location
 
-- Default reminders: `.claude-auto/reminders/` (copied from package during install)
+- Default reminders: `.claude-auto/reminders/` (provided by plugin)
 - Custom reminders: `.claude-auto/reminders/` (add your own `.md` files)
 
 ### Frontmatter Schema
@@ -516,7 +303,7 @@ Validators are Markdown files with YAML frontmatter.
 
 ### Location
 
-- Default validators: `.claude-auto/validators/` (copied from package during install)
+- Default validators: `.claude-auto/validators/` (provided by plugin)
 - Custom validators: `.claude-auto/validators/` (add your own `.md` files)
 
 ### Frontmatter Schema
@@ -580,8 +367,8 @@ Claude Auto finds the project root in this order:
 }
 ```
 
-::: tip Script Location
-Hook scripts are located at `.claude-auto/scripts/`, not `.claude/scripts/`. The `settings.json` commands reference `.claude-auto/scripts/*.js`.
+::: tip Hook Scripts
+Hook scripts are bundled within the plugin and registered automatically. No manual script setup is needed.
 :::
 
 ### Enable non-stop mode

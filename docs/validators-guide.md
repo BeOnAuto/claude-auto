@@ -364,17 +364,10 @@ Consider NACK only if performance is critical for this change.
 
 ### List Active Validators
 
-```bash
-npx claude-auto validators
-```
+From within a Claude Code session:
 
-Output:
 ```
-Active Validators:
-✓ tcr-workflow (enabled)
-✓ test-coverage (enabled)
-✓ no-dangerous-git-operations (enabled)
-✗ no-console-logs (disabled)
+/claude-auto:config validators
 ```
 
 ### Temporarily Disable
