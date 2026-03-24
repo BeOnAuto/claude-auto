@@ -2,37 +2,9 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { resolveClaudeDirFromScript, resolvePathsFromEnv } from './path-resolver.js';
-
-describe('resolveClaudeDirFromScript', () => {
-  it('resolves .claude dir two levels up from script directory', () => {
-    const scriptDir = '/project/.claude-auto/scripts';
-
-    const result = resolveClaudeDirFromScript(scriptDir);
-
-    expect(result).toBe('/project/.claude');
-  });
-
-  it('handles trailing slashes in script directory', () => {
-    const scriptDir = '/project/.claude-auto/scripts/';
-
-    const result = resolveClaudeDirFromScript(scriptDir);
-
-    expect(result).toBe('/project/.claude');
-  });
-
-  it('works with nested project paths', () => {
-    const scriptDir = '/home/user/code/my-project/.claude-auto/scripts';
-
-    const result = resolveClaudeDirFromScript(scriptDir);
-
-    expect(result).toBe('/home/user/code/my-project/.claude');
-  });
-});
+import { resolvePathsFromEnv } from './path-resolver.js';
 
 describe('resolvePathsFromEnv', () => {
-  const originalEnv = process.env;
-
   beforeEach(() => {
     vi.stubEnv('CLAUDE_PLUGIN_ROOT', '');
     vi.stubEnv('CLAUDE_PLUGIN_DATA', '');
@@ -48,42 +20,34 @@ describe('resolvePathsFromEnv', () => {
 
     const result = await resolvePathsFromEnv();
 
-    expect(result.autoDir).toBe(path.join(process.cwd(), '.claude-auto'));
-    expect(result.claudeDir).toBe(path.join(process.cwd(), '.claude'));
-    expect(result.projectRoot).toBe(process.cwd());
-    expect(result.validatorsDirs).toEqual([
-      '/plugins/claude-auto/validators',
-      path.join(process.cwd(), '.claude-auto', 'validators'),
-    ]);
-    expect(result.remindersDirs).toEqual([
-      '/plugins/claude-auto/reminders',
-      path.join(process.cwd(), '.claude-auto', 'reminders'),
-    ]);
+    expect(result).toEqual({
+      projectRoot: process.cwd(),
+      claudeDir: path.join(process.cwd(), '.claude'),
+      autoDir: path.join(process.cwd(), '.claude-auto'),
+      validatorsDirs: ['/plugins/claude-auto/validators', path.join(process.cwd(), '.claude-auto', 'validators')],
+      remindersDirs: ['/plugins/claude-auto/reminders', path.join(process.cwd(), '.claude-auto', 'reminders')],
+    });
   });
 
-  it('falls back to legacy mode when env vars are not set', async () => {
+  it('throws when env vars are not set', async () => {
     delete process.env.CLAUDE_PLUGIN_ROOT;
     delete process.env.CLAUDE_PLUGIN_DATA;
 
-    const result = await resolvePathsFromEnv();
-
-    expect(result.validatorsDirs.length).toBe(1);
-    expect(result.remindersDirs.length).toBe(1);
-    expect(result.validatorsDirs[0]).toContain('validators');
-    expect(result.remindersDirs[0]).toContain('reminders');
+    await expect(resolvePathsFromEnv()).rejects.toThrow(
+      'CLAUDE_PLUGIN_ROOT and CLAUDE_PLUGIN_DATA must be set. Claude Auto requires plugin mode.',
+    );
   });
 
-  it('falls back to legacy mode when only CLAUDE_PLUGIN_ROOT is set', async () => {
+  it('throws when only CLAUDE_PLUGIN_ROOT is set', async () => {
     vi.stubEnv('CLAUDE_PLUGIN_ROOT', '/plugins/claude-auto');
     delete process.env.CLAUDE_PLUGIN_DATA;
 
-    const result = await resolvePathsFromEnv();
-
-    expect(result.validatorsDirs.length).toBe(1);
-    expect(result.remindersDirs.length).toBe(1);
+    await expect(resolvePathsFromEnv()).rejects.toThrow(
+      'CLAUDE_PLUGIN_ROOT and CLAUDE_PLUGIN_DATA must be set. Claude Auto requires plugin mode.',
+    );
   });
 
-  it('includes project-local dirs for plugin-mode multi-dir loading', async () => {
+  it('includes project-local dirs for multi-dir loading', async () => {
     vi.stubEnv('CLAUDE_PLUGIN_ROOT', '/plugins/claude-auto');
     vi.stubEnv('CLAUDE_PLUGIN_DATA', '/data/claude-auto');
 

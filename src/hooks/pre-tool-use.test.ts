@@ -4,19 +4,29 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { DEFAULT_AUTO_DIR } from '../config-loader.js';
+import type { ResolvedPaths } from '../path-resolver.js';
 import { handlePreToolUse } from './pre-tool-use.js';
+
+const DEFAULT_AUTO_DIR = '.claude-auto';
 
 describe('pre-tool-use hook', () => {
   let tempDir: string;
   let claudeDir: string;
   let autoDir: string;
+  let resolvedPaths: ResolvedPaths;
   const originalEnv = process.env.DEBUG;
 
   beforeEach(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'auto-pretool-'));
     claudeDir = path.join(tempDir, '.claude');
     autoDir = path.join(tempDir, DEFAULT_AUTO_DIR);
+    resolvedPaths = {
+      projectRoot: tempDir,
+      claudeDir,
+      autoDir,
+      remindersDirs: [path.join(autoDir, 'reminders')],
+      validatorsDirs: [path.join(autoDir, 'validators')],
+    };
     fs.mkdirSync(claudeDir, { recursive: true });
     fs.mkdirSync(autoDir, { recursive: true });
     fs.writeFileSync(path.join(tempDir, 'package.json'), '{}');
@@ -35,7 +45,7 @@ describe('pre-tool-use hook', () => {
     fs.writeFileSync(path.join(claudeDir, 'deny-list.project.txt'), '*.secret\n');
     const toolInput = { file_path: '/project/config.secret' };
 
-    const result = await handlePreToolUse(claudeDir, 'session-1', toolInput);
+    const result = await handlePreToolUse(resolvedPaths, 'session-1', toolInput);
 
     expect(result).toEqual({
       hookSpecificOutput: {
@@ -50,7 +60,7 @@ describe('pre-tool-use hook', () => {
     fs.writeFileSync(path.join(claudeDir, 'deny-list.project.txt'), '*.secret\n');
     const toolInput = { file_path: '/project/config.json' };
 
-    const result = await handlePreToolUse(claudeDir, 'session-2', toolInput);
+    const result = await handlePreToolUse(resolvedPaths, 'session-2', toolInput);
 
     expect(result).toEqual({
       hookSpecificOutput: {
@@ -63,7 +73,7 @@ describe('pre-tool-use hook', () => {
   it('does not write to activity.log for non-commit non-blocked tool use', async () => {
     const toolInput = { command: 'echo hello' };
 
-    await handlePreToolUse(claudeDir, 'session-silent', toolInput);
+    await handlePreToolUse(resolvedPaths, 'session-silent', toolInput);
 
     const logPath = path.join(autoDir, 'logs', 'activity.log');
     expect(fs.existsSync(logPath)).toBe(false);
@@ -73,7 +83,7 @@ describe('pre-tool-use hook', () => {
     fs.writeFileSync(path.join(claudeDir, 'deny-list.project.txt'), '*.secret\n');
     const toolInput = { file_path: '/project/config.secret' };
 
-    await handlePreToolUse(claudeDir, 'my-session-id', toolInput);
+    await handlePreToolUse(resolvedPaths, 'my-session-id', toolInput);
 
     const logPath = path.join(autoDir, 'logs', 'activity.log');
     expect(fs.existsSync(logPath)).toBe(true);
@@ -87,7 +97,7 @@ describe('pre-tool-use hook', () => {
     fs.writeFileSync(path.join(claudeDir, 'deny-list.project.txt'), '*.secret\n');
     const toolInput = { file_path: '/project/config.secret' };
 
-    await handlePreToolUse(claudeDir, 'debug-session', toolInput);
+    await handlePreToolUse(resolvedPaths, 'debug-session', toolInput);
 
     const logPath = path.join(autoDir, 'logs', 'claude-auto', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
@@ -102,7 +112,7 @@ describe('pre-tool-use hook', () => {
       command: 'git commit -m "Test commit"',
     };
 
-    const result = await handlePreToolUse(claudeDir, 'session-no-validators', toolInput);
+    const result = await handlePreToolUse(resolvedPaths, 'session-no-validators', toolInput);
 
     expect(result).toEqual({
       hookSpecificOutput: {
@@ -126,7 +136,7 @@ Validate this commit`,
     );
     fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify({ validateCommit: { mode: 'off' } }));
 
-    const result = await handlePreToolUse(claudeDir, 'session-off', {
+    const result = await handlePreToolUse(resolvedPaths, 'session-off', {
       command: 'git commit -m "test: skip validation"',
     });
 
@@ -164,7 +174,7 @@ Validate this commit`,
       command: 'git commit -m "Test commit"',
     };
 
-    const result = await handlePreToolUse(claudeDir, 'session-3', toolInput, { executor });
+    const result = await handlePreToolUse(resolvedPaths, 'session-3', toolInput, { executor });
 
     expect(result).toEqual({
       hookSpecificOutput: {
@@ -201,7 +211,7 @@ Validate this commit`,
       command: 'git commit -m "Test commit"',
     };
 
-    const result = await handlePreToolUse(claudeDir, 'session-4', toolInput, { executor });
+    const result = await handlePreToolUse(resolvedPaths, 'session-4', toolInput, { executor });
 
     expect(result).toEqual({
       hookSpecificOutput: {
@@ -246,7 +256,7 @@ You are the appeal system.`,
       command: 'git commit -m "Test commit"',
     };
 
-    const result = await handlePreToolUse(claudeDir, 'session-appeal-exclude', toolInput, { executor });
+    const result = await handlePreToolUse(resolvedPaths, 'session-appeal-exclude', toolInput, { executor });
 
     expect(result).toEqual({
       hookSpecificOutput: {
@@ -298,7 +308,7 @@ Validate this commit`,
     const cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(tempDir);
 
     try {
-      const result = await handlePreToolUse(claudeDir, 'session-cd-fix', toolInput, { executor });
+      const result = await handlePreToolUse(resolvedPaths, 'session-cd-fix', toolInput, { executor });
 
       expect(result).toEqual({
         hookSpecificOutput: {
@@ -338,7 +348,7 @@ Check for typos.`,
     );
 
     const toolInput = { command: 'echo hello' };
-    const result = await handlePreToolUse(claudeDir, 'session-5', toolInput, { toolName: 'Bash' });
+    const result = await handlePreToolUse(resolvedPaths, 'session-5', toolInput, { toolName: 'Bash' });
 
     expect(result).toEqual({
       hookSpecificOutput: {

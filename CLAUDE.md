@@ -43,17 +43,16 @@ Claude Code hooks are the core integration. Four hook points with bundled script
 | UserPromptSubmit | `user-prompt-submit.ts` | Inject context-aware reminders |
 | Stop | `auto-continue.ts` | Decide auto-continue vs stop |
 
-Scripts are bundled via esbuild to `dist/bundle/scripts/` and symlinked into `.claude-auto/scripts/` on install.
+Scripts are bundled via esbuild to `dist/bundle/scripts/` and executed from `$CLAUDE_PLUGIN_ROOT/dist/bundle/scripts/` in plugin mode.
 
 ### Key Source Modules (`src/`)
 
 - **`hooks/`** — Hook handlers: `session-start.ts`, `pre-tool-use.ts`, `user-prompt-submit.ts`, `auto-continue.ts`, `validate-commit.ts`
-- **`cli/`** — Commander.js CLI: `install.ts`, `status.ts`, `doctor.ts`, `repair.ts`, `reminders.ts`, `tui/` (terminal UI)
 - **`commit-validator.ts`** — Batched validator execution (default batch size: 3), appeals parsing, Claude CLI spawning
 - **`validator-loader.ts`** / **`reminder-loader.ts`** — Load markdown files with YAML frontmatter from `.claude-auto/validators/` and `.claude-auto/reminders/`
 - **`hook-state.ts`** — Manages `.claude.hooks.json` (autoContinue mode, validateCommit mode, deny-list config)
 - **`deny-list.ts`** — File path protection via micromatch glob patterns
-- **`settings-merger.ts`** — Deep merges `templates/settings.json` + `.claude/settings.project.json` + `.claude/settings.local.json`
+- **`path-resolver.ts`** — Resolves plugin and project paths from `CLAUDE_PLUGIN_ROOT` / `CLAUDE_PLUGIN_DATA` env vars
 - **`clue-collector.ts`** — Extracts signals from session transcripts for auto-continue decisions
 - **`subagent-classifier.ts`** — Classifies prompts as explore/work/unknown to control hook behavior
 
@@ -72,7 +71,7 @@ Both are markdown files with YAML frontmatter. Validators gate commits (ACK/NACK
 
 ### Installation Model
 
-`npx claude-auto install` copies validators, reminders, and bundled scripts into `.claude-auto/`, creates `.claude/settings.json` from templates, and initializes `.claude.hooks.json` state.
+Claude Auto runs as a Claude Code plugin. Install via `/plugin marketplace add BeOnAuto/claude-auto` or `claude --plugin-dir /path/to/claude-auto`. The plugin provides validators, reminders, and hook scripts. Projects can add local overrides in `.claude-auto/`.
 
 ## Coding Patterns
 

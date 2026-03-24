@@ -1,7 +1,7 @@
 import { activityLog } from '../activity-logger.js';
 import { debugLog } from '../debug-logger.js';
 import { createHookState } from '../hook-state.js';
-import { type ResolvedPaths, resolvePaths } from '../path-resolver.js';
+import type { ResolvedPaths } from '../path-resolver.js';
 import { loadReminders, scanReminders } from '../reminder-loader.js';
 
 type HookResult = {
@@ -18,11 +18,10 @@ export interface SessionStartDiagnostics {
 }
 
 export async function handleSessionStart(
-  claudeDirOrPaths: string | ResolvedPaths,
+  paths: ResolvedPaths,
   sessionId: string = '',
   agentType?: string,
 ): Promise<HookResult & { diagnostics: SessionStartDiagnostics }> {
-  const paths = typeof claudeDirOrPaths === 'string' ? await resolvePaths(claudeDirOrPaths) : claudeDirOrPaths;
   const reminderFiles = paths.remindersDirs.flatMap((dir) => scanReminders(dir));
 
   if (agentType === 'validator') {

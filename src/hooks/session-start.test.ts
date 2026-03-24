@@ -4,20 +4,31 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { DEFAULT_AUTO_DIR } from '../config-loader.js';
 import { DEFAULT_HOOK_STATE } from '../hook-state.js';
+import type { ResolvedPaths } from '../path-resolver.js';
+
+const DEFAULT_AUTO_DIR = '.claude-auto';
+
 import { handleSessionStart } from './session-start.js';
 
 describe('session-start hook', () => {
   let tempDir: string;
   let claudeDir: string;
   let autoDir: string;
+  let resolvedPaths: ResolvedPaths;
   const originalEnv = process.env.DEBUG;
 
   beforeEach(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'auto-session-'));
     claudeDir = path.join(tempDir, '.claude');
     autoDir = path.join(tempDir, DEFAULT_AUTO_DIR);
+    resolvedPaths = {
+      projectRoot: tempDir,
+      claudeDir,
+      autoDir,
+      remindersDirs: [path.join(autoDir, 'reminders')],
+      validatorsDirs: [path.join(autoDir, 'validators')],
+    };
     fs.mkdirSync(claudeDir, { recursive: true });
     fs.mkdirSync(autoDir, { recursive: true });
     fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify(DEFAULT_HOOK_STATE));
@@ -49,7 +60,7 @@ priority: 10
 This is the reminder content.`,
     );
 
-    const result = await handleSessionStart(claudeDir, 'test-session-id');
+    const result = await handleSessionStart(resolvedPaths, 'test-session-id');
 
     expect(result.hookSpecificOutput).toEqual({
       hookEventName: 'SessionStart',
@@ -72,7 +83,7 @@ when:
 Content.`,
     );
 
-    await handleSessionStart(claudeDir, 'abc12345-session');
+    await handleSessionStart(resolvedPaths, 'abc12345-session');
 
     const logPath = path.join(autoDir, 'logs', 'activity.log');
     expect(fs.existsSync(logPath)).toBe(true);
@@ -105,7 +116,7 @@ when:
 Reminder B content.`,
     );
 
-    await handleSessionStart(claudeDir, 'debug-session');
+    await handleSessionStart(resolvedPaths, 'debug-session');
 
     const logPath = path.join(autoDir, 'logs', 'claude-auto', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
@@ -128,7 +139,7 @@ priority: 10
 Test content.`,
     );
 
-    const result = await handleSessionStart(claudeDir, 'normal-session');
+    const result = await handleSessionStart(resolvedPaths, 'normal-session');
 
     expect(result.hookSpecificOutput.additionalContext).toBe('Test content.');
     expect(result.hookSpecificOutput.additionalContext).not.toContain('Welcome to Claude Auto');
@@ -148,7 +159,7 @@ priority: 10
 Should be skipped.`,
     );
 
-    const result = await handleSessionStart(claudeDir, 'validator-session', 'validator');
+    const result = await handleSessionStart(resolvedPaths, 'validator-session', 'validator');
 
     expect(result.hookSpecificOutput).toEqual({
       hookEventName: 'SessionStart',

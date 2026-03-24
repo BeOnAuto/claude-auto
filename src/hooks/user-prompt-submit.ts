@@ -1,7 +1,7 @@
 import { activityLog } from '../activity-logger.js';
 import { debugLog } from '../debug-logger.js';
 import { createHookState } from '../hook-state.js';
-import { type ResolvedPaths, resolvePaths } from '../path-resolver.js';
+import type { ResolvedPaths } from '../path-resolver.js';
 import { loadReminders, scanReminders } from '../reminder-loader.js';
 import { isValidatorSession } from '../validator-session.js';
 import { FIRST_SETUP_MESSAGE } from '../welcome-message.js';
@@ -20,11 +20,10 @@ export interface UserPromptSubmitDiagnostics {
 }
 
 export async function handleUserPromptSubmit(
-  claudeDirOrPaths: string | ResolvedPaths,
+  paths: ResolvedPaths,
   sessionId: string,
   prompt?: string,
 ): Promise<HookResult & { diagnostics: UserPromptSubmitDiagnostics }> {
-  const paths = typeof claudeDirOrPaths === 'string' ? await resolvePaths(claudeDirOrPaths) : claudeDirOrPaths;
   const reminderFiles = paths.remindersDirs.flatMap((dir) => scanReminders(dir));
 
   if (isValidatorSession(prompt)) {

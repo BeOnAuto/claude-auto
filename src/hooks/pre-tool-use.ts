@@ -9,7 +9,7 @@ import {
 import { debugLog } from '../debug-logger.js';
 import { isDenied, loadDenyPatterns } from '../deny-list.js';
 import { createHookState } from '../hook-state.js';
-import { type ResolvedPaths, resolvePaths } from '../path-resolver.js';
+import type { ResolvedPaths } from '../path-resolver.js';
 import { loadReminders } from '../reminder-loader.js';
 import { loadValidators } from '../validator-loader.js';
 
@@ -31,12 +31,11 @@ interface PreToolUseOptions {
 }
 
 export async function handlePreToolUse(
-  claudeDirOrPaths: string | ResolvedPaths,
+  paths: ResolvedPaths,
   sessionId: string,
   toolInput: ToolInput,
   options: PreToolUseOptions = {},
 ): Promise<HookResult> {
-  const paths = typeof claudeDirOrPaths === 'string' ? await resolvePaths(claudeDirOrPaths) : claudeDirOrPaths;
   const command = toolInput.command as string | undefined;
 
   if (command && isCommitCommand(command)) {

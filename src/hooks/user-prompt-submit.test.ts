@@ -4,20 +4,31 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { DEFAULT_AUTO_DIR } from '../config-loader.js';
+import type { ResolvedPaths } from '../path-resolver.js';
 import { FIRST_SETUP_MESSAGE } from '../welcome-message.js';
+
+const DEFAULT_AUTO_DIR = '.claude-auto';
+
 import { handleUserPromptSubmit } from './user-prompt-submit.js';
 
 describe('user-prompt-submit hook', () => {
   let tempDir: string;
   let claudeDir: string;
   let autoDir: string;
+  let resolvedPaths: ResolvedPaths;
   const originalEnv = process.env.DEBUG;
 
   beforeEach(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'auto-prompt-'));
     claudeDir = path.join(tempDir, '.claude');
     autoDir = path.join(tempDir, DEFAULT_AUTO_DIR);
+    resolvedPaths = {
+      projectRoot: tempDir,
+      claudeDir,
+      autoDir,
+      remindersDirs: [path.join(autoDir, 'reminders')],
+      validatorsDirs: [path.join(autoDir, 'validators')],
+    };
     fs.mkdirSync(claudeDir, { recursive: true });
     fs.mkdirSync(autoDir, { recursive: true });
     fs.writeFileSync(path.join(tempDir, 'package.json'), '{}');
@@ -46,7 +57,7 @@ priority: 10
 Remember to follow coding standards.`,
     );
 
-    const result = await handleUserPromptSubmit(claudeDir, 'session-1');
+    const result = await handleUserPromptSubmit(resolvedPaths, 'session-1');
 
     expect(result.hookSpecificOutput).toEqual({
       hookEventName: 'UserPromptSubmit',
@@ -56,7 +67,7 @@ Remember to follow coding standards.`,
   });
 
   it('returns empty additionalContext when no reminders exist', async () => {
-    const result = await handleUserPromptSubmit(claudeDir, 'session-2');
+    const result = await handleUserPromptSubmit(resolvedPaths, 'session-2');
 
     expect(result.hookSpecificOutput).toEqual({
       hookEventName: 'UserPromptSubmit',
@@ -79,7 +90,7 @@ priority: 10
 Remember to follow coding standards.`,
     );
 
-    await handleUserPromptSubmit(claudeDir, 'my-session-id');
+    await handleUserPromptSubmit(resolvedPaths, 'my-session-id');
 
     const logPath = path.join(autoDir, 'logs', 'activity.log');
     expect(fs.existsSync(logPath)).toBe(true);
@@ -103,7 +114,7 @@ priority: 10
 Remember to follow coding standards.`,
     );
 
-    await handleUserPromptSubmit(claudeDir, 'debug-session');
+    await handleUserPromptSubmit(resolvedPaths, 'debug-session');
 
     const logPath = path.join(autoDir, 'logs', 'claude-auto', 'debug.log');
     expect(fs.existsSync(logPath)).toBe(true);
@@ -113,12 +124,9 @@ Remember to follow coding standards.`,
   });
 
   it('injects first-setup directive when firstSetupRequired is true', async () => {
-    fs.writeFileSync(
-      path.join(autoDir, '.claude.hooks.json'),
-      JSON.stringify({ firstSetupRequired: true }),
-    );
+    fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify({ firstSetupRequired: true }));
 
-    const result = await handleUserPromptSubmit(claudeDir, 'setup-session', 'do something');
+    const result = await handleUserPromptSubmit(resolvedPaths, 'setup-session', 'do something');
 
     expect(result.hookSpecificOutput.additionalContext).toBe(FIRST_SETUP_MESSAGE);
     const state = JSON.parse(fs.readFileSync(path.join(autoDir, '.claude.hooks.json'), 'utf-8'));
@@ -153,7 +161,7 @@ src/file.ts
 
 You are a commit validator.`;
 
-    const result = await handleUserPromptSubmit(claudeDir, 'validator-session', validatorPrompt);
+    const result = await handleUserPromptSubmit(resolvedPaths, 'validator-session', validatorPrompt);
 
     expect(result.hookSpecificOutput).toEqual({
       hookEventName: 'UserPromptSubmit',

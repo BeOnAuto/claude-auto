@@ -17,9 +17,6 @@
   },
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
-  "bin": {
-    "claude-auto": "dist/bin/cli.js"
-  },
   "scripts": {
     "build": "tsc && pnpm build:bundle",
     "build:bundle": "esbuild scripts/session-start.ts scripts/pre-tool-use.ts scripts/user-prompt-submit.ts scripts/auto-continue.ts scripts/config.ts --bundle --platform=node --target=node18 --format=cjs --outdir=dist/bundle/scripts --external:typescript",
@@ -36,7 +33,6 @@
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
-    "install:local": "pnpm tsx bin/cli.ts install --local",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -54,11 +50,8 @@
   "author": "Sam Hatoum",
   "license": "MIT",
   "dependencies": {
-    "commander": "^12.0.0",
-    "cosmiconfig": "^9.0.0",
     "gray-matter": "^4.0.3",
-    "micromatch": "^4.0.8",
-    "yaml": "^2.3.0"
+    "micromatch": "^4.0.8"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
@@ -80,10 +73,7 @@
   },
   "files": [
     "dist/",
-    "bin/",
-    "templates/",
     "scripts/",
-    "commands/",
     "skills/",
     ".claude-plugin/",
     "hooks/",
