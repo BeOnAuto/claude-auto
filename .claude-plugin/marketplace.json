@@ -1,12 +1,16 @@
 {
   "name": "beon-auto",
-  "owner": { "name": "BeOnAuto" },
+  "owner": {
+    "name": "BeOnAuto"
+  },
   "plugins": [
     {
       "name": "claude-auto",
       "description": "Husky-style hooks and skills management for Claude Code",
-      "version": "0.17.0",
-      "author": { "name": "Sam Hatoum" },
+      "version": "0.18.0",
+      "author": {
+        "name": "Sam Hatoum"
+      },
       "source": "."
     }
   ]

@@ -1,5 +1,29 @@
 # claude-ketchup
 
+## 0.18.0
+
+### Minor Changes
+
+- 466a054: - Added native Claude Code plugin support with dual-mode operation alongside legacy install
+  - Added runtime config management for validators and reminders via config skill, with first-setup guidance
+  - Fixed commit validation to correctly skip when validateCommit mode is set to off
+  - Added ketchup plan for legacy npx install removal
+
+### Patch Changes
+
+- 432dbaa: - Cleaned up lockfile after removing legacy dependencies
+- 81ce412: - Fixed path resolution when only the plugin root directory is set, ensuring skills work correctly in environments where the data directory is not explicitly configured
+- 1c8ed07: - Updated all documentation for plugin-only installation mode
+  - Removed references to legacy npx CLI and symlink-based setup across all guides
+  - Deleted obsolete npm package test workflow and local install spec
+- be50887: - Added plugin marketplace support for easier installation and discovery
+  - Bundled scripts are now tracked in git, enabling direct use in plugin mode
+  - Automated version synchronization between plugin and marketplace during releases
+- 315480a: - Fixed skills not working when run as shell commands by automatically detecting the plugin location from the script path instead of relying on environment variables
+- 3f2c4b8: - Removed the entire CLI system including install, doctor, repair, status, and TUI commands
+  - Claude Auto now requires plugin mode exclusively — install via `/plugin marketplace add BeOnAuto/claude-auto`
+  - Removed legacy dependencies (commander, cosmiconfig, yaml) reducing package size
+
 ## 0.17.0
 
 ### Minor Changes

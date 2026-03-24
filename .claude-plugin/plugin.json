@@ -1,6 +1,8 @@
 {
   "name": "claude-auto",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "Husky-style hooks and skills management for Claude Code",
-  "author": { "name": "Sam Hatoum" }
+  "author": {
+    "name": "Sam Hatoum"
+  }
 }
