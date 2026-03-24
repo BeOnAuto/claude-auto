@@ -8,21 +8,12 @@ importers:
 
   .:
     dependencies:
-      commander:
-        specifier: ^12.0.0
-        version: 12.1.0
-      cosmiconfig:
-        specifier: ^9.0.0
-        version: 9.0.0(typescript@5.9.3)
       gray-matter:
         specifier: ^4.0.3
         version: 4.0.3
       micromatch:
         specifier: ^4.0.8
         version: 4.0.8
-      yaml:
-        specifier: ^2.3.0
-        version: 2.8.2
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.3.11
@@ -1186,10 +1177,6 @@ packages:
 
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
-
-  commander@12.1.0:
-    resolution: {integrity: sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==}
-    engines: {node: '>=18'}
 
   commander@14.0.2:
     resolution: {integrity: sha512-TywoWNNRbhoD0BXs1P3ZEScW8W5iKrnbithIl0YH+uCmBd0QpPOA8yc82DS3BIE5Ma6FnBVUsJ7wVUDz4dvOWQ==}
@@ -3462,8 +3449,6 @@ snapshots:
   colorette@2.0.20: {}
 
   comma-separated-tokens@2.0.3: {}
-
-  commander@12.1.0: {}
 
   commander@14.0.2: {}
 
