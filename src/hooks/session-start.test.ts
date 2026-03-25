@@ -28,6 +28,8 @@ describe('session-start hook', () => {
       autoDir,
       remindersDirs: [path.join(autoDir, 'reminders')],
       validatorsDirs: [path.join(autoDir, 'validators')],
+      isWorktree: false,
+      mainRepoRoot: null,
     };
     fs.mkdirSync(claudeDir, { recursive: true });
     fs.mkdirSync(autoDir, { recursive: true });

@@ -1,5 +1,7 @@
 import * as path from 'node:path';
 
+import { getMainRepoPath, isWorktree } from './worktree-detector.js';
+
 const AUTO_DIR = '.claude-auto';
 
 export interface ResolvedPaths {
@@ -8,6 +10,8 @@ export interface ResolvedPaths {
   autoDir: string;
   remindersDirs: string[];
   validatorsDirs: string[];
+  isWorktree: boolean;
+  mainRepoRoot: string | null;
 }
 
 export async function resolvePathsFromEnv(explicitPluginRoot?: string): Promise<ResolvedPaths> {
@@ -18,6 +22,8 @@ export async function resolvePathsFromEnv(explicitPluginRoot?: string): Promise<
   }
 
   const projectRoot = process.cwd();
+  const worktreeDetected = isWorktree(projectRoot);
+  const mainRepoRoot = worktreeDetected ? getMainRepoPath(projectRoot) : null;
   const claudeDir = path.join(projectRoot, '.claude');
   const autoDir = path.join(projectRoot, AUTO_DIR);
 
@@ -27,5 +33,7 @@ export async function resolvePathsFromEnv(explicitPluginRoot?: string): Promise<
     autoDir,
     remindersDirs: [path.join(pluginRoot, 'reminders'), path.join(autoDir, 'reminders')],
     validatorsDirs: [path.join(pluginRoot, 'validators'), path.join(autoDir, 'validators')],
+    isWorktree: worktreeDetected,
+    mainRepoRoot,
   };
 }

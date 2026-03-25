@@ -42,6 +42,8 @@ describe('config-manager', () => {
       autoDir,
       validatorsDirs: [validatorsDir],
       remindersDirs: [remindersDir, projectRemindersDir],
+      isWorktree: false,
+      mainRepoRoot: null,
     };
 
     fs.writeFileSync(

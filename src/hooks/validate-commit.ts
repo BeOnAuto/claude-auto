@@ -58,5 +58,7 @@ export function shouldValidateCommit(subagentType: SubagentType, state: Subagent
       return state.validateCommitOnWork;
     case 'unknown':
       return state.validateCommitOnUnknown;
+    case 'orchestrate':
+      return state.validateCommitOnWork;
   }
 }
