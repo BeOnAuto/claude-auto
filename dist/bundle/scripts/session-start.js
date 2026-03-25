@@ -3813,10 +3813,20 @@ async function handleSessionStart(paths, sessionId = "", agentType) {
   activityLog(paths.autoDir, sessionId, "session-start", `loaded ${reminders.length} reminders`);
   debugLog(paths.autoDir, "session-start", `loaded ${reminders.length} reminders for SessionStart`);
   const content = reminders.map((r) => r.content).join("\n\n");
+  let finalContent = content;
+  if (paths.isWorktree) {
+    const worktreeContext = `
+
+# Worktree Context
+
+You are operating in a git worktree. Main repository: ${paths.mainRepoRoot ?? "unknown"}. All hooks and validators are active.`;
+    finalContent = content ? `${content}${worktreeContext}` : worktreeContext.trimStart();
+    debugLog(paths.autoDir, "session-start", `injected worktree context (main repo: ${paths.mainRepoRoot})`);
+  }
   return {
     hookSpecificOutput: {
       hookEventName: "SessionStart",
-      additionalContext: content
+      additionalContext: finalContent
     },
     diagnostics: {
       resolvedPaths: paths,

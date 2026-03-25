@@ -3397,7 +3397,7 @@ var require_parse = __commonJS({
 var require_gray_matter = __commonJS({
   "node_modules/.pnpm/gray-matter@4.0.3/node_modules/gray-matter/index.js"(exports2, module2) {
     "use strict";
-    var fs9 = require("fs");
+    var fs10 = require("fs");
     var sections = require_section_matter();
     var defaults = require_defaults();
     var stringify = require_stringify();
@@ -3481,7 +3481,7 @@ var require_gray_matter = __commonJS({
       return stringify(file, data, options2);
     };
     matter2.read = function(filepath, options2) {
-      const str2 = fs9.readFileSync(filepath, "utf8");
+      const str2 = fs10.readFileSync(filepath, "utf8");
       const file = matter2(str2, options2);
       file.path = filepath;
       return file;
@@ -3510,7 +3510,7 @@ var require_gray_matter = __commonJS({
 });
 
 // scripts/user-prompt-submit.ts
-var fs8 = __toESM(require("node:fs"));
+var fs9 = __toESM(require("node:fs"));
 
 // src/activity-logger.ts
 var import_node_fs = __toESM(require("node:fs"));
@@ -3823,6 +3823,57 @@ The default workflow follows the Ketchup Technique:
 
 This setup runs once. After this, normal reminders will guide the workflow.`;
 
+// src/worktree-state.ts
+var fs6 = __toESM(require("node:fs"));
+var path6 = __toESM(require("node:path"));
+function createWorktreeState(autoDir) {
+  if (!fs6.existsSync(autoDir)) {
+    fs6.mkdirSync(autoDir, { recursive: true });
+  }
+  const stateFile = path6.join(autoDir, ".worktrees.json");
+  function read() {
+    if (!fs6.existsSync(stateFile)) {
+      return { worktrees: {} };
+    }
+    const content = fs6.readFileSync(stateFile, "utf-8");
+    return JSON.parse(content);
+  }
+  function write(state) {
+    fs6.writeFileSync(stateFile, `${JSON.stringify(state, null, 2)}
+`);
+  }
+  function addWorktree(info) {
+    const state = read();
+    state.worktrees[info.id] = info;
+    write(state);
+  }
+  function removeWorktree(id) {
+    const state = read();
+    delete state.worktrees[id];
+    write(state);
+  }
+  function updateWorktree(id, updates) {
+    const state = read();
+    const existing = state.worktrees[id];
+    if (existing) {
+      state.worktrees[id] = { ...existing, ...updates };
+      write(state);
+    }
+  }
+  function getWorktree(id) {
+    const state = read();
+    return state.worktrees[id];
+  }
+  return {
+    read,
+    write,
+    addWorktree,
+    removeWorktree,
+    updateWorktree,
+    getWorktree
+  };
+}
+
 // src/hooks/user-prompt-submit.ts
 async function handleUserPromptSubmit(paths, sessionId, prompt) {
   const reminderFiles = paths.remindersDirs.flatMap((dir) => scanReminders(dir));
@@ -3879,26 +3930,41 @@ async function handleUserPromptSubmit(paths, sessionId, prompt) {
     reminderFiles,
     matchedReminders: reminders.map((r) => ({ name: r.name, priority: r.priority }))
   };
+  let finalContent = reminderContent;
+  if (!paths.isWorktree) {
+    const worktreeState = createWorktreeState(paths.autoDir);
+    const activeWorktrees = Object.values(worktreeState.read().worktrees).filter((w) => w.status === "active");
+    if (activeWorktrees.length > 0) {
+      const statusLines = activeWorktrees.map((w) => `- ${w.id}: ${w.branch} at ${w.path}`).join("\n");
+      const worktreeStatus = `
+
+# Active Worktrees
+
+${statusLines}`;
+      finalContent = reminderContent ? `${reminderContent}${worktreeStatus}` : worktreeStatus.trimStart();
+      debugLog(paths.autoDir, "user-prompt-submit", `injected ${activeWorktrees.length} active worktree(s) status`);
+    }
+  }
   return {
     hookSpecificOutput: {
       hookEventName: "UserPromptSubmit",
-      additionalContext: reminderContent
+      additionalContext: finalContent
     },
     diagnostics
   };
 }
 
 // src/path-resolver.ts
-var path7 = __toESM(require("node:path"));
+var path8 = __toESM(require("node:path"));
 
 // src/worktree-detector.ts
-var fs6 = __toESM(require("node:fs"));
-var path6 = __toESM(require("node:path"));
+var fs7 = __toESM(require("node:fs"));
+var path7 = __toESM(require("node:path"));
 function isWorktree(cwd) {
   const dir = cwd ?? process.cwd();
-  const gitPath = path6.join(dir, ".git");
+  const gitPath = path7.join(dir, ".git");
   try {
-    const stat = fs6.statSync(gitPath);
+    const stat = fs7.statSync(gitPath);
     return stat.isFile();
   } catch {
     return false;
@@ -3909,9 +3975,9 @@ function getMainRepoPath(cwd) {
   if (!isWorktree(dir)) {
     return null;
   }
-  const gitContent = fs6.readFileSync(path6.join(dir, ".git"), "utf-8").trim();
+  const gitContent = fs7.readFileSync(path7.join(dir, ".git"), "utf-8").trim();
   const gitdir = gitContent.replace(/^gitdir:\s*/, "");
-  return path6.resolve(gitdir, "..", "..", "..");
+  return path7.resolve(gitdir, "..", "..", "..");
 }
 
 // src/path-resolver.ts
@@ -3924,22 +3990,22 @@ async function resolvePathsFromEnv(explicitPluginRoot) {
   const projectRoot = process.cwd();
   const worktreeDetected = isWorktree(projectRoot);
   const mainRepoRoot = worktreeDetected ? getMainRepoPath(projectRoot) : null;
-  const claudeDir = path7.join(projectRoot, ".claude");
-  const autoDir = path7.join(projectRoot, AUTO_DIR);
+  const claudeDir = path8.join(projectRoot, ".claude");
+  const autoDir = path8.join(projectRoot, AUTO_DIR);
   return {
     projectRoot,
     claudeDir,
     autoDir,
-    remindersDirs: [path7.join(pluginRoot, "reminders"), path7.join(autoDir, "reminders")],
-    validatorsDirs: [path7.join(pluginRoot, "validators"), path7.join(autoDir, "validators")],
+    remindersDirs: [path8.join(pluginRoot, "reminders"), path8.join(autoDir, "reminders")],
+    validatorsDirs: [path8.join(pluginRoot, "validators"), path8.join(autoDir, "validators")],
     isWorktree: worktreeDetected,
     mainRepoRoot
   };
 }
 
 // src/plugin-debug.ts
-var fs7 = __toESM(require("node:fs"));
-var path8 = __toESM(require("node:path"));
+var fs8 = __toESM(require("node:fs"));
+var path9 = __toESM(require("node:path"));
 function logPluginDiagnostics(hookName, paths) {
   const isPluginMode = !!process.env.CLAUDE_PLUGIN_ROOT;
   const isDebug = !!process.env.CLAUDE_AUTO_DEBUG;
@@ -3962,13 +4028,13 @@ function logPluginDiagnostics(hookName, paths) {
   if (isDebug) {
     console.error(message);
   }
-  const logsDir = path8.join(paths.autoDir, "logs");
-  fs7.mkdirSync(logsDir, { recursive: true });
-  fs7.appendFileSync(path8.join(logsDir, "plugin-debug.log"), message);
+  const logsDir = path9.join(paths.autoDir, "logs");
+  fs8.mkdirSync(logsDir, { recursive: true });
+  fs8.appendFileSync(path9.join(logsDir, "plugin-debug.log"), message);
 }
 
 // scripts/user-prompt-submit.ts
-var input = parseHookInput(fs8.readFileSync(0, "utf-8"));
+var input = parseHookInput(fs9.readFileSync(0, "utf-8"));
 var startTime = Date.now();
 (async () => {
   const paths = await resolvePathsFromEnv();
