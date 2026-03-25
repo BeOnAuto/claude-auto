@@ -1,4 +1,4 @@
-export type SubagentType = 'explore' | 'work' | 'unknown';
+export type SubagentType = 'explore' | 'work' | 'orchestrate' | 'unknown';
 
 const EXPLORE_PATTERNS = [
   /\bsearch\b/i,
@@ -28,9 +28,16 @@ const WORK_PATTERNS = [
   /\bdelete\b/i,
 ];
 
+const ORCHESTRATE_PATTERNS = [/\borchestrat/i, /\bworktree/i, /\bspawn\b/i, /\bcoordinat/i, /\bparallel\b/i];
+
 export function classifySubagent(taskDescription: string): SubagentType {
   if (!taskDescription) {
     return 'unknown';
+  }
+
+  const isOrchestrate = ORCHESTRATE_PATTERNS.some((p) => p.test(taskDescription));
+  if (isOrchestrate) {
+    return 'orchestrate';
   }
 
   const isExplore = EXPLORE_PATTERNS.some((p) => p.test(taskDescription));

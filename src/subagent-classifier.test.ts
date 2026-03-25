@@ -53,6 +53,24 @@ describe('subagent-classifier', () => {
     it('returns unknown for empty description', () => {
       expect(classifySubagent('')).toBe('unknown');
     });
+
+    it('classifies orchestrate patterns', () => {
+      const orchestrateDescriptions = [
+        'Orchestrate the parallel builds',
+        'Create a worktree for this feature',
+        'Spawn agents for burst execution',
+        'Coordinate multiple sub-agents',
+        'Run parallel test suites',
+      ];
+
+      for (const desc of orchestrateDescriptions) {
+        expect(classifySubagent(desc)).toBe('orchestrate' as SubagentType);
+      }
+    });
+
+    it('orchestrate takes priority over work patterns', () => {
+      expect(classifySubagent('Create a worktree and implement feature')).toBe('orchestrate' as SubagentType);
+    });
   });
 
   describe('extractTaskDescription', () => {

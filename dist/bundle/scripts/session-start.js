@@ -3663,6 +3663,10 @@ var DEFAULT_HOOK_STATE = {
   overrides: {
     validators: {},
     reminders: {}
+  },
+  worktree: {
+    enabled: true,
+    autoCleanup: true
   }
 };
 function createHookState(autoDir) {
@@ -3690,7 +3694,8 @@ function createHookState(autoDir) {
       overrides: {
         validators: { ...DEFAULT_HOOK_STATE.overrides.validators, ...partial.overrides?.validators },
         reminders: { ...DEFAULT_HOOK_STATE.overrides.reminders, ...partial.overrides?.reminders }
-      }
+      },
+      worktree: { ...DEFAULT_HOOK_STATE.worktree, ...partial.worktree }
     };
   }
   function write(state) {
@@ -3710,7 +3715,8 @@ function createHookState(autoDir) {
       overrides: {
         validators: { ...current.overrides.validators, ...updates.overrides?.validators },
         reminders: { ...current.overrides.reminders, ...updates.overrides?.reminders }
-      }
+      },
+      worktree: { ...current.worktree, ...updates.worktree }
     };
     write(newState);
     return newState;
