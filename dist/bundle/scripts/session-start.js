@@ -3397,7 +3397,7 @@ var require_parse = __commonJS({
 var require_gray_matter = __commonJS({
   "node_modules/.pnpm/gray-matter@4.0.3/node_modules/gray-matter/index.js"(exports2, module2) {
     "use strict";
-    var fs8 = require("fs");
+    var fs9 = require("fs");
     var sections = require_section_matter();
     var defaults = require_defaults();
     var stringify = require_stringify();
@@ -3481,7 +3481,7 @@ var require_gray_matter = __commonJS({
       return stringify(file, data, options2);
     };
     matter2.read = function(filepath, options2) {
-      const str2 = fs8.readFileSync(filepath, "utf8");
+      const str2 = fs9.readFileSync(filepath, "utf8");
       const file = matter2(str2, options2);
       file.path = filepath;
       return file;
@@ -3510,7 +3510,7 @@ var require_gray_matter = __commonJS({
 });
 
 // scripts/session-start.ts
-var fs7 = __toESM(require("node:fs"));
+var fs8 = __toESM(require("node:fs"));
 
 // src/activity-logger.ts
 var import_node_fs = __toESM(require("node:fs"));
@@ -3827,7 +3827,32 @@ async function handleSessionStart(paths, sessionId = "", agentType) {
 }
 
 // src/path-resolver.ts
+var path7 = __toESM(require("node:path"));
+
+// src/worktree-detector.ts
+var fs6 = __toESM(require("node:fs"));
 var path6 = __toESM(require("node:path"));
+function isWorktree(cwd) {
+  const dir = cwd ?? process.cwd();
+  const gitPath = path6.join(dir, ".git");
+  try {
+    const stat = fs6.statSync(gitPath);
+    return stat.isFile();
+  } catch {
+    return false;
+  }
+}
+function getMainRepoPath(cwd) {
+  const dir = cwd ?? process.cwd();
+  if (!isWorktree(dir)) {
+    return null;
+  }
+  const gitContent = fs6.readFileSync(path6.join(dir, ".git"), "utf-8").trim();
+  const gitdir = gitContent.replace(/^gitdir:\s*/, "");
+  return path6.resolve(gitdir, "..", "..", "..");
+}
+
+// src/path-resolver.ts
 var AUTO_DIR = ".claude-auto";
 async function resolvePathsFromEnv(explicitPluginRoot) {
   const pluginRoot = explicitPluginRoot || process.env.CLAUDE_PLUGIN_ROOT;
@@ -3835,20 +3860,24 @@ async function resolvePathsFromEnv(explicitPluginRoot) {
     throw new Error("CLAUDE_PLUGIN_ROOT must be set. Claude Auto requires plugin mode.");
   }
   const projectRoot = process.cwd();
-  const claudeDir = path6.join(projectRoot, ".claude");
-  const autoDir = path6.join(projectRoot, AUTO_DIR);
+  const worktreeDetected = isWorktree(projectRoot);
+  const mainRepoRoot = worktreeDetected ? getMainRepoPath(projectRoot) : null;
+  const claudeDir = path7.join(projectRoot, ".claude");
+  const autoDir = path7.join(projectRoot, AUTO_DIR);
   return {
     projectRoot,
     claudeDir,
     autoDir,
-    remindersDirs: [path6.join(pluginRoot, "reminders"), path6.join(autoDir, "reminders")],
-    validatorsDirs: [path6.join(pluginRoot, "validators"), path6.join(autoDir, "validators")]
+    remindersDirs: [path7.join(pluginRoot, "reminders"), path7.join(autoDir, "reminders")],
+    validatorsDirs: [path7.join(pluginRoot, "validators"), path7.join(autoDir, "validators")],
+    isWorktree: worktreeDetected,
+    mainRepoRoot
   };
 }
 
 // src/plugin-debug.ts
-var fs6 = __toESM(require("node:fs"));
-var path7 = __toESM(require("node:path"));
+var fs7 = __toESM(require("node:fs"));
+var path8 = __toESM(require("node:path"));
 function logPluginDiagnostics(hookName, paths) {
   const isPluginMode = !!process.env.CLAUDE_PLUGIN_ROOT;
   const isDebug = !!process.env.CLAUDE_AUTO_DEBUG;
@@ -3871,13 +3900,13 @@ function logPluginDiagnostics(hookName, paths) {
   if (isDebug) {
     console.error(message);
   }
-  const logsDir = path7.join(paths.autoDir, "logs");
-  fs6.mkdirSync(logsDir, { recursive: true });
-  fs6.appendFileSync(path7.join(logsDir, "plugin-debug.log"), message);
+  const logsDir = path8.join(paths.autoDir, "logs");
+  fs7.mkdirSync(logsDir, { recursive: true });
+  fs7.appendFileSync(path8.join(logsDir, "plugin-debug.log"), message);
 }
 
 // scripts/session-start.ts
-var input = parseHookInput(fs7.readFileSync(0, "utf-8"));
+var input = parseHookInput(fs8.readFileSync(0, "utf-8"));
 var startTime = Date.now();
 (async () => {
   const paths = await resolvePathsFromEnv();

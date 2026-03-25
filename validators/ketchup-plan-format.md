@@ -21,6 +21,11 @@ Valid responses:
 - Must have `## TODO` section
 - Must have `## DONE` section
 
+**Burst 0 requirement:**
+- The first burst (Burst 0) should be labeled "Setup" and describe worktree creation
+- Format: `- [ ] Burst 0: Setup — create worktree [depends: none]` or similar
+- If no Burst 0 exists, ACK but note it's recommended
+
 **Burst format:**
 - Bursts should include `[depends: ...]` notation
 - Format: `- [ ] Burst N: description [depends: none]` or `[depends: N, M]`
@@ -34,6 +39,7 @@ Valid responses:
 - ketchup-plan.md lacks TODO or DONE sections
 - Bursts are missing dependency notation
 - Bottles are named by number instead of capability
+- Burst 0 exists but is not labeled as Setup/worktree creation
 
 **ACK if:**
 - ketchup-plan.md follows the required structure

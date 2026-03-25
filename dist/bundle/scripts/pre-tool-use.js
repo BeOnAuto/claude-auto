@@ -1112,7 +1112,7 @@ var require_braces = __commonJS({
 var require_constants2 = __commonJS({
   "node_modules/.pnpm/picomatch@2.3.1/node_modules/picomatch/lib/constants.js"(exports2, module2) {
     "use strict";
-    var path10 = require("path");
+    var path11 = require("path");
     var WIN_SLASH = "\\\\/";
     var WIN_NO_SLASH = `[^${WIN_SLASH}]`;
     var DOT_LITERAL = "\\.";
@@ -1282,7 +1282,7 @@ var require_constants2 = __commonJS({
       /* | */
       CHAR_ZERO_WIDTH_NOBREAK_SPACE: 65279,
       /* \uFEFF */
-      SEP: path10.sep,
+      SEP: path11.sep,
       /**
        * Create EXTGLOB_CHARS
        */
@@ -1309,7 +1309,7 @@ var require_constants2 = __commonJS({
 var require_utils2 = __commonJS({
   "node_modules/.pnpm/picomatch@2.3.1/node_modules/picomatch/lib/utils.js"(exports2) {
     "use strict";
-    var path10 = require("path");
+    var path11 = require("path");
     var win32 = process.platform === "win32";
     var {
       REGEX_BACKSLASH,
@@ -1338,7 +1338,7 @@ var require_utils2 = __commonJS({
       if (options2 && typeof options2.windows === "boolean") {
         return options2.windows;
       }
-      return win32 === true || path10.sep === "\\";
+      return win32 === true || path11.sep === "\\";
     };
     exports2.escapeLast = (input2, char, lastIdx) => {
       const idx = input2.lastIndexOf(char, lastIdx);
@@ -2473,7 +2473,7 @@ var require_parse2 = __commonJS({
 var require_picomatch = __commonJS({
   "node_modules/.pnpm/picomatch@2.3.1/node_modules/picomatch/lib/picomatch.js"(exports2, module2) {
     "use strict";
-    var path10 = require("path");
+    var path11 = require("path");
     var scan = require_scan();
     var parse2 = require_parse2();
     var utils = require_utils2();
@@ -2558,7 +2558,7 @@ var require_picomatch = __commonJS({
     };
     picomatch.matchBase = (input2, glob, options2, posix = utils.isWindows(options2)) => {
       const regex = glob instanceof RegExp ? glob : picomatch.makeRe(glob, options2);
-      return regex.test(path10.basename(input2));
+      return regex.test(path11.basename(input2));
     };
     picomatch.isMatch = (str2, patterns, options2) => picomatch(patterns, options2)(str2);
     picomatch.parse = (pattern, options2) => {
@@ -6150,7 +6150,7 @@ var require_parse3 = __commonJS({
 var require_gray_matter = __commonJS({
   "node_modules/.pnpm/gray-matter@4.0.3/node_modules/gray-matter/index.js"(exports2, module2) {
     "use strict";
-    var fs10 = require("fs");
+    var fs11 = require("fs");
     var sections = require_section_matter();
     var defaults = require_defaults();
     var stringify = require_stringify2();
@@ -6234,7 +6234,7 @@ var require_gray_matter = __commonJS({
       return stringify(file, data, options2);
     };
     matter3.read = function(filepath, options2) {
-      const str2 = fs10.readFileSync(filepath, "utf8");
+      const str2 = fs11.readFileSync(filepath, "utf8");
       const file = matter3(str2, options2);
       file.path = filepath;
       return file;
@@ -6263,7 +6263,7 @@ var require_gray_matter = __commonJS({
 });
 
 // scripts/pre-tool-use.ts
-var fs9 = __toESM(require("node:fs"));
+var fs10 = __toESM(require("node:fs"));
 
 // src/activity-logger.ts
 var import_node_fs = __toESM(require("node:fs"));
@@ -6311,7 +6311,7 @@ function activityLog(autoDir, sessionId, hookName, message) {
 // src/commit-validator.ts
 var import_node_child_process = require("node:child_process");
 function spawnAsync(cmd, args, _options) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve2, reject) => {
     const { CLAUDECODE: _, ...cleanEnv } = process.env;
     const child = (0, import_node_child_process.spawn)(cmd, args, { stdio: ["ignore", "pipe", "pipe"], env: cleanEnv });
     let stdout = "";
@@ -6324,7 +6324,7 @@ function spawnAsync(cmd, args, _options) {
     });
     child.on("error", reject);
     child.on("close", (status) => {
-      resolve({ stdout, stderr, status });
+      resolve2({ stdout, stderr, status });
     });
   });
 }
@@ -6885,7 +6885,32 @@ async function handleCommitValidation(paths, sessionId, command, options2, gitCw
 }
 
 // src/path-resolver.ts
+var path9 = __toESM(require("node:path"));
+
+// src/worktree-detector.ts
+var fs8 = __toESM(require("node:fs"));
 var path8 = __toESM(require("node:path"));
+function isWorktree(cwd) {
+  const dir = cwd ?? process.cwd();
+  const gitPath = path8.join(dir, ".git");
+  try {
+    const stat = fs8.statSync(gitPath);
+    return stat.isFile();
+  } catch {
+    return false;
+  }
+}
+function getMainRepoPath(cwd) {
+  const dir = cwd ?? process.cwd();
+  if (!isWorktree(dir)) {
+    return null;
+  }
+  const gitContent = fs8.readFileSync(path8.join(dir, ".git"), "utf-8").trim();
+  const gitdir = gitContent.replace(/^gitdir:\s*/, "");
+  return path8.resolve(gitdir, "..", "..", "..");
+}
+
+// src/path-resolver.ts
 var AUTO_DIR = ".claude-auto";
 async function resolvePathsFromEnv(explicitPluginRoot) {
   const pluginRoot = explicitPluginRoot || process.env.CLAUDE_PLUGIN_ROOT;
@@ -6893,20 +6918,24 @@ async function resolvePathsFromEnv(explicitPluginRoot) {
     throw new Error("CLAUDE_PLUGIN_ROOT must be set. Claude Auto requires plugin mode.");
   }
   const projectRoot = process.cwd();
-  const claudeDir = path8.join(projectRoot, ".claude");
-  const autoDir = path8.join(projectRoot, AUTO_DIR);
+  const worktreeDetected = isWorktree(projectRoot);
+  const mainRepoRoot = worktreeDetected ? getMainRepoPath(projectRoot) : null;
+  const claudeDir = path9.join(projectRoot, ".claude");
+  const autoDir = path9.join(projectRoot, AUTO_DIR);
   return {
     projectRoot,
     claudeDir,
     autoDir,
-    remindersDirs: [path8.join(pluginRoot, "reminders"), path8.join(autoDir, "reminders")],
-    validatorsDirs: [path8.join(pluginRoot, "validators"), path8.join(autoDir, "validators")]
+    remindersDirs: [path9.join(pluginRoot, "reminders"), path9.join(autoDir, "reminders")],
+    validatorsDirs: [path9.join(pluginRoot, "validators"), path9.join(autoDir, "validators")],
+    isWorktree: worktreeDetected,
+    mainRepoRoot
   };
 }
 
 // src/plugin-debug.ts
-var fs8 = __toESM(require("node:fs"));
-var path9 = __toESM(require("node:path"));
+var fs9 = __toESM(require("node:fs"));
+var path10 = __toESM(require("node:path"));
 function logPluginDiagnostics(hookName, paths) {
   const isPluginMode = !!process.env.CLAUDE_PLUGIN_ROOT;
   const isDebug = !!process.env.CLAUDE_AUTO_DEBUG;
@@ -6929,13 +6958,13 @@ function logPluginDiagnostics(hookName, paths) {
   if (isDebug) {
     console.error(message);
   }
-  const logsDir = path9.join(paths.autoDir, "logs");
-  fs8.mkdirSync(logsDir, { recursive: true });
-  fs8.appendFileSync(path9.join(logsDir, "plugin-debug.log"), message);
+  const logsDir = path10.join(paths.autoDir, "logs");
+  fs9.mkdirSync(logsDir, { recursive: true });
+  fs9.appendFileSync(path10.join(logsDir, "plugin-debug.log"), message);
 }
 
 // scripts/pre-tool-use.ts
-var input = parseHookInput(fs9.readFileSync(0, "utf-8"));
+var input = parseHookInput(fs10.readFileSync(0, "utf-8"));
 var startTime = Date.now();
 (async () => {
   const paths = await resolvePathsFromEnv();

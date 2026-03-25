@@ -3397,7 +3397,7 @@ var require_parse = __commonJS({
 var require_gray_matter = __commonJS({
   "node_modules/.pnpm/gray-matter@4.0.3/node_modules/gray-matter/index.js"(exports2, module2) {
     "use strict";
-    var fs5 = require("fs");
+    var fs6 = require("fs");
     var sections = require_section_matter();
     var defaults = require_defaults();
     var stringify = require_stringify();
@@ -3481,7 +3481,7 @@ var require_gray_matter = __commonJS({
       return stringify(file, data, options2);
     };
     matter3.read = function(filepath, options2) {
-      const str2 = fs5.readFileSync(filepath, "utf8");
+      const str2 = fs6.readFileSync(filepath, "utf8");
       const file = matter3(str2, options2);
       file.path = filepath;
       return file;
@@ -3510,7 +3510,7 @@ var require_gray_matter = __commonJS({
 });
 
 // scripts/config.ts
-var path4 = __toESM(require("node:path"));
+var path5 = __toESM(require("node:path"));
 
 // src/config-manager.ts
 var fs4 = __toESM(require("node:fs"));
@@ -3807,7 +3807,32 @@ ${formatYaml(val, indent + 1)}`;
 }
 
 // src/path-resolver.ts
+var path4 = __toESM(require("node:path"));
+
+// src/worktree-detector.ts
+var fs5 = __toESM(require("node:fs"));
 var path3 = __toESM(require("node:path"));
+function isWorktree(cwd) {
+  const dir = cwd ?? process.cwd();
+  const gitPath = path3.join(dir, ".git");
+  try {
+    const stat = fs5.statSync(gitPath);
+    return stat.isFile();
+  } catch {
+    return false;
+  }
+}
+function getMainRepoPath(cwd) {
+  const dir = cwd ?? process.cwd();
+  if (!isWorktree(dir)) {
+    return null;
+  }
+  const gitContent = fs5.readFileSync(path3.join(dir, ".git"), "utf-8").trim();
+  const gitdir = gitContent.replace(/^gitdir:\s*/, "");
+  return path3.resolve(gitdir, "..", "..", "..");
+}
+
+// src/path-resolver.ts
 var AUTO_DIR = ".claude-auto";
 async function resolvePathsFromEnv(explicitPluginRoot) {
   const pluginRoot = explicitPluginRoot || process.env.CLAUDE_PLUGIN_ROOT;
@@ -3815,20 +3840,24 @@ async function resolvePathsFromEnv(explicitPluginRoot) {
     throw new Error("CLAUDE_PLUGIN_ROOT must be set. Claude Auto requires plugin mode.");
   }
   const projectRoot = process.cwd();
-  const claudeDir = path3.join(projectRoot, ".claude");
-  const autoDir = path3.join(projectRoot, AUTO_DIR);
+  const worktreeDetected = isWorktree(projectRoot);
+  const mainRepoRoot = worktreeDetected ? getMainRepoPath(projectRoot) : null;
+  const claudeDir = path4.join(projectRoot, ".claude");
+  const autoDir = path4.join(projectRoot, AUTO_DIR);
   return {
     projectRoot,
     claudeDir,
     autoDir,
-    remindersDirs: [path3.join(pluginRoot, "reminders"), path3.join(autoDir, "reminders")],
-    validatorsDirs: [path3.join(pluginRoot, "validators"), path3.join(autoDir, "validators")]
+    remindersDirs: [path4.join(pluginRoot, "reminders"), path4.join(autoDir, "reminders")],
+    validatorsDirs: [path4.join(pluginRoot, "validators"), path4.join(autoDir, "validators")],
+    isWorktree: worktreeDetected,
+    mainRepoRoot
   };
 }
 
 // scripts/config.ts
 function derivePluginRoot() {
-  return path4.resolve(__dirname, "..", "..", "..");
+  return path5.resolve(__dirname, "..", "..", "..");
 }
 var args = process.argv.slice(2);
 var subcommand = args[0];
