@@ -45,6 +45,12 @@ export interface OverridesState {
   reminders: Record<string, ReminderOverride>;
 }
 
+export interface WorktreeConfig {
+  enabled: boolean;
+  defaultBasePath?: string;
+  autoCleanup: boolean;
+}
+
 export interface HookState {
   firstSetupRequired?: boolean;
   autoContinue: AutoContinueState;
@@ -53,6 +59,7 @@ export interface HookState {
   promptReminder: PromptReminderState;
   subagentHooks: SubagentHooksState;
   overrides: OverridesState;
+  worktree: WorktreeConfig;
 }
 
 export const DEFAULT_HOOK_STATE: HookState = {
@@ -80,6 +87,10 @@ export const DEFAULT_HOOK_STATE: HookState = {
   overrides: {
     validators: {},
     reminders: {},
+  },
+  worktree: {
+    enabled: true,
+    autoCleanup: true,
   },
 };
 
@@ -120,6 +131,7 @@ export function createHookState(autoDir: string): HookStateManager {
         validators: { ...DEFAULT_HOOK_STATE.overrides.validators, ...partial.overrides?.validators },
         reminders: { ...DEFAULT_HOOK_STATE.overrides.reminders, ...partial.overrides?.reminders },
       },
+      worktree: { ...DEFAULT_HOOK_STATE.worktree, ...partial.worktree },
     };
   }
 
@@ -141,6 +153,7 @@ export function createHookState(autoDir: string): HookStateManager {
         validators: { ...current.overrides.validators, ...updates.overrides?.validators },
         reminders: { ...current.overrides.reminders, ...updates.overrides?.reminders },
       },
+      worktree: { ...current.worktree, ...updates.worktree },
     };
     write(newState);
     return newState;

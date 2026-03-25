@@ -66,6 +66,7 @@ describe('hook-state', () => {
         promptReminder: { enabled: false },
         subagentHooks: { validateCommitOnExplore: false, validateCommitOnWork: true, validateCommitOnUnknown: true },
         overrides: { validators: {}, reminders: {} },
+        worktree: { enabled: true, autoCleanup: true },
       };
       fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify(existingState));
 
@@ -181,6 +182,7 @@ describe('hook-state', () => {
         promptReminder: { enabled: true },
         subagentHooks: { validateCommitOnExplore: false, validateCommitOnWork: true, validateCommitOnUnknown: true },
         overrides: { validators: {}, reminders: {} },
+        worktree: { enabled: true, autoCleanup: true },
       });
     });
 
@@ -221,6 +223,51 @@ describe('hook-state', () => {
 
       const state = hookState.read();
       expect(state.subagentHooks.validateCommitOnExplore).toBe(true);
+    });
+  });
+
+  describe('worktree', () => {
+    it('reads worktree config from state file', () => {
+      const existingState = {
+        worktree: {
+          enabled: false,
+          defaultBasePath: '/tmp/worktrees',
+          autoCleanup: false,
+        },
+      };
+      fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify(existingState));
+
+      const hookState = createHookState(autoDir);
+      const state = hookState.read();
+
+      expect(state.worktree).toEqual({
+        enabled: false,
+        defaultBasePath: '/tmp/worktrees',
+        autoCleanup: false,
+      });
+    });
+
+    it('updates worktree config with update method', () => {
+      const hookState = createHookState(autoDir);
+
+      hookState.update({
+        worktree: { enabled: false, autoCleanup: false },
+      });
+
+      const state = hookState.read();
+      expect(state.worktree).toEqual({ enabled: false, autoCleanup: false });
+    });
+
+    it('merges partial worktree config with defaults', () => {
+      const partialState = {
+        worktree: { enabled: false },
+      };
+      fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify(partialState));
+
+      const hookState = createHookState(autoDir);
+      const state = hookState.read();
+
+      expect(state.worktree).toEqual({ enabled: false, autoCleanup: true });
     });
   });
 });
