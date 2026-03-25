@@ -5,6 +5,7 @@ import type { ResolvedPaths } from '../path-resolver.js';
 import { loadReminders, scanReminders } from '../reminder-loader.js';
 import { isValidatorSession } from '../validator-session.js';
 import { FIRST_SETUP_MESSAGE } from '../welcome-message.js';
+import { createWorktreeState } from '../worktree-state.js';
 
 type HookResult = {
   hookSpecificOutput: {
@@ -89,10 +90,23 @@ export async function handleUserPromptSubmit(
     matchedReminders: reminders.map((r) => ({ name: r.name, priority: r.priority })),
   };
 
+  let finalContent = reminderContent;
+
+  if (!paths.isWorktree) {
+    const worktreeState = createWorktreeState(paths.autoDir);
+    const activeWorktrees = Object.values(worktreeState.read().worktrees).filter((w) => w.status === 'active');
+    if (activeWorktrees.length > 0) {
+      const statusLines = activeWorktrees.map((w) => `- ${w.id}: ${w.branch} at ${w.path}`).join('\n');
+      const worktreeStatus = `\n\n# Active Worktrees\n\n${statusLines}`;
+      finalContent = reminderContent ? `${reminderContent}${worktreeStatus}` : worktreeStatus.trimStart();
+      debugLog(paths.autoDir, 'user-prompt-submit', `injected ${activeWorktrees.length} active worktree(s) status`);
+    }
+  }
+
   return {
     hookSpecificOutput: {
       hookEventName: 'UserPromptSubmit',
-      additionalContext: reminderContent,
+      additionalContext: finalContent,
     },
     diagnostics,
   };

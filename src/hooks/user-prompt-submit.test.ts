@@ -171,4 +171,29 @@ You are a commit validator.`;
     });
     expect(result.diagnostics.matchedReminders).toEqual([]);
   });
+
+  it('injects active worktree status for orchestrator sessions', async () => {
+    const worktreeStateFile = path.join(autoDir, '.worktrees.json');
+    fs.writeFileSync(
+      worktreeStateFile,
+      JSON.stringify({
+        worktrees: {
+          'feature-auth': {
+            id: 'feature-auth',
+            path: '/tmp/project-swift-fox',
+            branch: 'worktree/auth',
+            baseBranch: 'main',
+            status: 'active',
+            createdAt: '2026-03-25T10:00:00Z',
+          },
+        },
+      }),
+    );
+
+    const result = await handleUserPromptSubmit(resolvedPaths, 'orchestrator-session');
+
+    expect(result.hookSpecificOutput.additionalContext).toContain('# Active Worktrees');
+    expect(result.hookSpecificOutput.additionalContext).toContain('feature-auth');
+    expect(result.hookSpecificOutput.additionalContext).toContain('worktree/auth');
+  });
 });
