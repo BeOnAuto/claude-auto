@@ -11,7 +11,7 @@
       "author": {
         "name": "Sam Hatoum"
       },
-      "source": "."
+      "source": { "source": "github", "repo": "BeOnAuto/claude-auto" }
     }
   ]
 }
