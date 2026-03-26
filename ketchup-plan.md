@@ -2,12 +2,6 @@
 
 ## TODO
 
-- [ ] Burst 6: `src/worktree-orchestrator.ts` — Prompt building, branch naming [depends: 2, 5]
-- [ ] Burst 7: `src/hooks/session-start.ts` — Inject worktree context [depends: 4]
-- [ ] Burst 8: `src/hooks/user-prompt-submit.ts` — Inject worktree status [depends: 2, 4]
-- [ ] Burst 11: `scripts/worktree.ts` + skill — `/claude-auto:worktree` command [depends: 5]
-- [ ] Burst 12: `src/index.ts` — Export new public interfaces [depends: all]
-
 ## DONE
 
 - [x] Burst 1: `src/worktree-detector.ts` — `.git` file vs directory detection [depends: none] (343d3ea)
@@ -15,5 +9,10 @@
 - [x] Burst 3: `src/hook-state.ts` — Add `WorktreeConfig` to state [depends: none] (02ec299)
 - [x] Burst 4: `src/path-resolver.ts` — Add `isWorktree`, `mainRepoRoot` [depends: 1] (6007fff)
 - [x] Burst 5: `src/worktree-manager.ts` — Worktree create/list/remove lifecycle [depends: 1, 2] (8f0aea8)
+- [x] Burst 6: `src/worktree-orchestrator.ts` — Prompt building, branch naming [depends: 2, 5] (46a1a50)
+- [x] Burst 7: `src/hooks/session-start.ts` — Inject worktree context [depends: 4] (7bf8225)
+- [x] Burst 8: `src/hooks/user-prompt-submit.ts` — Inject worktree status [depends: 2, 4] (321d762)
 - [x] Burst 9: `src/subagent-classifier.ts` — Add `orchestrate` type [depends: none] (3c9f0cb)
 - [x] Burst 10: Reminders + validators — New markdown files [depends: none] (343d3ea)
+- [x] Burst 11: `scripts/worktree.ts` + skill — `/claude-auto:worktree` command [depends: 5] (6bcba23)
+- [x] Burst 12: `src/index.ts` — Export new public interfaces [depends: all] (ca515f0)
