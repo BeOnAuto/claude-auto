@@ -19,7 +19,7 @@
   "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "tsc && pnpm build:bundle",
-    "build:bundle": "esbuild scripts/session-start.ts scripts/pre-tool-use.ts scripts/user-prompt-submit.ts scripts/auto-continue.ts scripts/config.ts --bundle --platform=node --target=node18 --format=cjs --outdir=dist/bundle/scripts --external:typescript",
+    "build:bundle": "esbuild scripts/session-start.ts scripts/pre-tool-use.ts scripts/user-prompt-submit.ts scripts/auto-continue.ts scripts/config.ts scripts/worktree.ts --bundle --platform=node --target=node18 --format=cjs --outdir=dist/bundle/scripts --external:typescript",
     "test": "vitest run",
     "test:watch": "vitest",
     "type-check": "tsc --noEmit",
