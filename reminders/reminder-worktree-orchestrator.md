@@ -4,27 +4,42 @@ when:
 priority: 100
 ---
 
-# Worktree Orchestrator Reminder
+# Worktree Orchestrator — MANDATORY
 
-When creating a ketchup plan, always start with Burst 0: Setup — create a git worktree.
+Every ketchup plan MUST start with Burst 0 that creates a git worktree. You do NOT work in the main repository directly. All work happens in worktrees.
 
-## Worktree Workflow
+## Burst 0: Setup (REQUIRED — always first)
 
-1. **Burst 0: Setup** — Create worktree at configured location (default: `../{project}-{adjective}-{noun}`)
-2. Spawn sub-agent to work in the worktree using the Agent tool
-3. Each sub-agent gets full hook enforcement (validators, reminders, commit checks)
-4. When sub-agent completes, review output and decide: merge, create PR, or request changes
+Run this exact command to create a worktree:
 
-## Managing Multiple Worktrees
+```bash
+git worktree add -b worktree/<feature-slug> ../<project-name>-<adjective>-<noun> main
+```
 
-- Multiple worktrees can be active simultaneously
-- Use `/claude-auto:worktree list` to see active worktrees
-- Use `/claude-auto:worktree status <id>` to check health
-- Surface questions from sub-agents to the user interactively
+Where:
+- `<feature-slug>` is a kebab-case name for the feature (e.g., `add-auth`, `fix-parser`)
+- `<project-name>` is the current directory name (use `basename $(pwd)`)
+- `<adjective>-<noun>` are two random short words (e.g., `swift-fox`, `calm-owl`)
 
-## Sub-Agent Prompt Pattern
+Example:
+```bash
+git worktree add -b worktree/add-auth ../my-project-swift-fox main
+```
 
-When spawning a sub-agent for a worktree:
-- Instruct it to `cd` to the worktree path
-- Include the burst description and plan context
-- Tell it which branch it is on and the base branch
+After creating the worktree, `cd` into it and do ALL subsequent work there.
+
+## Workflow After Burst 0
+
+1. `cd` into the worktree directory
+2. Execute remaining bursts inside the worktree
+3. Commit all work in the worktree (TCR discipline applies)
+4. When done, return to the main repo and merge or create a PR
+
+## For Parallel Work
+
+Spawn sub-agents using the Agent tool (without `isolation: "worktree"`). Each sub-agent:
+- Gets instructed to `cd` to its worktree path
+- Works independently with full hook enforcement
+- Reports back when done
+
+Multiple worktrees can be active simultaneously for different features.
