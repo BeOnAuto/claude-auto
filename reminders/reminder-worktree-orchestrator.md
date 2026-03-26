@@ -26,20 +26,29 @@ Example:
 git worktree add -b worktree/add-auth ../my-project-swift-fox main
 ```
 
-After creating the worktree, `cd` into it and do ALL subsequent work there.
-
 ## Workflow After Burst 0
 
-1. `cd` into the worktree directory
-2. Execute remaining bursts inside the worktree
-3. Commit all work in the worktree (TCR discipline applies)
-4. When done, return to the main repo and merge or create a PR
+After creating the worktree, spawn a **background** sub-agent to do the work:
 
-## For Parallel Work
+```
+Agent tool call:
+  run_in_background: true
+  prompt: "cd <worktree-path> && ... your burst instructions ..."
+```
 
-Spawn sub-agents using the Agent tool (without `isolation: "worktree"`). Each sub-agent:
-- Gets instructed to `cd` to its worktree path
-- Works independently with full hook enforcement
-- Reports back when done
+CRITICAL: Always use `run_in_background: true` when spawning sub-agents. This keeps the orchestrator (you) responsive to the user while work happens in parallel. You will be notified when the sub-agent completes.
+
+Each sub-agent:
+- Gets instructed to `cd` to the worktree path as the FIRST thing it does
+- Works independently with full hook enforcement (validators, reminders, commit checks)
+- Reports back when done — you then decide: merge, create PR, or request changes
+
+## Staying Responsive
+
+You are the orchestrator. Your job is to:
+1. Create worktrees and spawn background sub-agents
+2. Stay available for the user's questions while sub-agents work
+3. When notified of completion, review results and report to the user
+4. NEVER block on a foreground sub-agent for worktree work
 
 Multiple worktrees can be active simultaneously for different features.
