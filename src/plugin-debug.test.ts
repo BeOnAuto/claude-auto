@@ -29,6 +29,8 @@ describe('logPluginDiagnostics', () => {
       autoDir: tempDir,
       validatorsDirs: ['/plugins/claude-auto/validators'],
       remindersDirs: ['/plugins/claude-auto/reminders'],
+      isWorktree: false,
+      mainRepoRoot: null,
     });
 
     const logFile = path.join(tempDir, 'logs', 'plugin-debug.log');
@@ -49,6 +51,8 @@ describe('logPluginDiagnostics', () => {
       autoDir: tempDir,
       validatorsDirs: ['/project/.claude-auto/validators'],
       remindersDirs: ['/project/.claude-auto/reminders'],
+      isWorktree: false,
+      mainRepoRoot: null,
     });
 
     const logFile = path.join(tempDir, 'logs', 'plugin-debug.log');
@@ -68,6 +72,8 @@ describe('logPluginDiagnostics', () => {
       autoDir: tempDir,
       validatorsDirs: ['/plugins/claude-auto/validators'],
       remindersDirs: ['/plugins/claude-auto/reminders'],
+      isWorktree: false,
+      mainRepoRoot: null,
     });
 
     expect(spy).toHaveBeenCalledOnce();
@@ -86,6 +92,8 @@ describe('logPluginDiagnostics', () => {
       autoDir: tempDir,
       validatorsDirs: ['/plugins/claude-auto/validators'],
       remindersDirs: ['/plugins/claude-auto/reminders'],
+      isWorktree: false,
+      mainRepoRoot: null,
     });
 
     expect(spy).not.toHaveBeenCalled();
@@ -104,6 +112,8 @@ describe('logPluginDiagnostics', () => {
       autoDir: tempDir,
       validatorsDirs: ['/project/.claude-auto/validators'],
       remindersDirs: ['/project/.claude-auto/reminders'],
+      isWorktree: false,
+      mainRepoRoot: null,
     });
 
     expect(spy).not.toHaveBeenCalled();

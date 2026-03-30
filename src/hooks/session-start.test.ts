@@ -28,6 +28,8 @@ describe('session-start hook', () => {
       autoDir,
       remindersDirs: [path.join(autoDir, 'reminders')],
       validatorsDirs: [path.join(autoDir, 'validators')],
+      isWorktree: false,
+      mainRepoRoot: null,
     };
     fs.mkdirSync(claudeDir, { recursive: true });
     fs.mkdirSync(autoDir, { recursive: true });
@@ -143,6 +145,20 @@ Test content.`,
 
     expect(result.hookSpecificOutput.additionalContext).toBe('Test content.');
     expect(result.hookSpecificOutput.additionalContext).not.toContain('Welcome to Claude Auto');
+  });
+
+  it('injects worktree context when running in a worktree', async () => {
+    const worktreePaths: ResolvedPaths = {
+      ...resolvedPaths,
+      isWorktree: true,
+      mainRepoRoot: '/main/repo',
+    };
+    fs.writeFileSync(path.join(autoDir, '.claude.hooks.json'), JSON.stringify(DEFAULT_HOOK_STATE));
+
+    const result = await handleSessionStart(worktreePaths, 'wt-session');
+
+    expect(result.hookSpecificOutput.additionalContext).toContain('# Worktree Context');
+    expect(result.hookSpecificOutput.additionalContext).toContain('/main/repo');
   });
 
   it('skips reminders for validator subagent sessions', async () => {

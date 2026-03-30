@@ -24,7 +24,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 
 // scripts/auto-continue.ts
-var fs5 = __toESM(require("node:fs"));
+var fs6 = __toESM(require("node:fs"));
 
 // src/activity-logger.ts
 var import_node_fs = __toESM(require("node:fs"));
@@ -153,6 +153,10 @@ var DEFAULT_HOOK_STATE = {
   overrides: {
     validators: {},
     reminders: {}
+  },
+  worktree: {
+    enabled: true,
+    autoCleanup: true
   }
 };
 function createHookState(autoDir) {
@@ -180,7 +184,8 @@ function createHookState(autoDir) {
       overrides: {
         validators: { ...DEFAULT_HOOK_STATE.overrides.validators, ...partial.overrides?.validators },
         reminders: { ...DEFAULT_HOOK_STATE.overrides.reminders, ...partial.overrides?.reminders }
-      }
+      },
+      worktree: { ...DEFAULT_HOOK_STATE.worktree, ...partial.worktree }
     };
   }
   function write(state) {
@@ -200,7 +205,8 @@ function createHookState(autoDir) {
       overrides: {
         validators: { ...current.overrides.validators, ...updates.overrides?.validators },
         reminders: { ...current.overrides.reminders, ...updates.overrides?.reminders }
-      }
+      },
+      worktree: { ...current.worktree, ...updates.worktree }
     };
     write(newState);
     return newState;
@@ -235,7 +241,32 @@ function handleStop(autoDir, input2) {
 }
 
 // src/path-resolver.ts
+var path5 = __toESM(require("node:path"));
+
+// src/worktree-detector.ts
+var fs4 = __toESM(require("node:fs"));
 var path4 = __toESM(require("node:path"));
+function isWorktree(cwd) {
+  const dir = cwd ?? process.cwd();
+  const gitPath = path4.join(dir, ".git");
+  try {
+    const stat = fs4.statSync(gitPath);
+    return stat.isFile();
+  } catch {
+    return false;
+  }
+}
+function getMainRepoPath(cwd) {
+  const dir = cwd ?? process.cwd();
+  if (!isWorktree(dir)) {
+    return null;
+  }
+  const gitContent = fs4.readFileSync(path4.join(dir, ".git"), "utf-8").trim();
+  const gitdir = gitContent.replace(/^gitdir:\s*/, "");
+  return path4.resolve(gitdir, "..", "..", "..");
+}
+
+// src/path-resolver.ts
 var AUTO_DIR = ".claude-auto";
 async function resolvePathsFromEnv(explicitPluginRoot) {
   const pluginRoot = explicitPluginRoot || process.env.CLAUDE_PLUGIN_ROOT;
@@ -243,20 +274,24 @@ async function resolvePathsFromEnv(explicitPluginRoot) {
     throw new Error("CLAUDE_PLUGIN_ROOT must be set. Claude Auto requires plugin mode.");
   }
   const projectRoot = process.cwd();
-  const claudeDir = path4.join(projectRoot, ".claude");
-  const autoDir = path4.join(projectRoot, AUTO_DIR);
+  const worktreeDetected = isWorktree(projectRoot);
+  const mainRepoRoot = worktreeDetected ? getMainRepoPath(projectRoot) : null;
+  const claudeDir = path5.join(projectRoot, ".claude");
+  const autoDir = path5.join(projectRoot, AUTO_DIR);
   return {
     projectRoot,
     claudeDir,
     autoDir,
-    remindersDirs: [path4.join(pluginRoot, "reminders"), path4.join(autoDir, "reminders")],
-    validatorsDirs: [path4.join(pluginRoot, "validators"), path4.join(autoDir, "validators")]
+    remindersDirs: [path5.join(pluginRoot, "reminders"), path5.join(autoDir, "reminders")],
+    validatorsDirs: [path5.join(pluginRoot, "validators"), path5.join(autoDir, "validators")],
+    isWorktree: worktreeDetected,
+    mainRepoRoot
   };
 }
 
 // src/plugin-debug.ts
-var fs4 = __toESM(require("node:fs"));
-var path5 = __toESM(require("node:path"));
+var fs5 = __toESM(require("node:fs"));
+var path6 = __toESM(require("node:path"));
 function logPluginDiagnostics(hookName, paths) {
   const isPluginMode = !!process.env.CLAUDE_PLUGIN_ROOT;
   const isDebug = !!process.env.CLAUDE_AUTO_DEBUG;
@@ -279,13 +314,13 @@ function logPluginDiagnostics(hookName, paths) {
   if (isDebug) {
     console.error(message);
   }
-  const logsDir = path5.join(paths.autoDir, "logs");
-  fs4.mkdirSync(logsDir, { recursive: true });
-  fs4.appendFileSync(path5.join(logsDir, "plugin-debug.log"), message);
+  const logsDir = path6.join(paths.autoDir, "logs");
+  fs5.mkdirSync(logsDir, { recursive: true });
+  fs5.appendFileSync(path6.join(logsDir, "plugin-debug.log"), message);
 }
 
 // scripts/auto-continue.ts
-var stdin = fs5.readFileSync(0, "utf8").trim();
+var stdin = fs6.readFileSync(0, "utf8").trim();
 if (!stdin) {
   process.exit(0);
 }
