@@ -11,4 +11,9 @@ describe('FIRST_SETUP_MESSAGE', () => {
   it('instructs to not proceed with user request', () => {
     expect(FIRST_SETUP_MESSAGE).toContain('DO NOT proceed');
   });
+
+  it('includes statusline setup prompt with skill reference', () => {
+    expect(FIRST_SETUP_MESSAGE).toContain('/claude-auto:statusline');
+    expect(FIRST_SETUP_MESSAGE).toContain('status line');
+  });
 });

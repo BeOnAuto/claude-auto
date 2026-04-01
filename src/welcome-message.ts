@@ -12,7 +12,8 @@ DO NOT proceed with the user's request yet. Instead:
    - Auto-continue to keep working until the plan is done
 3. Run /claude-auto:config show to display the current configuration
 4. Ask the user if they want to customize anything, or proceed with defaults
-5. ONLY AFTER the user confirms, proceed with their original request
+5. Ask the user if they want to configure the status line — it shows ketchup plan progress, git branch, and context usage. If they agree, run /claude-auto:statusline to set it up.
+6. ONLY AFTER the user confirms, proceed with their original request
 
 The default workflow follows the Ketchup Technique:
 - Create ketchup-plan.md with TODO/DONE sections before coding
