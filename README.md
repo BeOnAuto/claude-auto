@@ -87,6 +87,26 @@ If you're upgrading from `claude-auto`, your existing `.claude-auto/` directory 
 
 ---
 
+## Planning Commands
+
+Ketchup provides two slash commands for deterministic planning:
+
+```
+/ketchup:plan <feature description>
+```
+
+Writes `ketchup-plan.md` following the Ketchup Technique format (Bottles, Bursts, `[depends: ...]` notation). Claude will not write any code — it stops after presenting the plan and waits for your approval.
+
+```
+/ketchup:approve
+```
+
+Approves the plan and starts executing the first available burst using the Red → Green → TCR rhythm. Automatically proceeds through bursts, moving each one to `## DONE` with its commit hash when complete.
+
+See [The Ketchup Technique](./docs/ketchup-technique.md) for the `ketchup-plan.md` format and burst dependency notation.
+
+---
+
 ## Custom Validators and Reminders
 
 Add project-specific rules by creating markdown files in `.ketchup/validators/` and `.ketchup/reminders/`.
