@@ -280,44 +280,6 @@ if (subagentType === 'work' && state.validateCommitOnWork) {
 
 ---
 
-## Clue Collection
-
-The clue collector analyzes Claude transcripts for continuation signals.
-
-```
-transcript.jsonl
-      │
-      ▼
-┌─────────────────────────┐
-│ Parse JSONL lines       │
-│ Extract entries         │
-└──────────┬──────────────┘
-           │
-           ├─────────────────────────────────────────┐
-           │                                          │
-           ▼                                          ▼
-┌─────────────────────────┐          ┌─────────────────────────┐
-│ Pattern Detection       │          │ Metadata Extraction     │
-│ ├─► CONTINUE_PATTERNS   │          │ ├─► ketchup-plan paths  │
-│ ├─► ketchup mentions    │          │ ├─► working directories │
-│ └─► plan mentions       │          │ └─► current cwd         │
-└──────────┬──────────────┘          └──────────┬──────────────┘
-           │                                     │
-           └─────────────┬───────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│ ClueCollectorResult                                          │
-│ ├─► clues: Array<Clue>     Detected patterns                │
-│ ├─► lastChats: Array       Last 5 exchanges                 │
-│ ├─► ketchupPlanPaths       Found plan files                 │
-│ ├─► workingDirs            Detected directories             │
-│ └─► summary: string        Human-readable summary           │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
 ## Directory Structure
 
 ### Plugin Structure
@@ -335,7 +297,6 @@ ketchup/
 │   ├── debug-logger.ts     Debug output (internal)
 │   ├── clean-logs.ts       Log cleanup (internal)
 │   ├── subagent-classifier.ts  Task classification (internal)
-│   ├── clue-collector.ts   Transcript analysis (internal)
 │   │
 │   └── hooks/
 │       ├── session-start.ts     SessionStart handler
@@ -439,8 +400,7 @@ Unit Tests (vitest)
 ├── Deny-list (load patterns, match files)
 ├── Hook state (read, write, update)
 ├── Subagent classifier (patterns, extraction)
-├── Path resolver (environment-based resolution)
-└── Clue collector (transcript analysis)
+└── Path resolver (environment-based resolution)
 
 E2E Tests (scripts/test-hooks.sh)
 ├── Deny-list blocking

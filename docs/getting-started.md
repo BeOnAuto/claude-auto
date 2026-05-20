@@ -50,7 +50,7 @@ This creates `.ketchup/` with default configuration. Then verify:
 /ketchup:config show
 ```
 
-Ketchup is now active with commit validation, reminders, deny-lists, and auto-continue.
+Ketchup is now active with commit validation, reminders, and deny-lists.
 
 ---
 
@@ -101,7 +101,6 @@ Start a Claude Code session. The supervisor will:
 1. **Inject** your guidelines at session start
 2. **Validate** every commit against your rules
 3. **ACK** clean commits, **NACK** rule violations
-4. **Auto-continue** until the plan is complete
 
 ---
 
@@ -148,7 +147,6 @@ You installed Ketchup:
 | Validators    | ACK/NACK every commit via LLM           | PreToolUse hooks       |
 | Reminders     | Your rules, every session + prompt      | SessionStart + prompt  |
 | Deny-list     | Structural file protection              | PreToolUse deny-list   |
-| Auto-Continue | Agent keeps working while plan has work | Stop hooks             |
 | TCR gate      | `test && commit revert` enforced        | TCR Workflow validator |
 
 ---

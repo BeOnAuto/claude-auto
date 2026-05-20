@@ -6,4 +6,3 @@ cjs for auto-engineer <<< look into this
 http server
 
 do not give reminders to validator subagents
-do not run auto continue for validator subagents (also otehr lifecycle hooks)

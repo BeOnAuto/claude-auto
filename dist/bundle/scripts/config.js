@@ -3845,7 +3845,7 @@ function usage() {
 
 Subcommands:
   show                              Show all current configuration
-  set <key.path> <value>            Set a config value (e.g., autoContinue.mode off)
+  set <key.path> <value>            Set a config value (e.g., validateCommit.mode off)
   validators                        List all validators with status
   validators enable <name>          Enable a validator
   validators disable <name>         Disable a validator
