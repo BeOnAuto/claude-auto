@@ -6336,10 +6336,12 @@ function isCommitCommand(command) {
 }
 function getCommitContext(cwd, command) {
   const gitCwd = extractCdTarget(command) ?? cwd;
-  const diff = (0, import_node_child_process.execSync)("git diff --cached", { cwd: gitCwd, encoding: "utf8" });
+  const maxBuffer = 64 * 1024 * 1024;
+  const diff = (0, import_node_child_process.execSync)("git diff --cached", { cwd: gitCwd, encoding: "utf8", maxBuffer });
   const filesOutput = (0, import_node_child_process.execSync)("git diff --cached --name-only", {
     cwd: gitCwd,
-    encoding: "utf8"
+    encoding: "utf8",
+    maxBuffer
   });
   const files = filesOutput.trim().split("\n").filter(Boolean);
   const message = extractCommitMessage(command);

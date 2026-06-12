@@ -28,6 +28,9 @@ docs/.vitepress/cache
 
 # Temp files
 .changeset-prompt-*.txt
-# Ketchup plans
-ketchup-plan.md
 .ketchup/
+
+# Event store database
+events.db
+events.db-shm
+events.db-wal

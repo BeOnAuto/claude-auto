@@ -1,0 +1,37 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-ketchup-bg: #0e051b;
+  --color-ketchup-bg-alt: #130c1e;
+  --color-ketchup-bg-soft: #1a1329;
+  --color-ketchup-surface: #160f22;
+  --color-ketchup-text: #f3ecfe;
+  --color-ketchup-text-2: #b8aed0;
+  --color-ketchup-text-3: #8a7da0;
+  --color-ketchup-brand: #4d8ae8;
+  --color-ketchup-accent: #5ec72d;
+  --color-ketchup-divider: rgba(243, 236, 254, 0.08);
+  --color-ketchup-code-bg: #0a0414;
+  --color-ketchup-code: #c4b8f0;
+}
+
+html,
+body {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+html.dark,
+html.dark body {
+  background-color: var(--color-ketchup-bg);
+  color: var(--color-ketchup-text);
+}
+
+.ketchup-brand-gradient {
+  background: linear-gradient(135deg, #ec3f4a 0%, #ff8a1d 30%, #5ec72d 60%, #42c3f7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

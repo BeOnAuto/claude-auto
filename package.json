@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "tsc && pnpm build:bundle",
-    "build:bundle": "esbuild scripts/session-start.ts scripts/pre-tool-use.ts scripts/user-prompt-submit.ts scripts/config.ts scripts/init.ts --bundle --platform=node --target=node18 --format=cjs --outdir=dist/bundle/scripts --external:typescript",
+    "build:bundle": "esbuild scripts/session-start.ts scripts/pre-tool-use.ts scripts/user-prompt-submit.ts scripts/config.ts scripts/init.ts scripts/events-viewer.ts --bundle --platform=node --target=node18 --format=cjs --outdir=dist/bundle/scripts --external:typescript --external:sqlite3",
     "test": "vitest run",
     "test:watch": "vitest",
     "type-check": "tsc --noEmit",
@@ -37,8 +37,12 @@
   "author": "Sam Hatoum",
   "license": "MIT",
   "dependencies": {
+    "@event-driven-io/emmett": "^0.42.0",
+    "@event-driven-io/emmett-sqlite": "^0.42.0",
+    "express": "^5.2.1",
     "gray-matter": "^4.0.3",
-    "micromatch": "^4.0.8"
+    "micromatch": "^4.0.8",
+    "ws": "^8.20.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
@@ -46,12 +50,16 @@
     "@changesets/cli": "^2.29.8",
     "@commitlint/cli": "^20.3.1",
     "@commitlint/config-conventional": "^20.3.1",
+    "@types/express": "^5.0.6",
     "@types/micromatch": "^4.0.10",
     "@types/node": "^20.0.0",
+    "@types/supertest": "^7.2.0",
+    "@types/ws": "^8.18.1",
     "@vitest/coverage-v8": "^1.6.1",
     "esbuild": "^0.27.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
+    "supertest": "^7.2.2",
     "tsx": "^4.0.0",
     "turbo": "^2.7.5",
     "typescript": "^5.0.0",
@@ -61,5 +69,10 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "packageManager": "pnpm@10.28.0"
+  "packageManager": "pnpm@10.28.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sqlite3"
+    ]
+  }
 }

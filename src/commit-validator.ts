@@ -39,10 +39,12 @@ export interface CommitContext {
 
 export function getCommitContext(cwd: string, command: string): CommitContext {
   const gitCwd = extractCdTarget(command) ?? cwd;
-  const diff = execSync('git diff --cached', { cwd: gitCwd, encoding: 'utf8' });
+  const maxBuffer = 64 * 1024 * 1024;
+  const diff = execSync('git diff --cached', { cwd: gitCwd, encoding: 'utf8', maxBuffer });
   const filesOutput = execSync('git diff --cached --name-only', {
     cwd: gitCwd,
     encoding: 'utf8',
+    maxBuffer,
   });
   const files = filesOutput.trim().split('\n').filter(Boolean);
   const message = extractCommitMessage(command);

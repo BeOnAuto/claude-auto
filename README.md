@@ -87,6 +87,34 @@ If you're upgrading from `claude-auto`, your existing `.claude-auto/` directory 
 
 ---
 
+## Events Viewer
+
+Ketchup ships with a local web UI that streams every Claude Code event from the current repository in real time — prompts, thoughts, tool invocations and their results, hook executions, file edits, and session boundaries — as a collapsible tree per session.
+
+```
+/ketchup:view        # boot the viewer (auto-picks first free port from 4321 up)
+/ketchup:view-stop   # stop the viewer running for this repo
+```
+
+Open the URL it prints (default `http://127.0.0.1:4321`) in your browser. Light/dark themes with a toggle in the sidebar (choice persisted), selected session highlighted, auto-scroll to bottom on new events when pinned.
+
+**How it works:**
+
+- Reads `~/.claude/projects/<dashed-cwd>/*.jsonl` transcripts, translates each line into a domain event, and appends to a SQLite store via `@event-driven-io/emmett-sqlite`
+- Watches the transcript directory with `fs.watch`; new lines are ingested within ~15 ms and pushed over WebSocket to any connected tab — no polling
+- Serves the built SPA and the API from a single Express port so the viewer is one process, one URL
+- The repository name shown in the sidebar is derived from the cwd the viewer was launched in
+
+**Multiple repositories:**
+
+Running `/ketchup:view` in a second repo starts a second viewer on the next free port (4322, 4323, …). Each viewer watches its own repo's transcripts. They do not share state.
+
+**Auto-stop:**
+
+The viewer exits on its own after 30 minutes with no connected clients — close all browser tabs and the process cleans itself up. Override with the `KETCHUP_VIEW_IDLE_MINUTES` env var. `/ketchup:view-stop` kills every running viewer immediately.
+
+---
+
 ## Custom Validators and Reminders
 
 Add project-specific rules by creating markdown files in `.ketchup/validators/` and `.ketchup/reminders/`.
